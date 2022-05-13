@@ -14,7 +14,7 @@ public class MixinEntityRenderer {
     /** @reason Makes the third-person view camera pass through non-solid blocks (fixes https://bugs.mojang.com/browse/MC-30845) */
     @Redirect(method = "orientCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;rayTraceBlocks(Lnet/minecraft/util/Vec3;Lnet/minecraft/util/Vec3;)Lnet/minecraft/util/MovingObjectPosition;"))
     private MovingObjectPosition rayTraceBlocks(WorldClient world, Vec3 from, Vec3 to) {
-        return world.rayTraceBlocks(from, to, false, true, true);
+        return world.func_147447_a(from, to, false, true, true);
     }
 
 }

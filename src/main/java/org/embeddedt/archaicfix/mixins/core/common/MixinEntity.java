@@ -26,23 +26,6 @@ import java.util.List;
 public abstract class MixinEntity {
     @Shadow public float fallDistance;
 
-
-    @Shadow public boolean noClip;
-
-    @Shadow @Final public AxisAlignedBB boundingBox;
-
-    @Shadow public double posX;
-
-    @Shadow public double posY;
-
-    @Shadow public double posZ;
-
-    @Shadow public float yOffset;
-
-    @Shadow public float yOffset2;
-
-    @Shadow public World worldObj;
-
     /**
      * @reason Fixes a vanilla bug where the entity's fall distance is not updated before invoking the
      * block's onFallenUpon when it falls on the ground, meaning that the last fall state update won't

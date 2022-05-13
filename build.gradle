@@ -40,7 +40,6 @@ group = project.group
 minecraft {
     version = project.minecraft_version + "-" + project.forge_version
     runDir = "run"
-    mappings = 'stable_12'
 }
 
 repositories {
@@ -48,9 +47,27 @@ repositories {
             name = 'spongepowered-repo'
             url = 'https://repo.spongepowered.org/maven/'
     }
+    maven {
+        name = "gt"
+        url = "https://gregtech.mechaenetia.com/"
+    }
+    maven {
+        name = "sonatype"
+        url = "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+    maven {
+        url "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
 }
 
 dependencies {
+    // Provides deobf support like in FG2
+    compile "codechicken:CodeChickenLib:1.7.10-1.1.3.140:dev"
+    compile "codechicken:CodeChickenCore:1.7.10-1.0.7.47:dev"
+    compile "curse.maven:chunkpregen-267193:3756388"
     // you may put jars on which you depend on in ./libs
     // or you may define them like so..
     //compile "some.group:artifact:version:classifier"
