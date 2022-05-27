@@ -41,7 +41,7 @@ public abstract class MixinEntityRenderer {
     }
 
     @Overwrite
-    private void updateLightmap(float par1)
+    public void updateLightmap(float par1)
     {
         WorldClient var2 = this.mc.theWorld;
 
