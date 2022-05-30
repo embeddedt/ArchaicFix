@@ -22,8 +22,18 @@ public abstract class MixinWorldRenderer {
 
     @Shadow public boolean[] skipRenderPass;
 
+    private boolean isInView() {
+        if(Minecraft.getMinecraft().renderViewEntity == null)
+            return true;
+        float distance = this.distanceToEntitySquared(Minecraft.getMinecraft().renderViewEntity);
+        int renderDistanceBlocks = (Minecraft.getMinecraft().gameSettings.renderDistanceChunks) * 16;
+        return distance <= (renderDistanceBlocks * renderDistanceBlocks);
+    }
+
     @Inject(method = "markDirty", at = @At("TAIL"))
     private void forceRender(CallbackInfo ci) {
+        if(!isInView())
+            return;
         for(int i = 0; i < this.skipRenderPass.length; i++) {
             this.skipRenderPass[i] = false;
         }
@@ -33,10 +43,6 @@ public abstract class MixinWorldRenderer {
     private boolean checkEmpty(ChunkCache cache) {
         if(cache.extendedLevelsInChunkCache())
             return true;
-        if(Minecraft.getMinecraft().renderViewEntity == null)
-            return false;
-        float distance = this.distanceToEntitySquared(Minecraft.getMinecraft().renderViewEntity);
-        int renderDistanceBlocks = Minecraft.getMinecraft().gameSettings.renderDistanceChunks * 16;
-        return distance > (renderDistanceBlocks * renderDistanceBlocks);
+        return !isInView();
     }
 }

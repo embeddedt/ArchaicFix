@@ -56,6 +56,9 @@ repositories {
         url = "https://oss.sonatype.org/content/repositories/snapshots/"
     }
     maven {
+        url 'https://jitpack.io'
+    }
+    maven {
         url "https://cursemaven.com"
         content {
             includeGroup "curse.maven"
@@ -65,9 +68,9 @@ repositories {
 
 dependencies {
     // Provides deobf support like in FG2
-    compile "codechicken:CodeChickenLib:1.7.10-1.1.3.140:dev"
-    compile "codechicken:CodeChickenCore:1.7.10-1.0.7.47:dev"
+    compile('com.github.GTNewHorizons:CodeChickenLib:1.1.5.3:dev')
     compile "curse.maven:chunkpregen-267193:3756388"
+    compile('com.github.GTNewHorizons:NotEnoughItems:2.2.14-GTNH:dev')
     // you may put jars on which you depend on in ./libs
     // or you may define them like so..
     //compile "some.group:artifact:version:classifier"
