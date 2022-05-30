@@ -14,7 +14,7 @@ public class MixinMerchantRecipe {
 
     @Shadow private ItemStack secondItemToBuy;
 
-    @Inject(method = "<init>(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;)V", at = @At("TAIL"))
+    @Inject(method = "<init>(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;)V", at = @At("RETURN"))
     private void capItemAmounts(ItemStack p_i1941_1_, ItemStack p_i1941_2_, ItemStack p_i1941_3_, CallbackInfo ci) {
         if(this.itemToBuy != null)
             this.itemToBuy.stackSize = Math.min(this.itemToBuy.stackSize, this.itemToBuy.getMaxStackSize());
