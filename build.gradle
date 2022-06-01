@@ -69,7 +69,7 @@ repositories {
 dependencies {
     // Provides deobf support like in FG2
     compile('com.github.GTNewHorizons:CodeChickenLib:1.1.5.3:dev')
-    compile "curse.maven:chunkpregen-267193:3756388"
+    compileOnly "curse.maven:chunkpregen-267193:3756388"
     compile('com.github.GTNewHorizons:NotEnoughItems:2.2.14-GTNH:dev')
     // you may put jars on which you depend on in ./libs
     // or you may define them like so..

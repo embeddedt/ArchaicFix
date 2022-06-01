@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.ChunkCache;
+import org.embeddedt.archaicfix.mixins.IWorldRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /* MC-129 */
 @Mixin(WorldRenderer.class)
-public abstract class MixinWorldRenderer {
+public abstract class MixinWorldRenderer implements IWorldRenderer {
     @Shadow private boolean isInitialized;
     @Shadow public boolean needsUpdate;
 
@@ -22,7 +23,7 @@ public abstract class MixinWorldRenderer {
 
     @Shadow public boolean[] skipRenderPass;
 
-    private boolean isInView() {
+    public boolean arch$isInView() {
         if(Minecraft.getMinecraft().renderViewEntity == null)
             return true;
         float distance = this.distanceToEntitySquared(Minecraft.getMinecraft().renderViewEntity);
@@ -32,17 +33,8 @@ public abstract class MixinWorldRenderer {
 
     @Inject(method = "markDirty", at = @At("TAIL"))
     private void forceRender(CallbackInfo ci) {
-        if(!isInView())
-            return;
         for(int i = 0; i < this.skipRenderPass.length; i++) {
             this.skipRenderPass[i] = false;
         }
-    }
-
-    @Redirect(method = "updateRenderer", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/ChunkCache;extendedLevelsInChunkCache()Z"))
-    private boolean checkEmpty(ChunkCache cache) {
-        if(cache.extendedLevelsInChunkCache())
-            return true;
-        return !isInView();
     }
 }
