@@ -6,6 +6,7 @@ import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.relauncher.Side;
+import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -34,6 +35,7 @@ public class ArchaicFix
     public void preinit(FMLPreInitializationEvent event)
     {
         MinecraftForge.EVENT_BUS.register(new LeftClickEventHandler());
+        Minecraft.memoryReserve = new byte[0];
     }
 
     @EventHandler

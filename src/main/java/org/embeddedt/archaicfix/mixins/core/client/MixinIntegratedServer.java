@@ -11,6 +11,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public class MixinIntegratedServer {
     @Redirect(method = "tick", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/settings/GameSettings;renderDistanceChunks:I"))
     private int getRealRenderDistance(GameSettings settings) {
-        return Math.max(settings.renderDistanceChunks, 10);
+        return Math.max(settings.renderDistanceChunks, 8);
     }
 }
