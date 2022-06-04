@@ -6,17 +6,21 @@ import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.relauncher.Side;
+import gnu.trove.map.hash.TObjectIntHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.common.MinecraftForge;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.embeddedt.archaicfix.mixins.IAcceleratedRecipe;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -61,6 +65,21 @@ public class ArchaicFix
                 }
             }
         }
+        HashMap<Class<? extends IRecipe>, Integer> recipeTypeMap = new HashMap<>();
+        for(Object o : CraftingManager.getInstance().getRecipeList()) {
+            recipeTypeMap.compute(((IRecipe)o).getClass(), (key, oldValue) -> {
+                if(oldValue == null)
+                    return 1;
+                else
+                    return oldValue + 1;
+            });
+        }
+        recipeTypeMap.entrySet().stream()
+                .sorted(Comparator.comparingInt(pair -> pair.getValue()))
+                .forEach(pair -> {
+                    String acceleratedSuffix = IAcceleratedRecipe.class.isAssignableFrom(pair.getKey()) ? " (accelerated)" : "";
+                    ArchaicFix.LOGGER.info("There are " + pair.getValue() + " recipes of type " + pair.getKey().getName() + acceleratedSuffix);
+                });
     }
 
 }

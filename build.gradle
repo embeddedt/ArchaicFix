@@ -71,6 +71,7 @@ dependencies {
     compile('com.github.GTNewHorizons:CodeChickenLib:1.1.5.3:dev')
     compileOnly "curse.maven:chunkpregen-267193:3756388"
     compile('com.github.GTNewHorizons:NotEnoughItems:2.2.14-GTNH:dev')
+    compile "com.gregoriust.gregtech:gregtech_1.7.10:SNAPSHOT:dev"
     // you may put jars on which you depend on in ./libs
     // or you may define them like so..
     //compile "some.group:artifact:version:classifier"
