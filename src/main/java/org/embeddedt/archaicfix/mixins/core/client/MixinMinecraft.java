@@ -23,4 +23,9 @@ public class MixinMinecraft {
     private void onSystemGC(WorldClient worldClient, String reason, CallbackInfo ci) {
         ci.cancel();
     }
+
+    @Inject(method = "checkGLError", at = @At("HEAD"), cancellable = true)
+    private void skipErrorCheck(String msg, CallbackInfo ci) {
+        ci.cancel();
+    }
 }
