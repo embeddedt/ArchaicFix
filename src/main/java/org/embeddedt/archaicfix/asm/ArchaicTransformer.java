@@ -1,5 +1,6 @@
 package org.embeddedt.archaicfix.asm;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.embeddedt.archaicfix.ArchaicFix;
@@ -11,6 +12,7 @@ import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.tree.*;
 
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Set;
 
 import static org.objectweb.asm.Opcodes.ASM5;
@@ -24,8 +26,20 @@ public class ArchaicTransformer implements IClassTransformer {
             "minZ",
             "maxZ"
     );
+    private static final Map<String, String> threadedObfFields = ImmutableMap.<String, String>builder()
+            .put("field_149759_B", "minX")
+            .put("field_149760_C", "minY")
+            .put("field_149755_E", "maxX")
+            .put("field_149756_F", "maxY")
+            .put("field_149754_D", "minZ")
+            .put("field_149757_G", "maxZ")
+            .build();
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
+        /* FIXME this doesn't work outside dev at the moment */
+        if(true) {
+            return basicClass;
+        }
         if(!transformedName.startsWith("org.embeddedt.archaicfix")) {
             final ClassReader cr = new ClassReader(basicClass);
             final ClassWriter cw = new ClassWriter(0);
@@ -41,10 +55,14 @@ public class ArchaicTransformer implements IClassTransformer {
                         boolean isSetter = node.getOpcode() == Opcodes.PUTFIELD;
                         FieldInsnNode f = (FieldInsnNode)node;
                         if(f.owner.equals("net/minecraft/block/Block")) {
-                            if(threadedFields.contains(f.name)) {
+                            boolean obfContains = threadedObfFields.containsKey(f.name);
+                            boolean devContains = threadedFields.contains(f.name);
+                            if(obfContains || devContains) {
                                 transformed = true;
                                 ArchaicFix.LOGGER.info("Transforming threaded block data access in {}.{}()", transformedName, m.name);
                                 f.owner = "org/embeddedt/archaicfix/block/ThreadedBlockData";
+                                if(obfContains)
+                                    f.name = threadedObfFields.get(f.name);
                                 insns.previous();
                                 if(isSetter) {
                                     /* FIXME: assumes a double is at the top of the stack */
