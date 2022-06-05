@@ -11,6 +11,9 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public class MixinGuiButton {
     @Redirect(method = "drawButton", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/gui/GuiButton;field_146123_n:Z", ordinal = 1))
     private boolean isHovered(GuiButton button) {
-        return !(button instanceof GuiOptionSlider);
+        if(button instanceof GuiOptionSlider)
+            return button.field_146123_n;
+        else
+            return false;
     }
 }

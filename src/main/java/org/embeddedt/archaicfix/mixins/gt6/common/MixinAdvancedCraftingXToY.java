@@ -21,11 +21,11 @@ import java.util.stream.Collectors;
  */
 @Mixin(AdvancedCraftingXToY.class)
 public class MixinAdvancedCraftingXToY implements IAcceleratedRecipe {
-    @Shadow @Final public OreDictPrefix mInput;
+    @Shadow(remap = false) @Final public OreDictPrefix mInput;
 
     private Set<Item> allPotentialItems;
 
-    @Inject(method = "<init>(Lgregapi/oredict/OreDictPrefix;ILgregapi/oredict/OreDictPrefix;IZLgregapi/code/ICondition;)V", at = @At("RETURN"))
+    @Inject(method = "<init>(Lgregapi/oredict/OreDictPrefix;ILgregapi/oredict/OreDictPrefix;IZLgregapi/code/ICondition;)V", at = @At("RETURN"), remap = false)
     private void setupRecipeCache(OreDictPrefix aInput, int aInputCount, OreDictPrefix aOutput, int aOutputCount, boolean aAutoCraftable, ICondition aCondition, CallbackInfo ci) {
         allPotentialItems = ImmutableSet.copyOf(mInput.mRegisteredItems.stream().map(container -> container.mItem).collect(Collectors.toSet()));
     }
