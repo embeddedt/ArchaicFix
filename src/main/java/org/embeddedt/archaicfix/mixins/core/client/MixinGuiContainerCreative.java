@@ -15,6 +15,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import org.apache.commons.lang3.StringUtils;
 import org.embeddedt.archaicfix.ArchaicFix;
+import org.embeddedt.archaicfix.creative.BetterCreativeSearch;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -34,7 +35,7 @@ public abstract class MixinGuiContainerCreative extends InventoryEffectRenderer 
 
     @Shadow private float currentScroll;
 
-    private final boolean neiPresent = Loader.isModLoaded("NotEnoughItems");
+    private final boolean neiPresent = true;
 
     public MixinGuiContainerCreative(Container p_i1089_1_) {
         super(p_i1089_1_);
@@ -42,39 +43,10 @@ public abstract class MixinGuiContainerCreative extends InventoryEffectRenderer 
 
     @Inject(method = "updateCreativeSearch", at = @At(value = "HEAD"), cancellable = true)
     private void updateSearchUsingNEI(CallbackInfo ci) {
-        if(neiPresent) {
+        if(Loader.isModLoaded("NotEnoughItems")) {
             ci.cancel();
-            GuiContainerCreative.ContainerCreative containercreative = (GuiContainerCreative.ContainerCreative)this.inventorySlots;
-            containercreative.itemList.clear();
-            CreativeTabs tab = CreativeTabs.creativeTabArray[selectedTabIndex];
-            if (tab.hasSearchBar() && tab != CreativeTabs.tabAllSearch) {
-                tab.displayAllReleventItems(containercreative.itemList);
-            } else {
-                String search = this.searchField.getText().toLowerCase();
-                List<ItemStack> filteredItems;
-                if(search.length() > 0) {
-                    try {
-                        filteredItems = ItemList.forkJoinPool.submit(() ->
-                                ArchaicFix.initialCreativeItems.parallelStream()
-                                        .filter(stack -> {
-                                            String s = ItemInfo.getSearchName(stack);
-                                            if(s != null)
-                                                return s.contains(search);
-                                            else
-                                                return false;
-                                        })
-                                        .collect(Collectors.toList())
-                        ).get();
-                    } catch (ExecutionException | InterruptedException e) {
-                        e.printStackTrace();
-                        filteredItems = ImmutableList.of();
-                    }
-                } else
-                    filteredItems = ArchaicFix.initialCreativeItems;
-                containercreative.itemList.addAll(filteredItems);
-            }
             this.currentScroll = 0.0F;
-            containercreative.scrollTo(0.0F);
+            BetterCreativeSearch.handle(searchField.getText(), (GuiContainerCreative.ContainerCreative)this.inventorySlots, selectedTabIndex);
         }
 
     }
