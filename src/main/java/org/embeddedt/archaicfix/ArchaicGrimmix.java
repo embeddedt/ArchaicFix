@@ -35,6 +35,15 @@ public class ArchaicGrimmix extends GrimmixController {
                 .verbose(true)
                 .required(false)
                 .build();
+        event.createBuilder("archaicfix/mixins.archaicfix.projecte.json")
+                .mixinPackage("org.embeddedt.archaicfix.mixins.projecte")
+                .commonMixins("common.*")
+                .clientMixins("client.*")
+                .refmap("@MIXIN_REFMAP@")
+                .configurationType(ConfigurationType.MOD)
+                .verbose(true)
+                .required(false)
+                .build();
     }
 
 }

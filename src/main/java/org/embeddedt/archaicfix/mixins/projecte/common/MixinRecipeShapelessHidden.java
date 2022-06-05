@@ -1,10 +1,10 @@
-package org.embeddedt.archaicfix.mixins.core.common;
+package org.embeddedt.archaicfix.mixins.projecte.common;
 
 import com.google.common.collect.ImmutableSet;
+import moze_intel.projecte.gameObjs.customRecipes.RecipeShapelessHidden;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ShapedRecipes;
-import net.minecraftforge.oredict.ShapedOreRecipe;
+import net.minecraft.item.crafting.ShapelessRecipes;
 import org.embeddedt.archaicfix.ArchaicFix;
 import org.embeddedt.archaicfix.mixins.IAcceleratedRecipe;
 import org.spongepowered.asm.mixin.Mixin;
@@ -13,27 +13,28 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 
-/**
- * Enhances ShapedOreRecipe to support recipe acceleration. This benefits a lot of mods which make use of this class
- * or a subclass.
- */
-@Mixin(ShapedOreRecipe.class)
-public class MixinShapedOreRecipe implements IAcceleratedRecipe {
-    @Shadow(remap = false) private Object[] input;
+@Mixin(RecipeShapelessHidden.class)
+public class MixinRecipeShapelessHidden implements IAcceleratedRecipe {
+    @Shadow(remap = false)
+    private ArrayList<Object> input;
     private Set<Item> allPossibleInputs = null;
+
     @Inject(method = "<init>(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V", at = @At("RETURN"), remap = false)
     private void setupMatchCache(ItemStack output, Object[] recipe, CallbackInfo ci) {
         genMatchCache();
     }
 
-    @Inject(method = "<init>(Lnet/minecraft/item/crafting/ShapedRecipes;Ljava/util/Map;)V", at = @At("RETURN"), remap = false)
-    private void setupMatchCache(ShapedRecipes old, Map map, CallbackInfo ci) {
+    @Inject(method = "<init>(Lnet/minecraft/item/crafting/ShapelessRecipes;Ljava/util/Map;)V", at = @At("RETURN"), remap = false)
+    private void setupMatchCache(ShapelessRecipes old, Map map, CallbackInfo ci) {
         genMatchCache();
     }
 
     private void genMatchCache() {
+        allPossibleInputs = null;
         ImmutableSet.Builder<Item> builder = ImmutableSet.builder();
         for(Object o : input) {
             if(o instanceof ItemStack) {
