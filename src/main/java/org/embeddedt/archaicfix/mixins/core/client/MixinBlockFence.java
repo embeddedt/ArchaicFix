@@ -14,6 +14,9 @@ public abstract class MixinBlockFence extends Block {
         super(p_i45394_1_);
     }
 
+    /**
+     * Fix a smooth lighting glitch with fences against solid blocks.
+     */
     @Inject(method = "<init>", at = @At("RETURN"))
     private void makeTransparent(String s, Material m, CallbackInfo ci) {
         this.canBlockGrass = true;

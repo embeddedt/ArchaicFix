@@ -11,6 +11,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(targets = { "net/minecraft/client/gui/inventory/GuiBeacon$Button" })
 public class MixinGuiBeaconButton {
+    /**
+     * Make transparent beacon buttons look right (e.g. with Modernity).
+     */
     @Inject(method = "drawButton", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/inventory/GuiBeacon$Button;drawTexturedModalRect(IIIIII)V", ordinal = 1))
     private void enableTransparency(Minecraft p_146112_1_, int p_146112_2_, int p_146112_3_, CallbackInfo ci) {
         GL11.glEnable(GL11.GL_BLEND);

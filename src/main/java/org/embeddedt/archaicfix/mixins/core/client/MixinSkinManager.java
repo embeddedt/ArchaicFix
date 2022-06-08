@@ -11,6 +11,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinSkinManager {
     @Shadow private SkinManager.SkinAvailableCallback field_152636_b;
 
+    /**
+     * Avoid leaking an EntityClientPlayerMP instance.
+     */
     @Inject(method = "func_152634_a", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/resources/SkinManager$SkinAvailableCallback;func_152121_a(Lcom/mojang/authlib/minecraft/MinecraftProfileTexture$Type;Lnet/minecraft/util/ResourceLocation;)V", shift = At.Shift.AFTER))
     private void onMakeCallback(CallbackInfo ci) {
         field_152636_b = null;

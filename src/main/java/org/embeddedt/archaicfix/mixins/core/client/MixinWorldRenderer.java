@@ -34,6 +34,9 @@ public abstract class MixinWorldRenderer implements IWorldRenderer {
         return distance <= (renderDistanceBlocks * renderDistanceBlocks);
     }
 
+    /**
+     * Make sure chunks re-render immediately (MC-129).
+     */
     @Inject(method = "markDirty", at = @At("TAIL"))
     private void forceRender(CallbackInfo ci) {
         for(int i = 0; i < this.skipRenderPass.length; i++) {
@@ -41,6 +44,10 @@ public abstract class MixinWorldRenderer implements IWorldRenderer {
         }
     }
 
+    /**
+     * When switching worlds/dimensions, clear out the old render lists for old chunks. This prevents old dimension
+     * content from being visible in the new world.
+     */
     @Inject(method = "stopRendering", at = @At("TAIL"))
     private void clearOldRenderList(CallbackInfo ci) {
         for(int pass = 0; pass < 2; pass++) {

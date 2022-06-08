@@ -9,6 +9,9 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(IntegratedServer.class)
 public class MixinIntegratedServer {
+    /**
+     * Force the integrated server to have a minimum view distance of 8, so mob spawning works correctly.
+     */
     @Redirect(method = "tick", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/settings/GameSettings;renderDistanceChunks:I"))
     private int getRealRenderDistance(GameSettings settings) {
         return Math.max(settings.renderDistanceChunks, 8);

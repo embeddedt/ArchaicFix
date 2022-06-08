@@ -41,6 +41,9 @@ public abstract class MixinGuiContainerCreative extends InventoryEffectRenderer 
         super(p_i1089_1_);
     }
 
+    /**
+     * Use the NEI-indexed item list to perform creative searches, for speedup.
+     */
     @Inject(method = "updateCreativeSearch", at = @At(value = "HEAD"), cancellable = true)
     private void updateSearchUsingNEI(CallbackInfo ci) {
         if(Loader.isModLoaded("NotEnoughItems")) {

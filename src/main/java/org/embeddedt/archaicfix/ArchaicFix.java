@@ -2,6 +2,7 @@ package org.embeddedt.archaicfix;
 
 import codechicken.nei.api.ItemInfo;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -35,6 +36,8 @@ public class ArchaicFix
 
     public static List<ItemStack> initialCreativeItems = null;
 
+    public static boolean TRIANGULATOR = false;
+
     @EventHandler
     public void preinit(FMLPreInitializationEvent event)
     {
@@ -49,6 +52,12 @@ public class ArchaicFix
 
     @EventHandler
     public void loadComplete(FMLLoadCompleteEvent event) {
+        try {
+            Class.forName("com.falsepattern.triangulator.Triangulator");
+            TRIANGULATOR = true;
+        } catch (Exception e) {
+            TRIANGULATOR = false;
+        }
         if(initialCreativeItems == null) {
             initialCreativeItems = new ArrayList<>();
             for (Object o : Item.itemRegistry) {
