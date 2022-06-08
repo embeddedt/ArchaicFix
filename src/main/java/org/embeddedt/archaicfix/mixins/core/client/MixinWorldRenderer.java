@@ -5,6 +5,7 @@ import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.ChunkCache;
 import org.embeddedt.archaicfix.mixins.IWorldRenderer;
+import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,6 +24,8 @@ public abstract class MixinWorldRenderer implements IWorldRenderer {
 
     @Shadow public boolean[] skipRenderPass;
 
+    @Shadow private int glRenderList;
+
     public boolean arch$isInView() {
         if(Minecraft.getMinecraft().renderViewEntity == null)
             return true;
@@ -35,6 +38,14 @@ public abstract class MixinWorldRenderer implements IWorldRenderer {
     private void forceRender(CallbackInfo ci) {
         for(int i = 0; i < this.skipRenderPass.length; i++) {
             this.skipRenderPass[i] = false;
+        }
+    }
+
+    @Inject(method = "stopRendering", at = @At("TAIL"))
+    private void clearOldRenderList(CallbackInfo ci) {
+        for(int pass = 0; pass < 2; pass++) {
+            GL11.glNewList(this.glRenderList + pass, GL11.GL_COMPILE);
+            GL11.glEndList();
         }
     }
 }

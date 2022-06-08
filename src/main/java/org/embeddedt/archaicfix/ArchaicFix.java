@@ -80,6 +80,9 @@ public class ArchaicFix
                     String acceleratedSuffix = IAcceleratedRecipe.class.isAssignableFrom(pair.getKey()) ? " (accelerated)" : "";
                     ArchaicFix.LOGGER.info("There are " + pair.getValue() + " recipes of type " + pair.getKey().getName() + acceleratedSuffix);
                 });
+        int totalRecipes = recipeTypeMap.values().stream().reduce(0, Integer::sum);
+        int acceleratedRecipes = recipeTypeMap.entrySet().stream().filter(pair -> IAcceleratedRecipe.class.isAssignableFrom(pair.getKey())).map(Map.Entry::getValue).reduce(0, Integer::sum);
+        ArchaicFix.LOGGER.info(acceleratedRecipes + " / " + totalRecipes + " recipes are accelerated!");
     }
 
 }

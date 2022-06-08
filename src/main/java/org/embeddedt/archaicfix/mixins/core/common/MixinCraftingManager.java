@@ -11,6 +11,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
 import org.embeddedt.archaicfix.recipe.LastMatchedInfo;
 import org.embeddedt.archaicfix.recipe.RecipeCacheLoader;
+import org.embeddedt.archaicfix.recipe.RecipeWeigher;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -23,7 +24,9 @@ import java.util.concurrent.ExecutionException;
 @Mixin(CraftingManager.class)
 public class MixinCraftingManager {
     private final LoadingCache<Set<Item>, IRecipe[]> potentialRecipes = CacheBuilder.newBuilder()
-            .maximumSize(100)
+            /* 500k IRecipe references times 8 bytes per reference = 4 million bytes */
+            .maximumWeight(500000)
+            .weigher(new RecipeWeigher())
             .build(new RecipeCacheLoader());
 
     private volatile LastMatchedInfo lastMatchedInfo = null;
