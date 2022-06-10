@@ -17,6 +17,14 @@ public class ArchaicGrimmix extends GrimmixController {
                 .verbose(true)
                 .required(true)
                 .build();
+        event.createBuilder("archaicfix/mixins.archaicfix.lighting.json")
+                .mixinPackage("org.embeddedt.archaicfix.mixins.lighting")
+                .commonMixins("common.*")
+                .clientMixins("client.*")
+                .refmap("@MIXIN_REFMAP@")
+                .verbose(true)
+                .required(true)
+                .build();
         event.createBuilder("archaicfix/mixins.archaicfix.pregen.json")
                 .mixinPackage("org.embeddedt.archaicfix.mixins.pregen")
                 .commonMixins("common.*")

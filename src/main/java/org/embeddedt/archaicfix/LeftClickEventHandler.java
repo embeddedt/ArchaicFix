@@ -63,8 +63,6 @@ public final class LeftClickEventHandler {
         AxisAlignedBB searchBB = safeGenBoundingBox(startPos.xCoord,startPos.yCoord,startPos.zCoord, endPos.xCoord, endPos.yCoord, endPos.zCoord);
         List<Entity> list = world.getEntitiesWithinAABBExcludingEntity(entityIn, searchBB, ent -> ent != null && ent.canBeCollidedWith());
 
-        System.out.println(list.size());
-
         double d0 = 0.0D;
         AxisAlignedBB axisAlignedBB;
 

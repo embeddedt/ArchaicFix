@@ -65,8 +65,8 @@ repositories {
         }
     }
     maven {
-        name = "mavenpattern"
-        url = "https://maven.falsepattern.com/"
+        name = "MavenPattern"
+        url = "https://maven.falsepattern.com"
     }
 }
 
