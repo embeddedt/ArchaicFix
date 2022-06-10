@@ -4,12 +4,14 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLeashKnot;
 import net.minecraft.entity.EntityTrackerEntry;
 import net.minecraft.entity.item.EntityItemFrame;
+import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
@@ -25,6 +27,8 @@ public class MixinEntityTrackerEntry {
     @Shadow public int lastPitch;
 
     @Shadow public Entity myEntity;
+
+    @Shadow public int ticks;
 
     @Inject(method = "sendLocationToAllClients", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/EntityTrackerEntry;sendMetadataToAllAssociatedPlayers()V", ordinal = 1, shift = At.Shift.AFTER), locals = LocalCapture.CAPTURE_FAILHARD)
     private void saveIfTeleported(List clientList, CallbackInfo ci, int i, int j, int k, int l, int i1, int j1, int k1, int l1, Object object) {
@@ -58,5 +62,19 @@ public class MixinEntityTrackerEntry {
                 spawnXpOrb.field_148988_d = this.lastScaledZPosition;
             }
         }
+    }
+
+    private boolean arch$wouldSendPacket() {
+        return (this.ticks > 0 || this.myEntity instanceof EntityArrow);
+    }
+
+    @ModifyVariable(method = "sendLocationToAllClients", at = @At("STORE"), index = 11, name = "flag")
+    private boolean avoidSavingIfPacketNotSent1(boolean incoming) {
+        return incoming && arch$wouldSendPacket();
+    }
+
+    @ModifyVariable(method = "sendLocationToAllClients", at = @At("STORE"), index = 12, name = "flag1")
+    private boolean avoidSavingIfPacketNotSent2(boolean incoming) {
+        return incoming && arch$wouldSendPacket();
     }
 }
