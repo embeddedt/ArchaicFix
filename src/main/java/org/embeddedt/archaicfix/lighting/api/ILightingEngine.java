@@ -1,10 +1,9 @@
 package org.embeddedt.archaicfix.lighting.api;
 
-import com.falsepattern.lib.compat.BlockPos;
 import net.minecraft.world.EnumSkyBlock;
 
 public interface ILightingEngine {
-    void scheduleLightUpdate(EnumSkyBlock lightType, BlockPos pos);
+    void scheduleLightUpdate(EnumSkyBlock lightType, int xIn, int yIn, int zIn);
 
     void processLightUpdates();
 

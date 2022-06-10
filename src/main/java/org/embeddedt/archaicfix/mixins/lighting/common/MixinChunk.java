@@ -105,7 +105,7 @@ public abstract class MixinChunk implements IChunkLighting, IChunkLightingData, 
     }
 
     /**
-     * @reason Hook for calculating light updates only as needed. {@link MixinChunk#getCachedLightFor(EnumSkyBlock, BlockPos)} does not
+     * @reason Hook for calculating light updates only as needed. {@link MixinChunk#getCachedLightFor(EnumSkyBlock, int, int, int)} does not
      * call this hook.
      *
      * @author Angeline
@@ -114,7 +114,7 @@ public abstract class MixinChunk implements IChunkLighting, IChunkLightingData, 
     public int getSavedLightValue(EnumSkyBlock type, int x, int y, int z) {
         getLightingEngine().processLightUpdatesForType(type);
 
-        return this.getCachedLightFor(type, new BlockPos(x, y, z));
+        return this.getCachedLightFor(type, x, y, z);
     }
 
     /**
@@ -304,10 +304,10 @@ public abstract class MixinChunk implements IChunkLighting, IChunkLightingData, 
     }
 
     @Override
-    public int getCachedLightFor(EnumSkyBlock type, BlockPos pos) {
-        int i = pos.getX() & 15;
-        int j = pos.getY();
-        int k = pos.getZ() & 15;
+    public int getCachedLightFor(EnumSkyBlock type, int xIn, int yIn, int zIn) {
+        int i = xIn & 15;
+        int j = yIn;
+        int k = zIn & 15;
 
         ExtendedBlockStorage extendedblockstorage = this.storageArrays[j >> 4];
 

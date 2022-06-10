@@ -415,8 +415,8 @@ public class LightingHooks {
         ((IChunkLightingData) chunk).setNeighborLightChecks(table);
     }
 
-    public static int getCachedLightFor(Chunk chunk, EnumSkyBlock type, BlockPos pos) {
-        return ((IChunkLighting) chunk).getCachedLightFor(type, pos);
+    public static int getCachedLightFor(Chunk chunk, EnumSkyBlock type, int x, int y, int z) {
+        return ((IChunkLighting) chunk).getCachedLightFor(type, x, y, z);
     }
 
     public static ILightingEngine getLightingEngine(World world) {

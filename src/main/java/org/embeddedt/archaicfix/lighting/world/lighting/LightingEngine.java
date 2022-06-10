@@ -132,11 +132,11 @@ public class LightingEngine implements ILightingEngine {
      * Schedules a light update for the specified light type and position to be processed later by {@link ILightingEngine#processLightUpdatesForType(EnumSkyBlock)}
      */
     @Override
-    public void scheduleLightUpdate(final EnumSkyBlock lightType, final BlockPos pos) {
+    public void scheduleLightUpdate(final EnumSkyBlock lightType, final int xIn, final int yIn, final int zIn) {
         this.acquireLock();
 
         try {
-            this.scheduleLightUpdate(lightType, encodeWorldCoord(pos));
+            this.scheduleLightUpdate(lightType, encodeWorldCoord(xIn, yIn, zIn));
         } finally {
             this.releaseLock();
         }
@@ -533,10 +533,6 @@ public class LightingEngine implements ILightingEngine {
         return pos.setPos(posX, posY, posZ);
     }
 
-    private static long encodeWorldCoord(final BlockPos pos) {
-        return encodeWorldCoord(pos.getX(), pos.getY(), pos.getZ());
-    }
-
     private static long encodeWorldCoord(final long x, final long y, final long z) {
         return (y << sY) | (x + (1 << lX - 1) << sX) | (z + (1 << lZ - 1) << sZ);
     }
@@ -575,7 +571,7 @@ public class LightingEngine implements ILightingEngine {
     }
 
     private int getCursorCachedLight(final EnumSkyBlock lightType) {
-        return ((IChunkLighting) this.curChunk).getCachedLightFor(lightType, this.curPos);
+        return ((IChunkLighting) this.curChunk).getCachedLightFor(lightType, this.curPos.getX(), this.curPos.getY(), this.curPos.getZ());
     }
 
     /**

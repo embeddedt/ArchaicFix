@@ -1,6 +1,5 @@
 package org.embeddedt.archaicfix.mixins.lighting.common;
 
-import com.falsepattern.lib.compat.BlockPos;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.ISaveHandler;
@@ -35,7 +34,7 @@ public abstract class MixinWorld implements ILightingEngineProvider {
      */
     @Inject(method = "updateLightByType", at = @At("HEAD"), cancellable = true)
     private void checkLightFor(EnumSkyBlock type, int x, int y, int z, CallbackInfoReturnable<Boolean> cir) {
-        this.lightingEngine.scheduleLightUpdate(type, new BlockPos(x, y, z));
+        this.lightingEngine.scheduleLightUpdate(type, x, y, z);
 
         cir.setReturnValue(true);
     }

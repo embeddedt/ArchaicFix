@@ -43,6 +43,7 @@ public class ArchaicFix
     public void preinit(FMLPreInitializationEvent event)
     {
         MinecraftForge.EVENT_BUS.register(new LeftClickEventHandler());
+        MinecraftForge.EVENT_BUS.register(new FixHelper());
         Minecraft.memoryReserve = new byte[0];
         //SoundSystemConfig.setNumberNormalChannels(1073741824);
         //SoundSystemConfig.setNumberStreamingChannels(1073741823);
