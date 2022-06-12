@@ -68,17 +68,31 @@ repositories {
         name = "MavenPattern"
         url = "https://maven.falsepattern.com"
     }
+    maven {
+        name "mvnmrtjp"
+        url "http://files.projectredwiki.com/maven"
+        metadataSources {
+            mavenPom()
+            artifact()
+        }
+    }
 }
 
 dependencies {
     // Provides deobf support like in FG2
     compile('com.github.GTNewHorizons:CodeChickenLib:1.1.5.3:dev')
     compile('com.github.GTNewHorizons:CodeChickenCore:1.1.3:dev')
+    compileOnly("mrtjp:MrTJPCore:1.7.10-1.1.0.33:dev") {
+        transitive = false
+    }
+    compileOnly "thaumcraft:Thaumcraft:1.7.10-4.2.3.5:dev"
+    compileOnly('com.github.GTNewHorizons:TC4Tweaks:1.4.16:dev')
     compileOnly "curse.maven:chunkpregen-267193:3756388"
     compileOnly('com.github.GTNewHorizons:NotEnoughItems:2.2.14-GTNH:dev')
     compileOnly("com.gregoriust.gregtech:gregtech_1.7.10:SNAPSHOT:dev") {
         transitive = false
     }
+    compileOnly("curse.maven:matteroverdrive-229694:2331162")
     compileOnly("curse.maven:projecte-226410:2340786")
     compile("com.falsepattern:falsepatternlib-mc1.7.10:0.7.1:dev")
     compile("com.falsepattern:triangulator-mc1.7.10:1.4.3:dev")

@@ -77,7 +77,7 @@ public abstract class MixinChunk implements IChunkLighting, IChunkLightingData, 
      * @author Angeline
      */
     @Overwrite
-    private void relightBlock(int x, int y, int z) {
+    public void relightBlock(int x, int y, int z) {
         int i = this.heightMap[z << 4 | x] & 255;
         int j = i;
 
@@ -135,7 +135,7 @@ public abstract class MixinChunk implements IChunkLighting, IChunkLightingData, 
      * @author Angeline
      */
     @Overwrite
-    private void recheckGaps(boolean onlyOne) {
+    public void recheckGaps(boolean onlyOne) {
         this.worldObj.theProfiler.startSection("recheckGaps");
 
         WorldChunkSlice slice = new WorldChunkSlice(this.worldObj, this.xPosition, this.zPosition);
