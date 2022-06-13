@@ -35,9 +35,6 @@ public class ArchaicTransformer implements IClassTransformer {
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
         /* FIXME this doesn't work outside dev at the moment */
-        if(true) {
-            return basicClass;
-        }
         if(!transformedName.startsWith("org.embeddedt.archaicfix")) {
             final ClassReader cr = new ClassReader(basicClass);
             final ClassWriter cw = new ClassWriter(0);
