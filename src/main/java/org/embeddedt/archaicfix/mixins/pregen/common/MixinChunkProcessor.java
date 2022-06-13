@@ -5,7 +5,7 @@ import cpw.mods.fml.relauncher.ReflectionHelper;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.NextTickListEntry;
 import net.minecraft.world.WorldServer;
-import org.embeddedt.archaicfix.ArchaicFix;
+import org.embeddedt.archaicfix.ArchaicLogger;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -34,7 +34,7 @@ public abstract class MixinChunkProcessor {
                     long elapsed = TimeUnit.SECONDS.convert(System.nanoTime() - lastTimeMessaged, TimeUnit.NANOSECONDS);
                     if(elapsed >= 5) {
                         lastTimeMessaged = System.nanoTime();
-                        ArchaicFix.LOGGER.warn("Preventing more pregeneration till the update queue settles in dimension " + world.provider.dimensionId);
+                        ArchaicLogger.LOGGER.warn("Preventing more pregeneration till the update queue settles in dimension " + world.provider.dimensionId);
                     }
                     ci.cancel();
                     break;

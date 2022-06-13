@@ -3,12 +3,10 @@ package org.embeddedt.archaicfix.asm;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.launchwrapper.IClassTransformer;
-import org.embeddedt.archaicfix.ArchaicFix;
+import org.embeddedt.archaicfix.ArchaicLogger;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
-import org.objectweb.asm.commons.GeneratorAdapter;
 import org.objectweb.asm.tree.*;
 
 import java.util.ListIterator;
@@ -59,7 +57,7 @@ public class ArchaicTransformer implements IClassTransformer {
                             boolean devContains = threadedFields.contains(f.name);
                             if(obfContains || devContains) {
                                 transformed = true;
-                                ArchaicFix.LOGGER.info("Transforming threaded block data access in {}.{}()", transformedName, m.name);
+                                ArchaicLogger.LOGGER.info("Transforming threaded block data access in {}.{}()", transformedName, m.name);
                                 f.owner = "org/embeddedt/archaicfix/block/ThreadedBlockData";
                                 if(obfContains)
                                     f.name = threadedObfFields.get(f.name);

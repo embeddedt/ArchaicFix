@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
-import org.embeddedt.archaicfix.ArchaicFix;
+import org.embeddedt.archaicfix.ArchaicLogger;
 import org.embeddedt.archaicfix.lighting.api.IChunkLighting;
 import org.embeddedt.archaicfix.lighting.api.ILightingEngine;
 import org.embeddedt.archaicfix.lighting.collections.PooledLongQueue;
@@ -213,7 +213,7 @@ public class LightingEngine implements ILightingEngine {
                                     " but was accessed from thread '%s' (ID: %s)",
                             this.ownedThread.getName(), this.ownedThread.getId(), current.getName(), current.getId()));
 
-                    ArchaicFix.LOGGER.warn(
+                    ArchaicLogger.LOGGER.warn(
                             "Something (likely another mod) has attempted to modify the world's state from the wrong thread!\n" +
                                     "This is *bad practice* and can cause severe issues in your game. Phosphor has done as best as it can to mitigate this violation," +
                                     " but it may negatively impact performance or introduce stalls.\nIn a future release, this violation may result in a hard crash instead" +

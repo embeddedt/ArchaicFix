@@ -2,7 +2,7 @@ package org.embeddedt.archaicfix.helpers;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.integrated.IntegratedServer;
-import org.embeddedt.archaicfix.ArchaicFix;
+import org.embeddedt.archaicfix.ArchaicLogger;
 
 import java.lang.ref.WeakReference;
 
@@ -24,7 +24,7 @@ public class PreventSPDeadlockThread extends Thread {
         if(server == null)
             return;
         if(Minecraft.getMinecraft().thePlayer == null && server.getCurrentPlayerCount() == 0) {
-            ArchaicFix.LOGGER.warn("Detected possible deadlock, stopping integrated server");
+            ArchaicLogger.LOGGER.warn("Detected possible deadlock, stopping integrated server");
             Minecraft.getMinecraft().func_152343_a(() -> {
                 Minecraft.stopIntegratedServer();
                 Minecraft.getMinecraft().loadWorld(null);

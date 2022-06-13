@@ -2,14 +2,11 @@ package org.embeddedt.archaicfix.mixins.mo.common;
 
 import matteroverdrive.handler.MatterRegistrationHandler;
 import matteroverdrive.handler.thread.RegisterItemsFromRecipes;
-import net.minecraft.world.World;
-import org.embeddedt.archaicfix.ArchaicFix;
+import org.embeddedt.archaicfix.ArchaicLogger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-
-import java.io.File;
 
 @Mixin(MatterRegistrationHandler.class)
 public abstract class MixinMatterRegistrationHandler {
@@ -24,7 +21,7 @@ public abstract class MixinMatterRegistrationHandler {
     @Overwrite(remap = false)
     public void runCalculationThread() {
         if(theMatterThread != null) {
-            ArchaicFix.LOGGER.warn("Stopping old matter calculation thread");
+            ArchaicLogger.LOGGER.warn("Stopping old matter calculation thread");
             theMatterThread.interrupt();
             theMatterThread = null;
         }

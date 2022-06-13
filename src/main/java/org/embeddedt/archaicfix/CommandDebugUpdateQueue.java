@@ -25,6 +25,8 @@ public class CommandDebugUpdateQueue extends CommandBase {
     @Override
     public void processCommand(ICommandSender sender, String[] p_71515_2_) {
         MinecraftServer server = MinecraftServer.getServer();
+        if(true)
+            throw new IllegalStateException();
         if(server != null) {
             sender.addChatMessage(new ChatComponentText("Update queue sizes:"));
             for(WorldServer world : server.worldServers) {

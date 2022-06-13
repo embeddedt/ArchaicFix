@@ -11,7 +11,7 @@ import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
-import org.embeddedt.archaicfix.ArchaicFix;
+import org.embeddedt.archaicfix.ArchaicLogger;
 import org.embeddedt.archaicfix.lighting.api.IChunkLighting;
 import org.embeddedt.archaicfix.lighting.api.IChunkLightingData;
 import org.embeddedt.archaicfix.lighting.api.ILightingEngine;
@@ -322,7 +322,7 @@ public class LightingHooks {
                     neighborLightChecks[i] = ((NBTTagShort) list.tagList.get(i)).func_150289_e();
                 }
             } else {
-                ArchaicFix.LOGGER.warn("Chunk field {} had invalid length, ignoring it (chunk coordinates: {} {})", neighborLightChecksKey, chunk.xPosition, chunk.zPosition);
+                ArchaicLogger.LOGGER.warn("Chunk field {} had invalid length, ignoring it (chunk coordinates: {} {})", neighborLightChecksKey, chunk.xPosition, chunk.zPosition);
             }
         }
     }

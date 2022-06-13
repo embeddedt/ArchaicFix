@@ -5,7 +5,7 @@ import moze_intel.projecte.gameObjs.customRecipes.RecipeShapelessHidden;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
-import org.embeddedt.archaicfix.ArchaicFix;
+import org.embeddedt.archaicfix.ArchaicLogger;
 import org.embeddedt.archaicfix.mixins.IAcceleratedRecipe;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -44,7 +44,7 @@ public class MixinRecipeShapelessHidden implements IAcceleratedRecipe {
                     builder.add(stack.getItem());
                 }
             } else if(o != null) {
-                ArchaicFix.LOGGER.warn("Couldn't optimize input value: " + o);
+                ArchaicLogger.LOGGER.warn("Couldn't optimize input value: " + o);
                 return;
             }
         }
