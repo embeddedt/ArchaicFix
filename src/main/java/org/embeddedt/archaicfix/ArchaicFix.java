@@ -29,6 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.embeddedt.archaicfix.mixins.IAcceleratedRecipe;
 import paulscode.sound.SoundSystemConfig;
+import thaumcraft.api.ThaumcraftApi;
 
 import java.util.*;
 import java.util.concurrent.locks.Lock;
@@ -106,6 +107,20 @@ public class ArchaicFix
         int totalRecipes = recipeTypeMap.values().stream().reduce(0, Integer::sum);
         int acceleratedRecipes = recipeTypeMap.entrySet().stream().filter(pair -> IAcceleratedRecipe.class.isAssignableFrom(pair.getKey())).map(Map.Entry::getValue).reduce(0, Integer::sum);
         ArchaicFix.LOGGER.info(acceleratedRecipes + " / " + totalRecipes + " recipes are accelerated!");
+        if(!Loader.isModLoaded("Thaumcraft")) {
+            boolean thaumcraftGhostApiPresent = false;
+            try {
+                Class.forName("thaumcraft.api.ThaumcraftApi");
+                thaumcraftGhostApiPresent = true;
+            } catch(Exception e) {
+
+            }
+            if(thaumcraftGhostApiPresent) {
+                ArchaicFix.LOGGER.info("Cleared " + ThaumcraftApi.objectTags.size() + " unused Thaumcraft aspects");
+                ThaumcraftApi.objectTags.clear();
+                ThaumcraftApi.groupedObjectTags.clear();
+            }
+        }
     }
 
 }
