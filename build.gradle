@@ -18,8 +18,18 @@ buildscript {
         }
     }
     dependencies {
-        classpath ('com.github.GTNewHorizons:ForgeGradle:1.2.7')
+        classpath ('com.anatawa12.forge:ForgeGradle:1.2-1.0.+') {
+            changing = true
+        }
         classpath 'com.integral.grimoire:GrimoireShenanigans:[1.5.2,)'
+    }
+    configurations.classpath {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group == 'org.osgi.service' && details.requested.name == 'org.osgi.service.prefs') {
+                details.useTarget group: 'org.osgi', name: details.requested.name, version: details.requested.version
+                details.because 'workaround resolution error'
+            }
+        }
     }
 }
 
@@ -90,7 +100,7 @@ dependencies {
     compileOnly('com.github.GTNewHorizons:TC4Tweaks:1.4.16:dev')
     compileOnly "curse.maven:chunkpregen-267193:3756388"
     compileOnly('com.github.GTNewHorizons:NotEnoughItems:2.2.14-GTNH:dev')
-    compileOnly("com.gregoriust.gregtech:gregtech_1.7.10:SNAPSHOT:dev") {
+    compile("com.gregoriust.gregtech:gregtech_1.7.10:SNAPSHOT:dev") {
         transitive = false
     }
     compileOnly("curse.maven:matteroverdrive-229694:2331162")

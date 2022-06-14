@@ -9,20 +9,31 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
+import org.embeddedt.archaicfix.recipe.IFasterCraftingManager;
 import org.embeddedt.archaicfix.recipe.LastMatchedInfo;
 import org.embeddedt.archaicfix.recipe.RecipeCacheLoader;
 import org.embeddedt.archaicfix.recipe.RecipeWeigher;
+import org.embeddedt.archaicfix.util.ObservableList;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 @Mixin(CraftingManager.class)
-public class MixinCraftingManager {
+public class MixinCraftingManager implements IFasterCraftingManager {
+    @Shadow private List recipes;
+
+    @Inject(method = "<init>", at = @At("RETURN"))
+    private void changeListType(CallbackInfo ci) {
+        recipes = new ObservableList(recipes);
+    }
     private final LoadingCache<Set<Item>, IRecipe[]> potentialRecipes = CacheBuilder.newBuilder()
             /* 500k IRecipe references times 8 bytes per reference = 4 million bytes */
             .maximumWeight(500000)
@@ -33,6 +44,12 @@ public class MixinCraftingManager {
 
     @Inject(method = "findMatchingRecipe", at = @At(value = "INVOKE", target = "Ljava/util/List;size()I"), cancellable = true)
     private void fasterRecipeSearch(InventoryCrafting inventory, World world, CallbackInfoReturnable<ItemStack> cir) {
+        synchronized (recipes) {
+            if(((ObservableList<IRecipe>)recipes).isDirty()) {
+                ((ObservableList<IRecipe>)recipes).clearDirty();
+                clearRecipeCache();
+            }
+        }
         LastMatchedInfo retInfo = lastMatchedInfo;
         if(retInfo == null || !retInfo.matches(inventory)) {
             Set<Item> stacks = new HashSet<>();
@@ -59,5 +76,11 @@ public class MixinCraftingManager {
             lastMatchedInfo = retInfo;
         }
         cir.setReturnValue(retInfo.getCraftingResult(inventory));
+    }
+
+    @Override
+    public void clearRecipeCache() {
+        potentialRecipes.invalidateAll();
+        lastMatchedInfo = null;
     }
 }
