@@ -13,11 +13,12 @@ buildscript {
             name = "github"
             url = "https://github.com/juanmuscaria/maven/raw/master"
         }
+        maven {
+            url 'https://jitpack.io'
+        }
     }
     dependencies {
-        classpath ('com.anatawa12.forge:ForgeGradle:1.2-1.0.+') {
-            changing = true
-        }
+        classpath ('com.github.GTNewHorizons:ForgeGradle:1.2.7')
         classpath 'com.integral.grimoire:GrimoireShenanigans:[1.5.2,)'
     }
 }
