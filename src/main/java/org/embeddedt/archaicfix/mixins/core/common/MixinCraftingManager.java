@@ -13,7 +13,6 @@ import org.embeddedt.archaicfix.recipe.IFasterCraftingManager;
 import org.embeddedt.archaicfix.recipe.LastMatchedInfo;
 import org.embeddedt.archaicfix.recipe.RecipeCacheLoader;
 import org.embeddedt.archaicfix.recipe.RecipeWeigher;
-import org.embeddedt.archaicfix.util.ObservableList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,12 +27,6 @@ import java.util.concurrent.ExecutionException;
 
 @Mixin(CraftingManager.class)
 public class MixinCraftingManager implements IFasterCraftingManager {
-    @Shadow private List recipes;
-
-    @Inject(method = "<init>", at = @At("RETURN"))
-    private void changeListType(CallbackInfo ci) {
-        recipes = new ObservableList(recipes);
-    }
     private final LoadingCache<Set<Item>, IRecipe[]> potentialRecipes = CacheBuilder.newBuilder()
             /* 500k IRecipe references times 8 bytes per reference = 4 million bytes */
             .maximumWeight(500000)
@@ -44,12 +37,6 @@ public class MixinCraftingManager implements IFasterCraftingManager {
 
     @Inject(method = "findMatchingRecipe", at = @At(value = "INVOKE", target = "Ljava/util/List;size()I"), cancellable = true)
     private void fasterRecipeSearch(InventoryCrafting inventory, World world, CallbackInfoReturnable<ItemStack> cir) {
-        synchronized (recipes) {
-            if(((ObservableList<IRecipe>)recipes).isDirty()) {
-                ((ObservableList<IRecipe>)recipes).clearDirty();
-                clearRecipeCache();
-            }
-        }
         LastMatchedInfo retInfo = lastMatchedInfo;
         if(retInfo == null || !retInfo.matches(inventory)) {
             Set<Item> stacks = new HashSet<>();
