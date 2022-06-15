@@ -48,6 +48,8 @@ public class MixinCR {
             IRecipe recipe = recipeList.get(recipeIdxs[i]);
             if((!(recipe instanceof ICraftingRecipeGT) || ((ICraftingRecipeGT)recipe).isRemovableByGT())) {
                 for(ItemStackContainer tStack : OP.ore.mRegisteredItems) {
+                    if(recipe instanceof IAcceleratedRecipe && !((IAcceleratedRecipe) recipe).getPotentialItems().contains(tStack.mItem))
+                        continue;
                     InventoryCrafting aCrafting = CR.crafting(tStack.toStack(), pyroStack);
                     if(recipe.matches(aCrafting, CS.DW)) {
                         recipeList.remove(recipeIdxs[i]);
@@ -56,5 +58,6 @@ public class MixinCR {
                 }
             }
         }
+        ArchaicLogger.LOGGER.info("Finished removing TE recipes");
     }
 }
