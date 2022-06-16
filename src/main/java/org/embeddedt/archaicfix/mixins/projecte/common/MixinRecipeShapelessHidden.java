@@ -6,6 +6,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import org.embeddedt.archaicfix.ArchaicLogger;
+import org.embeddedt.archaicfix.FixHelper;
 import org.embeddedt.archaicfix.mixins.IAcceleratedRecipe;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -23,16 +24,6 @@ public class MixinRecipeShapelessHidden implements IAcceleratedRecipe {
     private ArrayList<Object> input;
     private Set<Item> allPossibleInputs = null;
 
-    @Inject(method = "<init>(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V", at = @At("RETURN"), remap = false)
-    private void setupMatchCache(ItemStack output, Object[] recipe, CallbackInfo ci) {
-        genMatchCache();
-    }
-
-    @Inject(method = "<init>(Lnet/minecraft/item/crafting/ShapelessRecipes;Ljava/util/Map;)V", at = @At("RETURN"), remap = false)
-    private void setupMatchCache(ShapelessRecipes old, Map map, CallbackInfo ci) {
-        genMatchCache();
-    }
-
     private void genMatchCache() {
         allPossibleInputs = null;
         ImmutableSet.Builder<Item> builder = ImmutableSet.builder();
@@ -49,10 +40,18 @@ public class MixinRecipeShapelessHidden implements IAcceleratedRecipe {
             }
         }
         allPossibleInputs = builder.build();
+        FixHelper.recipesHoldingPotentialItems.add(this);
     }
 
     @Override
     public Set<Item> getPotentialItems() {
+        if(allPossibleInputs == null)
+            genMatchCache();
         return allPossibleInputs;
+    }
+
+    @Override
+    public void invalidatePotentialItems() {
+        allPossibleInputs = null;
     }
 }

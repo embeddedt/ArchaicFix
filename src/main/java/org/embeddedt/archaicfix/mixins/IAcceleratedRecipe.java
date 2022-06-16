@@ -7,4 +7,6 @@ import java.util.Set;
 
 public interface IAcceleratedRecipe {
     Set<Item> getPotentialItems();
+
+    void invalidatePotentialItems();
 }

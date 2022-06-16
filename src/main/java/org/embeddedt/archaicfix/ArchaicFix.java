@@ -5,6 +5,7 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.relauncher.Side;
 import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Items;
@@ -14,6 +15,8 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.common.MinecraftForge;
 import org.embeddedt.archaicfix.mixins.IAcceleratedRecipe;
+import org.embeddedt.archaicfix.recipe.IFasterCraftingManager;
+import org.embeddedt.archaicfix.thaumcraft.MappingsHandler;
 import thaumcraft.api.ThaumcraftApi;
 
 import java.util.*;
@@ -47,6 +50,12 @@ public class ArchaicFix
     @EventHandler
     public void serverStart(FMLServerStartingEvent event) {
         event.registerServerCommand(new CommandDebugUpdateQueue());
+    }
+
+    @EventHandler
+    public void serverStarted(FMLServerStartedEvent event) {
+        ((IFasterCraftingManager)CraftingManager.getInstance()).clearRecipeCache();
+        ArchaicLogger.LOGGER.info("Cleared recipe cache");
     }
 
     @EventHandler

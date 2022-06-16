@@ -5,6 +5,7 @@ import gregapi.code.ICondition;
 import gregapi.oredict.OreDictPrefix;
 import gregapi.recipes.AdvancedCraftingXToY;
 import net.minecraft.item.Item;
+import org.embeddedt.archaicfix.FixHelper;
 import org.embeddedt.archaicfix.mixins.IAcceleratedRecipe;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,14 +24,19 @@ import java.util.stream.Collectors;
 public class MixinAdvancedCraftingXToY implements IAcceleratedRecipe {
     @Shadow(remap = false) @Final public OreDictPrefix mInput;
 
-    private Set<Item> allPotentialItems;
+    private Set<Item> allPotentialItems = null;
 
-    @Inject(method = "<init>(Lgregapi/oredict/OreDictPrefix;ILgregapi/oredict/OreDictPrefix;IZLgregapi/code/ICondition;)V", at = @At("RETURN"), remap = false)
-    private void setupRecipeCache(OreDictPrefix aInput, int aInputCount, OreDictPrefix aOutput, int aOutputCount, boolean aAutoCraftable, ICondition aCondition, CallbackInfo ci) {
-        allPotentialItems = ImmutableSet.copyOf(mInput.mRegisteredItems.stream().map(container -> container.mItem).collect(Collectors.toSet()));
-    }
     @Override
     public Set<Item> getPotentialItems() {
+        if(allPotentialItems == null) {
+            allPotentialItems = ImmutableSet.copyOf(mInput.mRegisteredItems.stream().map(container -> container.mItem).collect(Collectors.toSet()));
+            FixHelper.recipesHoldingPotentialItems.add(this);
+        }
         return allPotentialItems;
+    }
+
+    @Override
+    public void invalidatePotentialItems() {
+        allPotentialItems = null;
     }
 }

@@ -70,6 +70,24 @@ public class ArchaicGrimmix extends GrimmixController {
                 .verbose(true)
                 .required(false)
                 .build();
+        event.createBuilder("archaicfix/mixins.archaicfix.tc4tweaks.json")
+                .mixinPackage("org.embeddedt.archaicfix.mixins.tc4tweaks")
+                .commonMixins("common.*")
+                .clientMixins("client.*")
+                .refmap("@MIXIN_REFMAP@")
+                .configurationType(ConfigurationType.MOD)
+                .verbose(true)
+                .required(false)
+                .build();
+        event.createBuilder("archaicfix/mixins.archaicfix.thermal.json")
+                .mixinPackage("org.embeddedt.archaicfix.mixins.thermal")
+                .commonMixins("common.*")
+                .clientMixins("client.*")
+                .refmap("@MIXIN_REFMAP@")
+                .configurationType(ConfigurationType.MOD)
+                .verbose(true)
+                .required(false)
+                .build();
     }
 
 }

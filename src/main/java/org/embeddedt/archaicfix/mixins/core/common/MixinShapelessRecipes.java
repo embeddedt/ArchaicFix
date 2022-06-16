@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
+import org.embeddedt.archaicfix.FixHelper;
 import org.embeddedt.archaicfix.mixins.IAcceleratedRecipe;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -35,5 +36,10 @@ public class MixinShapelessRecipes implements IAcceleratedRecipe {
     @Override
     public Set<Item> getPotentialItems() {
         return allPossibleItems;
+    }
+
+    @Override
+    public void invalidatePotentialItems() {
+        /* No-op, fixed set of items */
     }
 }

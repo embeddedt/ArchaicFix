@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(MatterRegistrationHandler.class)
 public abstract class MixinMatterRegistrationHandler {
-    @Shadow @Final public String registryPath;
+    @Shadow(remap = false) @Final public String registryPath;
 
     private Thread theMatterThread = null;
 

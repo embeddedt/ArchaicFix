@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import org.embeddedt.archaicfix.ArchaicLogger;
+import org.embeddedt.archaicfix.FixHelper;
 import org.embeddedt.archaicfix.mixins.IAcceleratedRecipe;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,16 +22,6 @@ import java.util.Set;
 public class MixinShapelessOreRecipe implements IAcceleratedRecipe {
     @Shadow(remap = false) private ArrayList<Object> input;
     private Set<Item> allPossibleInputs = null;
-
-    @Inject(method = "<init>(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V", at = @At("RETURN"), remap = false)
-    private void setupMatchCache(ItemStack output, Object[] recipe, CallbackInfo ci) {
-        genMatchCache();
-    }
-
-    @Inject(method = "<init>(Lnet/minecraft/item/crafting/ShapelessRecipes;Ljava/util/Map;)V", at = @At("RETURN"), remap = false)
-    private void setupMatchCache(ShapelessRecipes old, Map map, CallbackInfo ci) {
-        genMatchCache();
-    }
 
     private void genMatchCache() {
         allPossibleInputs = null;
@@ -48,10 +39,17 @@ public class MixinShapelessOreRecipe implements IAcceleratedRecipe {
             }
         }
         allPossibleInputs = builder.build();
+        FixHelper.recipesHoldingPotentialItems.add(this);
     }
 
     @Override
     public Set<Item> getPotentialItems() {
+        if(allPossibleInputs == null)
+            genMatchCache();
         return allPossibleInputs;
+    }
+
+    public void invalidatePotentialItems() {
+        allPossibleInputs = null;
     }
 }

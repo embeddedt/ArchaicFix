@@ -28,4 +28,9 @@ public class MixinShapedRecipes implements IAcceleratedRecipe {
     public Set<Item> getPotentialItems() {
         return allPossibleItems;
     }
+
+    @Override
+    public void invalidatePotentialItems() {
+        /* No-op, the set of items is fixed for this recipe */
+    }
 }
