@@ -16,12 +16,9 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.common.MinecraftForge;
 import org.embeddedt.archaicfix.mixins.IAcceleratedRecipe;
 import org.embeddedt.archaicfix.recipe.IFasterCraftingManager;
-import org.embeddedt.archaicfix.thaumcraft.MappingsHandler;
 import thaumcraft.api.ThaumcraftApi;
 
 import java.util.*;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 @Mod(modid = ArchaicFix.MODID, version = ArchaicFix.VERSION)
 public class ArchaicFix
@@ -29,17 +26,17 @@ public class ArchaicFix
     public static final String MODID = "archaicfix";
     public static final String VERSION = "1.0";
 
-    public static Lock REGION_FILE_LOCK = new ReentrantLock();
-
     public static List<ItemStack> initialCreativeItems = null;
 
     public static boolean TRIANGULATOR = false;
+
+    private FixHelper helper;
 
     @EventHandler
     public void preinit(FMLPreInitializationEvent event)
     {
         MinecraftForge.EVENT_BUS.register(new LeftClickEventHandler());
-        FixHelper helper = new FixHelper();
+        helper = new FixHelper();
         MinecraftForge.EVENT_BUS.register(helper);
         FMLCommonHandler.instance().bus().register(helper);
         Minecraft.memoryReserve = new byte[0];
