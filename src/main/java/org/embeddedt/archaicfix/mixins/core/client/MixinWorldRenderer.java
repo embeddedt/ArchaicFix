@@ -48,7 +48,7 @@ public abstract class MixinWorldRenderer implements IWorldRenderer {
      * When switching worlds/dimensions, clear out the old render lists for old chunks. This prevents old dimension
      * content from being visible in the new world.
      */
-    @Inject(method = "stopRendering", at = @At("TAIL"))
+    @Inject(method = "setDontDraw", at = @At("TAIL"))
     private void clearOldRenderList(CallbackInfo ci) {
         for(int pass = 0; pass < 2; pass++) {
             GL11.glNewList(this.glRenderList + pass, GL11.GL_COMPILE);
