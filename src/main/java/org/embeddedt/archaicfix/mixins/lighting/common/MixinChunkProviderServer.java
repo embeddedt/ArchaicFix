@@ -2,6 +2,7 @@ package org.embeddedt.archaicfix.mixins.lighting.common;
 
 import net.minecraft.util.IProgressUpdate;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkProviderServer;
 import org.embeddedt.archaicfix.lighting.api.ILightingEngineProvider;
 import org.spongepowered.asm.mixin.Final;
@@ -9,6 +10,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Set;
@@ -42,5 +44,11 @@ public abstract class MixinChunkProviderServer {
                 ((ILightingEngineProvider) this.worldObj).getLightingEngine().processLightUpdates();
             }
         }
+    }
+
+    // === FASTCRAFT OVERRIDES ===
+    @Redirect(method = "*", at = @At(value = "INVOKE", target = "Lfastcraft/H;a(Lnet/minecraft/world/chunk/Chunk;)V", remap = false))
+    private void usePhosphorLightPopulation(Chunk chunk) {
+        chunk.func_150809_p();
     }
 }
