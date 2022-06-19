@@ -90,6 +90,15 @@ public class ArchaicGrimmix extends GrimmixController {
                 .verbose(true)
                 .required(false)
                 .build();
+        event.createBuilder("archaicfix/mixins.archaicfix.chickenchunks.json")
+                .mixinPackage("org.embeddedt.archaicfix.mixins.chickenchunks")
+                .commonMixins("common.*")
+                .clientMixins("client.*")
+                .refmap("@MIXIN_REFMAP@")
+                .configurationType(ConfigurationType.MOD)
+                .verbose(true)
+                .required(false)
+                .build();
         if((Boolean)Launch.blackboard.get("fml.deobfuscatedEnvironment"))
             MixinEnvironment.getEnvironment(MixinEnvironment.Phase.DEFAULT).setOption(MixinEnvironment.Option.DEBUG_INJECTORS, false);
     }
