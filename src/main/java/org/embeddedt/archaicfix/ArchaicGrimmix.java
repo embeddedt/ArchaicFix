@@ -4,6 +4,8 @@ import io.github.crucible.grimoire.common.api.grimmix.Grimmix;
 import io.github.crucible.grimoire.common.api.grimmix.GrimmixController;
 import io.github.crucible.grimoire.common.api.grimmix.lifecycle.IConfigBuildingEvent;
 import io.github.crucible.grimoire.common.api.mixin.ConfigurationType;
+import net.minecraft.launchwrapper.Launch;
+import org.spongepowered.asm.mixin.MixinEnvironment;
 
 @Grimmix(id = "archaicgrimmix", name = "Grimmix for ArchaicFix")
 public class ArchaicGrimmix extends GrimmixController {
@@ -88,6 +90,8 @@ public class ArchaicGrimmix extends GrimmixController {
                 .verbose(true)
                 .required(false)
                 .build();
+        if((Boolean)Launch.blackboard.get("fml.deobfuscatedEnvironment"))
+            MixinEnvironment.getEnvironment(MixinEnvironment.Phase.DEFAULT).setOption(MixinEnvironment.Option.DEBUG_INJECTORS, false);
     }
 
 }

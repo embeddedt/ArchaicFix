@@ -47,7 +47,7 @@ public abstract class MixinChunkProviderServer {
     }
 
     // === FASTCRAFT OVERRIDES ===
-    @Redirect(method = "*", at = @At(value = "INVOKE", target = "Lfastcraft/H;a(Lnet/minecraft/world/chunk/Chunk;)V", remap = false))
+    @Redirect(method = "*", at = @At(value = "INVOKE", target = "Lfastcraft/H;a(Lnet/minecraft/world/chunk/Chunk;)V", remap = false), require = 0)
     private void usePhosphorLightPopulation(Chunk chunk) {
         chunk.func_150809_p();
     }
