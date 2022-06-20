@@ -2,6 +2,7 @@ package org.embeddedt.archaicfix.mixins.core.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.ChunkCache;
 import org.embeddedt.archaicfix.mixins.IWorldRenderer;
@@ -25,6 +26,14 @@ public abstract class MixinWorldRenderer implements IWorldRenderer {
     @Shadow public boolean[] skipRenderPass;
 
     @Shadow private int glRenderList;
+
+    @Shadow public int posXPlus;
+
+    @Shadow public int posYPlus;
+
+    @Shadow public int posZPlus;
+
+    @Shadow public boolean isInFrustum;
 
     public boolean arch$isInView() {
         if(Minecraft.getMinecraft().renderViewEntity == null)
@@ -53,6 +62,19 @@ public abstract class MixinWorldRenderer implements IWorldRenderer {
         for(int pass = 0; pass < 2; pass++) {
             GL11.glNewList(this.glRenderList + pass, GL11.GL_COMPILE);
             GL11.glEndList();
+        }
+    }
+
+    @Inject(method = "updateInFrustum", at = @At("HEAD"), cancellable = true)
+    private void cullInCircularRadius(ICamera camera, CallbackInfo ci) {
+        int renderDistance = Minecraft.getMinecraft().gameSettings.renderDistanceChunks * 16;
+        Entity renderViewEntity = Minecraft.getMinecraft().renderViewEntity;
+        if(renderViewEntity != null) {
+            double distance = this.distanceToEntitySquared(renderViewEntity);
+            if(distance > (renderDistance*renderDistance)) {
+                this.isInFrustum = false;
+                ci.cancel();
+            }
         }
     }
 }
