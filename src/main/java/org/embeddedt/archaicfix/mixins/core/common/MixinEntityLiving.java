@@ -59,11 +59,6 @@ public abstract class MixinEntityLiving extends EntityLivingBase {
                 ++var3;
             }
 
-            if (var3 == 4 && this.rand.nextFloat() < 0.25F)
-            {
-                ++var3;
-            }
-
             for (int var4 = 3; var4 >= 0; --var4)
             {
                 ItemStack var5 = this.func_130225_q(var4);
