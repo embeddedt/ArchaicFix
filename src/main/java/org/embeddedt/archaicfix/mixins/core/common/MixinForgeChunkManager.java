@@ -1,11 +1,11 @@
 package org.embeddedt.archaicfix.mixins.core.common;
 
-import codechicken.chunkloader.ChunkLoaderManager;
 import cpw.mods.fml.common.Loader;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.ForgeChunkManager;
 import org.embeddedt.archaicfix.ArchaicLogger;
+import org.embeddedt.archaicfix.helpers.ChickenChunkHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -17,7 +17,7 @@ public class MixinForgeChunkManager {
     private static void callCCLoadHandler(World world, CallbackInfo ci) {
         if(!world.isRemote && Loader.isModLoaded("ChickenChunks")) {
             try {
-                ChunkLoaderManager.load((WorldServer) world);
+                ChickenChunkHelper.load((WorldServer)world);
             } catch (Exception e) {
                 ArchaicLogger.LOGGER.error("An exception occured while loading CC data", e);
             }
