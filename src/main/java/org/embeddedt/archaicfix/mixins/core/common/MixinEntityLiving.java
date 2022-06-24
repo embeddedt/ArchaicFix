@@ -5,6 +5,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -27,7 +28,11 @@ public abstract class MixinEntityLiving extends EntityLivingBase {
 
     @ModifyConstant(method = "despawnEntity", constant = @Constant(doubleValue = 16384.0D))
     private double lowerHardRange(double old) {
-        return 96 * 96;
+        if(worldObj.isRemote)
+            return old;
+        if(((WorldServer)worldObj).func_73046_m().getConfigurationManager().getViewDistance() < 10)
+            return 96 * 96;
+        return old;
     }
 
     /**
