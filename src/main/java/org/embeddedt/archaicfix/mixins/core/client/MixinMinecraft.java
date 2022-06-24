@@ -66,4 +66,9 @@ public abstract class MixinMinecraft {
         PreventSPDeadlockThread t = new PreventSPDeadlockThread(currentServer);
         t.start();
     }
+
+    @Redirect(method = "runGameLoop", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;isActive()Z"))
+    private boolean alwaysHaveDisplayActive() {
+        return true;
+    }
 }
