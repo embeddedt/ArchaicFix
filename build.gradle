@@ -113,6 +113,27 @@ dependencies {
     compileOnly("curse.maven:projecte-226410:2340786")
     compile("com.falsepattern:falsepatternlib-mc1.7.10:0.9.1:dev")
     compileOnly("com.falsepattern:triangulator-mc1.7.10:1.6.2:dev")
+
+    annotationProcessor("org.ow2.asm:asm-debug-all:5.0.3")
+    annotationProcessor("com.google.guava:guava:24.1.1-jre")
+    annotationProcessor("com.google.code.gson:gson:2.8.6")
+    annotationProcessor("org.spongepowered:mixin:0.8-SNAPSHOT")
+    // using 0.8 to workaround a issue in 0.7 which fails mixin application
+    compile("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
+        // Mixin includes a lot of dependencies that are too up-to-date
+        exclude module: "launchwrapper"
+        exclude module: "guava"
+        exclude module: "gson"
+        exclude module: "commons-io"
+        exclude module: "log4j-core"
+    }
+
+    compileOnly("io.github.crucible.grimoire:Grimoire-mc1.7.10-api:3.2.10") {
+        transitive = false
+    }
+    runtimeOnly("io.github.crucible.grimoire:Grimoire-mc1.7.10-dev:3.2.10") {
+        transitive = false
+    }
     // you may put jars on which you depend on in ./libs
     // or you may define them like so..
     //compile "some.group:artifact:version:classifier"
