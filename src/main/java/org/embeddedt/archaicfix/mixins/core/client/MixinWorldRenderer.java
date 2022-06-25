@@ -50,6 +50,8 @@ public abstract class MixinWorldRenderer implements IWorldRenderer {
      */
     @Inject(method = "setDontDraw", at = @At("TAIL"))
     private void clearOldRenderList(CallbackInfo ci) {
+        if(this.glRenderList == -1)
+            return;
         for(int pass = 0; pass < 2; pass++) {
             GL11.glNewList(this.glRenderList + pass, GL11.GL_COMPILE);
             GL11.glEndList();
