@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.core.common;
+package org.embeddedt.archaicfix.mixins.common.core;
 
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumDifficulty;

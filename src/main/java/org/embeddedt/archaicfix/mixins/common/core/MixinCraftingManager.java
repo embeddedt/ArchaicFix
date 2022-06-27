@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.core.common;
+package org.embeddedt.archaicfix.mixins.common.core;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;

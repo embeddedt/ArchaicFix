@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.lighting.common;
+package org.embeddedt.archaicfix.mixins.common.lighting;
 
 import net.minecraft.util.IProgressUpdate;
 import net.minecraft.world.WorldServer;

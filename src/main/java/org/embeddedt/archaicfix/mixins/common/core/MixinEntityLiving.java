@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.core.common;
+package org.embeddedt.archaicfix.mixins.common.core;
 
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;

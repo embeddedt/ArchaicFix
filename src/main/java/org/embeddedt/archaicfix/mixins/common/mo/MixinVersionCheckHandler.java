@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.mo.common;
+package org.embeddedt.archaicfix.mixins.common.mo;
 
 import cpw.mods.fml.common.gameevent.TickEvent;
 import matteroverdrive.handler.VersionCheckerHandler;

@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.core.client;
+package org.embeddedt.archaicfix.mixins.client.core;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.Minecraft;

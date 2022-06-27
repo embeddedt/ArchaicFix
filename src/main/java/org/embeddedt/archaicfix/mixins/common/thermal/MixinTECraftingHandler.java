@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.thermal.common;
+package org.embeddedt.archaicfix.mixins.common.thermal;
 
 import cofh.thermalexpansion.util.crafting.TECraftingHandler;
 import cpw.mods.fml.common.Loader;

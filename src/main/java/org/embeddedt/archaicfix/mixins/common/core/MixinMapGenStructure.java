@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.core.common;
+package org.embeddedt.archaicfix.mixins.common.core;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.world.World;

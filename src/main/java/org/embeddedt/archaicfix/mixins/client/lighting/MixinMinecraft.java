@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.lighting.client;
+package org.embeddedt.archaicfix.mixins.client.lighting;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;

@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.pregen.common;
+package org.embeddedt.archaicfix.mixins.common.pregen;
 
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.relauncher.ReflectionHelper;

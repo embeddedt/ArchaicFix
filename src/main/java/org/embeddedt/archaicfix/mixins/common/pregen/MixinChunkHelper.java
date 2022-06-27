@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.pregen.common;
+package org.embeddedt.archaicfix.mixins.common.pregen;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;

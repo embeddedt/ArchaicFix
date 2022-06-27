@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.gt6.client;
+package org.embeddedt.archaicfix.mixins.client.gt6;
 
 import gregapi.GT_API_Proxy_Client;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;

@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.gt6.common;
+package org.embeddedt.archaicfix.mixins.common.gt6;
 
 import com.google.common.collect.ImmutableSet;
 import gregapi.code.ICondition;

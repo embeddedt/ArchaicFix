@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.mrtjp.common;
+package org.embeddedt.archaicfix.mixins.common.mrtjp;
 
 import mrtjp.core.world.BlockUpdateHandler$;
 import net.minecraft.world.ChunkCoordIntPair;

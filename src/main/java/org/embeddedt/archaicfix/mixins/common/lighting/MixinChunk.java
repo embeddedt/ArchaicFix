@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.lighting.common;
+package org.embeddedt.archaicfix.mixins.common.lighting;
 
 import com.falsepattern.lib.compat.BlockPos;
 import net.minecraft.block.Block;

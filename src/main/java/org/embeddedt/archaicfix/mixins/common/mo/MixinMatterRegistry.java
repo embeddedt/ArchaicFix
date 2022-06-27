@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.mo.common;
+package org.embeddedt.archaicfix.mixins.common.mo;
 
 import matteroverdrive.handler.MatterRegistry;
 import org.embeddedt.archaicfix.ArchaicLogger;

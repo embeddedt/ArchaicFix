@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.core.common;
+package org.embeddedt.archaicfix.mixins.common.core;
 
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;

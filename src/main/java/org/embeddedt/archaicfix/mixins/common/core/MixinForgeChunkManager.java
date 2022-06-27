@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.core.common;
+package org.embeddedt.archaicfix.mixins.common.core;
 
 import cpw.mods.fml.common.Loader;
 import net.minecraft.world.World;

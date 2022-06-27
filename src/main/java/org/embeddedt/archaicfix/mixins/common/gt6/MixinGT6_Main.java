@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.gt6.common;
+package org.embeddedt.archaicfix.mixins.common.gt6;
 
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import gregtech.GT6_Main;

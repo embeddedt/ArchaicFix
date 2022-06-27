@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.core.client;
+package org.embeddedt.archaicfix.mixins.client.core;
 
 import codechicken.nei.ItemList;
 import codechicken.nei.api.ItemInfo;

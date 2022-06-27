@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.mo.common;
+package org.embeddedt.archaicfix.mixins.common.mo;
 
 import matteroverdrive.handler.MatterRegistrationHandler;
 import matteroverdrive.handler.thread.RegisterItemsFromRecipes;

@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.tc4tweaks.common;
+package org.embeddedt.archaicfix.mixins.common.tc4tweaks;
 
 import com.google.common.collect.Iterators;
 import net.glease.tc4tweak.modules.generateItemHash.GenerateItemHash;

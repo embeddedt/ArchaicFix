@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.tc4tweaks.common;
+package org.embeddedt.archaicfix.mixins.common.tc4tweaks;
 
 import org.embeddedt.archaicfix.thaumcraft.MappingsHandler;
 import org.spongepowered.asm.mixin.Mixin;

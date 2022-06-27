@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.projecte.common;
+package org.embeddedt.archaicfix.mixins.common.projecte;
 
 import com.google.common.collect.ImmutableSet;
 import moze_intel.projecte.gameObjs.customRecipes.RecipeShapelessHidden;

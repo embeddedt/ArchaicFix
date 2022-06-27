@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.core.client;
+package org.embeddedt.archaicfix.mixins.client.core;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ChunkProviderClient;

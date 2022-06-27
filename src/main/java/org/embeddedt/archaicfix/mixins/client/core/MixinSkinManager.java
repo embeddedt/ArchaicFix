@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.core.client;
+package org.embeddedt.archaicfix.mixins.client.core;
 
 import net.minecraft.client.resources.SkinManager;
 import org.spongepowered.asm.mixin.Mixin;

@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins.chickenchunks.common;
+package org.embeddedt.archaicfix.mixins.common.chickenchunks;
 
 import codechicken.chunkloader.PlayerChunkViewerManager;
 import org.spongepowered.asm.mixin.Mixin;
