@@ -43,10 +43,4 @@ public abstract class MixinWorld implements ILightingEngineProvider {
     public LightingEngine getLightingEngine() {
         return this.lightingEngine;
     }
-
-    // === FASTCRAFT OVERRIDES ===
-    @Redirect(method = "*", at = @At(value = "INVOKE", target = "Lfastcraft/H;d(Lnet/minecraft/world/World;III)Z", remap = false), require = 0)
-    private boolean updateLightUsingPhosphor(World world, int x, int y, int z) {
-        return world.func_147451_t(x, y, z);
-    }
 }

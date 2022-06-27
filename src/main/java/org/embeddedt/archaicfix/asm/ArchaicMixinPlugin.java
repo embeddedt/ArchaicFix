@@ -12,7 +12,7 @@ public class ArchaicMixinPlugin implements IMixinPlugin {
 
     @Override
     public ITargetedMod[] getTargetedModEnumValues() {
-        return new ITargetedMod[0];
+        return TargetedMod.values();
     }
 
     @Override
