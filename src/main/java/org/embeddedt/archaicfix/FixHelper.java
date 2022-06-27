@@ -6,7 +6,7 @@ import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.oredict.OreDictionary;
-import org.embeddedt.archaicfix.mixins.IAcceleratedRecipe;
+import org.embeddedt.archaicfix.ducks.IAcceleratedRecipe;
 import org.embeddedt.archaicfix.recipe.IFasterCraftingManager;
 
 import java.util.ArrayList;

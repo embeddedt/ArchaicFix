@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;
-import org.embeddedt.archaicfix.mixins.IAcceleratedRecipe;
+import org.embeddedt.archaicfix.ducks.IAcceleratedRecipe;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

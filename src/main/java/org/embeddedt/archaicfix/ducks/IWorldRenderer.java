@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins;
+package org.embeddedt.archaicfix.ducks;
 
 public interface IWorldRenderer {
     boolean arch$isInView();

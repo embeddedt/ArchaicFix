@@ -12,7 +12,7 @@ import static com.falsepattern.lib.mixin.IMixin.PredicateHelpers.*;
 
 @RequiredArgsConstructor
 public enum Mixin implements IMixin {
-    CC_PlayerChunkViewerManager(Side.COMMON, always(), "chickenchunks.common.MixinPlayerChunkViewerManager"),
+    CC_PlayerChunkViewerManager(Side.COMMON, always(), "chickenchunks.MixinPlayerChunkViewerManager"),
 
     // The modFilter argument is a predicate, so you can also use the .and(), .or(), and .negate() methods to mix and match multiple predicates.
     ;

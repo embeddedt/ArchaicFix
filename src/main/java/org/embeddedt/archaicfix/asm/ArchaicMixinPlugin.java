@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 public class ArchaicMixinPlugin implements IMixinPlugin {
     @Getter
-    private final Logger logger = IMixinPlugin.createLogger("ArchaicFix Mixins");
+    private final Logger logger = IMixinPlugin.createLogger("ArchaicFix");
 
     @Override
     public ITargetedMod[] getTargetedModEnumValues() {

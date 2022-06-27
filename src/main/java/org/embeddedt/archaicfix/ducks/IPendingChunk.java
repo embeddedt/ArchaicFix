@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.mixins;
+package org.embeddedt.archaicfix.ducks;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.ChunkCoordIntPair;

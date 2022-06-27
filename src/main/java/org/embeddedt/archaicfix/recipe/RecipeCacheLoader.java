@@ -1,16 +1,13 @@
 package org.embeddedt.archaicfix.recipe;
 
 import com.google.common.cache.CacheLoader;
-import com.google.common.collect.ImmutableList;
-import jdk.nashorn.internal.ir.annotations.Immutable;
 import net.minecraft.item.Item;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
-import org.embeddedt.archaicfix.mixins.IAcceleratedRecipe;
+import org.embeddedt.archaicfix.ducks.IAcceleratedRecipe;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Helper class that determines the set of all crafting recipes that utilize a given set of items.

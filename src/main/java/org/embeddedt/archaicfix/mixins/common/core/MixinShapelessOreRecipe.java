@@ -3,19 +3,14 @@ package org.embeddedt.archaicfix.mixins.common.core;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 import org.embeddedt.archaicfix.ArchaicLogger;
 import org.embeddedt.archaicfix.FixHelper;
-import org.embeddedt.archaicfix.mixins.IAcceleratedRecipe;
+import org.embeddedt.archaicfix.ducks.IAcceleratedRecipe;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Set;
 
 @Mixin(ShapelessOreRecipe.class)

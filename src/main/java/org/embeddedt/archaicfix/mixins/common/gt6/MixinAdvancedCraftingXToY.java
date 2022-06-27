@@ -1,18 +1,14 @@
 package org.embeddedt.archaicfix.mixins.common.gt6;
 
 import com.google.common.collect.ImmutableSet;
-import gregapi.code.ICondition;
 import gregapi.oredict.OreDictPrefix;
 import gregapi.recipes.AdvancedCraftingXToY;
 import net.minecraft.item.Item;
 import org.embeddedt.archaicfix.FixHelper;
-import org.embeddedt.archaicfix.mixins.IAcceleratedRecipe;
+import org.embeddedt.archaicfix.ducks.IAcceleratedRecipe;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Set;
 import java.util.stream.Collectors;
