@@ -2,9 +2,9 @@
 {
   "modid": "archaicfix",
   "name": "Archaic Fix",
-  "description": "Backport of VanillaFix to 1.7.",
-  "version": "${version}",
-  "mcversion": "${mcversion}",
+  "description": "Swiss army knife of bugfixes for 1.7.",
+  "version": "${modVersion}",
+  "mcversion": "${minecraftVersion}",
   "url": "",
   "updateUrl": "",
   "authorList": ["embeddedt"],

@@ -1,0 +1,31 @@
+repositories {
+    maven {
+        name = "gt"
+        url = "https://gregtech.mechaenetia.com/"
+    }
+    maven {
+        name = "sonatype"
+        url = "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+    maven {
+        url 'https://jitpack.io'
+    }
+    maven {
+        url "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+    maven {
+        name = "MavenPattern"
+        url = "https://maven.falsepattern.com"
+    }
+    maven {
+        name "mvnmrtjp"
+        url "http://files.projectredwiki.com/maven"
+        metadataSources {
+            mavenPom()
+            artifact()
+        }
+    }
+}
