@@ -49,8 +49,16 @@ public abstract class MixinMinecraft {
         mc.displayGuiScreen(new GuiScreenWorking());
     }
 
-    @Inject(method = "launchIntegratedServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/integrated/IntegratedServer;getUserMessage()Ljava/lang/String;", ordinal = 0))
+    @Inject(method = "launchIntegratedServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/integrated/IntegratedServer;func_147137_ag()Lnet/minecraft/network/NetworkSystem;", ordinal = 0), cancellable = true)
     private void checkServerStopped(CallbackInfo ci) {
+        try
+        {
+            Thread.sleep(200L);
+        }
+        catch (InterruptedException interruptedexception)
+        {
+            ;
+        }
         if(this.theIntegratedServer.isServerStopped()) {
             loadWorld(null);
             displayGuiScreen(null);
