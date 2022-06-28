@@ -5,6 +5,7 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import gregapi.data.CS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Items;
@@ -13,11 +14,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.oredict.OreDictionary;
 import org.embeddedt.archaicfix.ducks.IAcceleratedRecipe;
+import org.embeddedt.archaicfix.helpers.OreDictIterator;
 import org.embeddedt.archaicfix.recipe.IFasterCraftingManager;
 import thaumcraft.api.ThaumcraftApi;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Mod(modid = ArchaicFix.MODID, version = ArchaicFix.VERSION)
 public class ArchaicFix
@@ -26,8 +30,6 @@ public class ArchaicFix
     public static final String VERSION = "1.0";
 
     public static List<ItemStack> initialCreativeItems = null;
-
-    public static boolean TRIANGULATOR = false;
 
     private FixHelper helper;
 
@@ -54,30 +56,7 @@ public class ArchaicFix
         ArchaicLogger.LOGGER.info("Cleared recipe cache");
     }
 
-    @EventHandler
-    public void loadComplete(FMLLoadCompleteEvent event) {
-        try {
-            Class.forName("com.falsepattern.triangulator.Triangulator");
-            TRIANGULATOR = true;
-        } catch (Exception e) {
-            TRIANGULATOR = false;
-        }
-        if(initialCreativeItems == null) {
-            initialCreativeItems = new ArrayList<>();
-            for (Object o : Item.itemRegistry) {
-                Item item = (Item) o;
-
-                if (item != null && item.getCreativeTab() != null) {
-                    item.getSubItems(item, null, initialCreativeItems);
-                }
-            }
-            for(Enchantment enchantment : Enchantment.enchantmentsList) {
-                if (enchantment != null && enchantment.type != null)
-                {
-                    Items.enchanted_book.func_92113_a(enchantment, initialCreativeItems);
-                }
-            }
-        }
+    private void printRecipeDebug() {
         HashMap<Class<? extends IRecipe>, Integer> recipeTypeMap = new HashMap<>();
         for(Object o : CraftingManager.getInstance().getRecipeList()) {
             recipeTypeMap.compute(((IRecipe)o).getClass(), (key, oldValue) -> {
@@ -96,6 +75,9 @@ public class ArchaicFix
         int totalRecipes = recipeTypeMap.values().stream().reduce(0, Integer::sum);
         int acceleratedRecipes = recipeTypeMap.entrySet().stream().filter(pair -> IAcceleratedRecipe.class.isAssignableFrom(pair.getKey())).map(Map.Entry::getValue).reduce(0, Integer::sum);
         ArchaicLogger.LOGGER.info(acceleratedRecipes + " / " + totalRecipes + " recipes are accelerated!");
+    }
+
+    private void removeThaumcraftLeak() {
         if(!Loader.isModLoaded("Thaumcraft")) {
             boolean thaumcraftGhostApiPresent = false;
             try {
@@ -112,4 +94,29 @@ public class ArchaicFix
         }
     }
 
+    private void fillCreativeItems() {
+        if(initialCreativeItems == null) {
+            initialCreativeItems = new ArrayList<>();
+            for (Object o : Item.itemRegistry) {
+                Item item = (Item) o;
+
+                if (item != null && item.getCreativeTab() != null) {
+                    item.getSubItems(item, null, initialCreativeItems);
+                }
+            }
+            for(Enchantment enchantment : Enchantment.enchantmentsList) {
+                if (enchantment != null && enchantment.type != null)
+                {
+                    Items.enchanted_book.func_92113_a(enchantment, initialCreativeItems);
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void loadComplete(FMLLoadCompleteEvent event) {
+        fillCreativeItems();
+        printRecipeDebug();
+        removeThaumcraftLeak();
+    }
 }
