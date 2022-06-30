@@ -5,9 +5,11 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.relauncher.ReflectionHelper;
 import gregapi.data.CS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.Entity;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -36,6 +38,11 @@ public class ArchaicFix
     @EventHandler
     public void preinit(FMLPreInitializationEvent event)
     {
+        int nextID = ReflectionHelper.getPrivateValue(Entity.class, null, "field_70152_a", "nextEntityID");
+        if(nextID == 0) {
+            ReflectionHelper.setPrivateValue(Entity.class, null, 1, "field_70152_a", "nextEntityID");
+            ArchaicLogger.LOGGER.info("Fixed MC-111480");
+        }
         MinecraftForge.EVENT_BUS.register(new LeftClickEventHandler());
         helper = new FixHelper();
         MinecraftForge.EVENT_BUS.register(helper);
