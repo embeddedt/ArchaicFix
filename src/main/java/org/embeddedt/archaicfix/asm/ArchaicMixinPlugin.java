@@ -7,7 +7,7 @@ import com.falsepattern.lib.mixin.IMixinPlugin;
 import com.falsepattern.lib.mixin.ITargetedMod;
 import lombok.Getter;
 import org.apache.logging.log4j.Logger;
-import org.embeddedt.archaicfix.ArchaicConfig;
+import org.embeddedt.archaicfix.config.ArchaicConfig;
 
 public class ArchaicMixinPlugin implements IMixinPlugin {
     @Getter

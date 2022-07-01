@@ -4,7 +4,7 @@ import com.falsepattern.lib.mixin.IMixin;
 import com.falsepattern.lib.mixin.ITargetedMod;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.embeddedt.archaicfix.ArchaicConfig;
+import org.embeddedt.archaicfix.config.ArchaicConfig;
 
 import java.util.*;
 import java.util.function.Predicate;

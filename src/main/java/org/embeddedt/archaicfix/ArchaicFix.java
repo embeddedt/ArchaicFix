@@ -6,7 +6,6 @@ import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.relauncher.ReflectionHelper;
-import gregapi.data.CS;
 import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
@@ -16,17 +15,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.oredict.OreDictionary;
+import org.embeddedt.archaicfix.config.ArchaicConfig;
 import org.embeddedt.archaicfix.ducks.IAcceleratedRecipe;
-import org.embeddedt.archaicfix.helpers.OreDictIterator;
 import org.embeddedt.archaicfix.occlusion.OcclusionHelpers;
 import org.embeddedt.archaicfix.recipe.IFasterCraftingManager;
 import thaumcraft.api.ThaumcraftApi;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-@Mod(modid = ArchaicFix.MODID, version = ArchaicFix.VERSION)
+@Mod(modid = ArchaicFix.MODID, version = ArchaicFix.VERSION, guiFactory = "org.embeddedt.archaicfix.config.ArchaicGuiConfigFactory")
 public class ArchaicFix
 {
     public static final String MODID = Tags.MODID;

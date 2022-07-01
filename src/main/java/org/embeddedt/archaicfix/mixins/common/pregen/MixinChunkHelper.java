@@ -1,6 +1,6 @@
 package org.embeddedt.archaicfix.mixins.common.pregen;
 
-import org.embeddedt.archaicfix.ArchaicConfig;
+import org.embeddedt.archaicfix.config.ArchaicConfig;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;

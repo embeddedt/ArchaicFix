@@ -2,7 +2,7 @@ package org.embeddedt.archaicfix.mixins.client.core;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiOptionSlider;
-import org.embeddedt.archaicfix.ArchaicConfig;
+import org.embeddedt.archaicfix.config.ArchaicConfig;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
