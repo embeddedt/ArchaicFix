@@ -3,13 +3,7 @@ package org.embeddedt.archaicfix.occlusion.util;
 import com.google.common.base.Objects;
 import com.google.common.primitives.Ints;
 
-import java.util.AbstractCollection;
-import java.util.Collection;
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @SuppressWarnings("unchecked")
 public class LinkedHashList<E extends Object> extends AbstractCollection<E> implements List<E>, Cloneable, java.io.Serializable {
@@ -516,6 +510,14 @@ public class LinkedHashList<E extends Object> extends AbstractCollection<E> impl
 		if (!isPositionIndex(index)) {
 			throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
 		}
+	}
+
+	@Override
+	public void sort(Comparator<? super E> comparator) {
+		ArrayList<E> sorter = new ArrayList<>(this);
+		sorter.sort(comparator);
+		this.clear();
+		this.addAll(sorter);
 	}
 
 	protected class ListItr implements ListIterator<E> {

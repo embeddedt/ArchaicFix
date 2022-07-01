@@ -83,10 +83,10 @@ public enum Mixin implements IMixin {
     client_lighting_MixinMinecraft(Side.CLIENT, always(), "lighting.MixinMinecraft"),
     client_lighting_MixinWorld(Side.CLIENT, always(), "lighting.MixinWorld"),
 
-    client_occlusion_MixinChunk(Side.CLIENT, m -> ArchaicConfig.enableOcclusionTweaks, "occlusion.MixinChunk"),
-    client_occlusion_MixinRenderGlobal(Side.CLIENT, m -> ArchaicConfig.enableOcclusionTweaks, "occlusion.MixinRenderGlobal"),
-    client_occlusion_MixinGuiVideoSettings(Side.CLIENT, m -> ArchaicConfig.enableOcclusionTweaks, "occlusion.MixinGuiVideoSettings"),
-    client_occlusion_MixinWorldRenderer(Side.CLIENT, m -> ArchaicConfig.enableOcclusionTweaks, "occlusion.MixinWorldRenderer"),
+    client_occlusion_MixinChunk(Side.CLIENT, avoid(TargetedMod.OPTIFINE).and(m -> ArchaicConfig.enableOcclusionTweaks), "occlusion.MixinChunk"),
+    client_occlusion_MixinRenderGlobal(Side.CLIENT, avoid(TargetedMod.OPTIFINE).and(m -> ArchaicConfig.enableOcclusionTweaks), "occlusion.MixinRenderGlobal"),
+    client_occlusion_MixinGuiVideoSettings(Side.CLIENT, avoid(TargetedMod.OPTIFINE).and(m -> ArchaicConfig.enableOcclusionTweaks), "occlusion.MixinGuiVideoSettings"),
+    client_occlusion_MixinWorldRenderer(Side.CLIENT, avoid(TargetedMod.OPTIFINE).and(m -> ArchaicConfig.enableOcclusionTweaks), "occlusion.MixinWorldRenderer"),
 
     // MOD-FILTERED MIXINS
     common_lighting_fastcraft_MixinChunk(Side.COMMON, require(TargetedMod.FASTCRAFT), "lighting.fastcraft.MixinChunk"),
