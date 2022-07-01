@@ -81,6 +81,7 @@ public class VisGraph {
 		return ALL_VIS;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void computeVisibility() {
 
 		dirty = false;
@@ -111,6 +112,7 @@ public class VisGraph {
 		computedVis = true;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Set<EnumFacing> getVisibleFacingsFrom(int x, int y, int z) {
 
 		visibleBlocks.andNot(visibleBlocks);
@@ -118,9 +120,10 @@ public class VisGraph {
 		return computeVisibleFacingsFrom(getIndex(x & 15, y & 15, z & 15), new IntStack(256, 512));
 	}
 
-	private EnumSet<EnumFacing> computeVisibleFacingsFrom(int index, IntStack linkedlist) {
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	private EnumSet computeVisibleFacingsFrom(int index, IntStack linkedlist) {
 
-		EnumSet<EnumFacing> enumset = EnumSet.noneOf(EnumFacing.class);
+		EnumSet enumset = EnumSet.noneOf((Class)EnumFacing.class);
 		linkedlist.add(index);
 		BitSet blocks = this.visibleBlocks;
 		blocks.set(index, true);
