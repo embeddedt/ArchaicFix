@@ -67,6 +67,8 @@ public class ArchaicFix
     }
 
     private void printRecipeDebug() {
+        if(!ArchaicConfig.cacheRecipes)
+            return;
         HashMap<Class<? extends IRecipe>, Integer> recipeTypeMap = new HashMap<>();
         for(Object o : CraftingManager.getInstance().getRecipeList()) {
             recipeTypeMap.compute(((IRecipe)o).getClass(), (key, oldValue) -> {

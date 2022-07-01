@@ -6,11 +6,14 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.WorldChunkManager;
 import net.minecraft.world.storage.WorldInfo;
+import org.embeddedt.archaicfix.ArchaicConfig;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(World.class)
 public abstract class MixinWorld {
@@ -34,8 +37,10 @@ public abstract class MixinWorld {
      * @reason Remove regional difficulty and make it based on overall world time instead. (From TMCW)
      * @author embeddedt
      */
-    @Overwrite
-    public float func_147473_B(int p_147473_1_, int p_147473_2_, int p_147473_3_) {
+    @Inject(method = "func_147473_B", at = @At("HEAD"), cancellable = true)
+    public void func_147473_B(int p_147473_1_, int p_147473_2_, int p_147473_3_, CallbackInfoReturnable<Float> cir) {
+        if(!ArchaicConfig.betterRegionalDifficulty)
+            return;
         float factor = (float)this.worldInfo.getWorldTotalTime() / 7200000.0F;
         factor += this.getCurrentMoonPhaseFactor() * 0.25F;
 
@@ -48,6 +53,6 @@ public abstract class MixinWorld {
             factor *= 2.0F;
         }
 
-        return MathHelper.clamp_float(factor, 0.0F, (float)this.difficultySetting.getDifficultyId() * 0.5F);
+        cir.setReturnValue(MathHelper.clamp_float(factor, 0.0F, (float)this.difficultySetting.getDifficultyId() * 0.5F));
     }
 }

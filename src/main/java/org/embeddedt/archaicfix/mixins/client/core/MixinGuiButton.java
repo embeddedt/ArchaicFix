@@ -2,6 +2,7 @@ package org.embeddedt.archaicfix.mixins.client.core;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiOptionSlider;
+import org.embeddedt.archaicfix.ArchaicConfig;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,7 +15,7 @@ public class MixinGuiButton {
      */
     @Redirect(method = "drawButton", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/gui/GuiButton;field_146123_n:Z", ordinal = 1))
     private boolean isHovered(GuiButton button) {
-        if(button instanceof GuiOptionSlider)
+        if(!ArchaicConfig.enableNewButtonAppearance || button instanceof GuiOptionSlider)
             return button.field_146123_n;
         else
             return false;

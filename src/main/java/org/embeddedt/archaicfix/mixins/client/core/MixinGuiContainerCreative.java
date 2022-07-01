@@ -14,6 +14,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import org.apache.commons.lang3.StringUtils;
+import org.embeddedt.archaicfix.ArchaicConfig;
 import org.embeddedt.archaicfix.ArchaicFix;
 import org.embeddedt.archaicfix.creative.BetterCreativeSearch;
 import org.spongepowered.asm.mixin.Mixin;
@@ -46,7 +47,7 @@ public abstract class MixinGuiContainerCreative extends InventoryEffectRenderer 
      */
     @Inject(method = "updateCreativeSearch", at = @At(value = "HEAD"), cancellable = true)
     private void updateSearchUsingNEI(CallbackInfo ci) {
-        if(Loader.isModLoaded("NotEnoughItems")) {
+        if(ArchaicConfig.useNeiForCreativeSearch && Loader.isModLoaded("NotEnoughItems")) {
             ci.cancel();
             this.currentScroll = 0.0F;
             BetterCreativeSearch.handle(searchField.getText(), (GuiContainerCreative.ContainerCreative)this.inventorySlots, selectedTabIndex);

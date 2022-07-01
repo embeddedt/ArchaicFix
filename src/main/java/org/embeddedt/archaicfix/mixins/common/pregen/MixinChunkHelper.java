@@ -1,5 +1,6 @@
 package org.embeddedt.archaicfix.mixins.common.pregen;
 
+import org.embeddedt.archaicfix.ArchaicConfig;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
@@ -9,6 +10,6 @@ import pregenerator.impl.processor.generator.ChunkHelper;
 public class MixinChunkHelper {
     @ModifyConstant(method = "cleanUp", constant = @Constant(intValue = 1000), remap = false)
     private int increaseUpdateLimit(int old) {
-        return 65000;
+        return ArchaicConfig.increaseBlockUpdateLimit ? 65000 : old;
     }
 }

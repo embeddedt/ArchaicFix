@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.play.INetHandlerPlayClient;
+import org.embeddedt.archaicfix.ArchaicConfig;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -20,11 +21,11 @@ public abstract class MixinNetHandlerPlayClient implements INetHandlerPlayClient
 
     @Redirect(method = "handleJoinGame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;displayGuiScreen(Lnet/minecraft/client/gui/GuiScreen;)V"))
     private void onGuiDisplayJoin(Minecraft mc, GuiScreen guiScreenIn) {
-        mc.displayGuiScreen(null);
+        mc.displayGuiScreen(ArchaicConfig.hideDownloadingTerrainScreen ? null : guiScreenIn);
     }
 
     @Redirect(method = "handleRespawn", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;displayGuiScreen(Lnet/minecraft/client/gui/GuiScreen;)V"))
     private void onGuiDisplayRespawn(Minecraft mc, GuiScreen guiScreenIn) {
-        mc.displayGuiScreen(null);
+        mc.displayGuiScreen(ArchaicConfig.hideDownloadingTerrainScreen ? null : guiScreenIn);
     }
 }

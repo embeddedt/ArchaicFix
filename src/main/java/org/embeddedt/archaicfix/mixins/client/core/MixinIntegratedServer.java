@@ -2,6 +2,8 @@ package org.embeddedt.archaicfix.mixins.client.core;
 
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.server.integrated.IntegratedServer;
+import org.embeddedt.archaicfix.ArchaicConfig;
+import org.embeddedt.archaicfix.ArchaicFix;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,6 +16,9 @@ public class MixinIntegratedServer {
      */
     @Redirect(method = "tick", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/client/settings/GameSettings;renderDistanceChunks:I"))
     private int getRealRenderDistance(GameSettings settings) {
-        return Math.max(settings.renderDistanceChunks, 8);
+        if(ArchaicConfig.fixMobSpawnsAtLowRenderDist)
+            return Math.max(settings.renderDistanceChunks, 8);
+        else
+            return settings.renderDistanceChunks;
     }
 }
