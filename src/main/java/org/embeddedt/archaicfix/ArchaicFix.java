@@ -49,7 +49,8 @@ public class ArchaicFix
         MinecraftForge.EVENT_BUS.register(helper);
         FMLCommonHandler.instance().bus().register(helper);
         Minecraft.memoryReserve = new byte[0];
-        OcclusionHelpers.init();
+        if(ArchaicConfig.enableOcclusionTweaks)
+            OcclusionHelpers.init();
         //SoundSystemConfig.setNumberNormalChannels(1073741824);
         //SoundSystemConfig.setNumberStreamingChannels(1073741823);
     }

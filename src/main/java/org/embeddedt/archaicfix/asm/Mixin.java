@@ -4,6 +4,7 @@ import com.falsepattern.lib.mixin.IMixin;
 import com.falsepattern.lib.mixin.ITargetedMod;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.embeddedt.archaicfix.ArchaicConfig;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -81,9 +82,9 @@ public enum Mixin implements IMixin {
     client_lighting_MixinMinecraft(Side.CLIENT, always(), "lighting.MixinMinecraft"),
     client_lighting_MixinWorld(Side.CLIENT, always(), "lighting.MixinWorld"),
 
-    client_occlusion_MixinChunk(Side.CLIENT, always(), "occlusion.MixinChunk"),
-    client_occlusion_MixinRenderGlobal(Side.CLIENT, always(), "occlusion.MixinRenderGlobal"),
-    client_occlusion_MixinGuiVideoSettings(Side.CLIENT, always(), "occlusion.MixinGuiVideoSettings"),
+    client_occlusion_MixinChunk(Side.CLIENT, m -> ArchaicConfig.enableOcclusionTweaks, "occlusion.MixinChunk"),
+    client_occlusion_MixinRenderGlobal(Side.CLIENT, m -> ArchaicConfig.enableOcclusionTweaks, "occlusion.MixinRenderGlobal"),
+    client_occlusion_MixinGuiVideoSettings(Side.CLIENT, m -> ArchaicConfig.enableOcclusionTweaks, "occlusion.MixinGuiVideoSettings"),
 
     // MOD-FILTERED MIXINS
     common_lighting_fastcraft_MixinChunk(Side.COMMON, require(TargetedMod.FASTCRAFT), "lighting.fastcraft.MixinChunk"),
