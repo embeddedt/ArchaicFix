@@ -38,6 +38,19 @@ public class ArchaicConfig {
     public static boolean increaseBlockUpdateLimit;
 
     @Config.Comment("EXPERIMENTAL: Cache matching crafting recipes to avoid needing to scan the whole list each time.")
-    @Config.DefaultBoolean(true)
+    @Config.DefaultBoolean(false)
     public static boolean cacheRecipes;
+
+    @Config.Comment("Disable spawn chunks")
+    @Config.DefaultBoolean(true)
+    public static boolean disableSpawnChunks;
+
+    @Config.Comment("Reduce lag caused by item entities")
+    @Config.DefaultBoolean(true)
+    @Config.RequiresMcRestart
+    public static boolean itemLagReduction;
+
+    @Config.Comment("Increase the amount of armor mobs wear on average. From TMCW.")
+    @Config.DefaultBoolean(true)
+    public static boolean increaseMobArmor;
 }

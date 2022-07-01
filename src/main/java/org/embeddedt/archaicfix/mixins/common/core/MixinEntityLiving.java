@@ -10,8 +10,11 @@ import org.embeddedt.archaicfix.config.ArchaicConfig;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityLiving.class)
 public abstract class MixinEntityLiving extends EntityLivingBase {
@@ -42,9 +45,11 @@ public abstract class MixinEntityLiving extends EntityLivingBase {
      * @reason Higher armor chances (from TMCW).
      * @author embeddedt
      */
-    @Overwrite
-    public void addRandomArmor()
+    @Inject(method = "addRandomArmor", at = @At("HEAD"), cancellable = true)
+    public void addRandomArmor(CallbackInfo ci)
     {
+        if(!ArchaicConfig.increaseMobArmor)
+            return;
         float var1 = this.worldObj.func_147462_b(this.posX, this.posY, this.posZ);
 
         if (this.rand.nextFloat() < var1 * 0.2F)
@@ -92,5 +97,6 @@ public abstract class MixinEntityLiving extends EntityLivingBase {
                 }
             }
         }
+        ci.cancel();
     }
 }
