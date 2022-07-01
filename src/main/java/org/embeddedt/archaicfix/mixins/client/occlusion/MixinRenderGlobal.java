@@ -2,12 +2,10 @@ package org.embeddedt.archaicfix.mixins.client.occlusion;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.renderer.RenderGlobal;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.RenderSorter;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.settings.GameSettings;
+import net.minecraft.client.util.RenderDistanceSorter;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
@@ -26,11 +24,12 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-@Mixin(RenderGlobal.class)
+@Mixin(value = RenderGlobal.class, priority = 900)
 public abstract class MixinRenderGlobal implements IRenderGlobal {
     @Shadow private int maxBlockY, minBlockY, maxBlockX, minBlockX, maxBlockZ, minBlockZ;
 
@@ -64,7 +63,9 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
 
     @Shadow private double prevRenderSortX, prevRenderSortY, prevRenderSortZ;
 
-    @Shadow protected abstract int renderSortedRenderers(int p_72724_1_, int p_72724_2_, int p_72724_3_, double p_72724_4_);
+    @Shadow private RenderList[] allRenderLists;
+
+    @Shadow public abstract void renderAllRenderLists(int p_72733_1_, double p_72733_2_);
 
     private Thread clientThread;
 
@@ -168,36 +169,6 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         return r.toString();
     }
 
-    @Inject(method = "renderSortedRenderers", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;renderViewEntity:Lnet/minecraft/entity/EntityLivingBase;", ordinal = 0))
-    private void setDebugInfo(int start, int end, int pass, double tick, CallbackInfoReturnable<Integer> cir) {
-        int renderersNotInitialized = 0, renderersBeingClipped = 0, renderersBeingOccluded = 0;
-        int renderersBeingRendered = 0, renderersSkippingRenderPass = 0, renderersNeedUpdate = 0;
-        WorldRenderer[] worldRenderers = this.worldRenderers;
-        for (int i = 0, e = worldRenderers.length; i < e; ++i) {
-            WorldRenderer rend = worldRenderers[i];
-            if (!rend.isInitialized) {
-                ++renderersNotInitialized;
-            } else if (!rend.isInFrustum) {
-                ++renderersBeingClipped;
-            } else if (!rend.isVisible) {
-                ++renderersBeingOccluded;
-            } else if (rend.isWaitingOnOcclusionQuery) {
-                ++renderersSkippingRenderPass;
-            } else {
-                ++renderersBeingRendered;
-            }
-            if (rend.needsUpdate) {
-                ++renderersNeedUpdate;
-            }
-        }
-
-        this.dummyRenderInt = renderersNotInitialized;
-        this.renderersBeingClipped = renderersBeingClipped;
-        this.renderersBeingOccluded = renderersBeingOccluded;
-        this.renderersBeingRendered = renderersBeingRendered;
-        this.renderersSkippingRenderPass = renderersSkippingRenderPass;
-        this.renderersNeedUpdate = renderersNeedUpdate;
-    }
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void initBetterLists(Minecraft p_i1249_1_, CallbackInfo ci) {
@@ -458,8 +429,105 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         return k;
     }
 
-    @Redirect(method = "renderSortedRenderers", at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, target = "Lnet/minecraft/client/renderer/RenderGlobal;renderersLoaded:I"))
-    private void skipIncrementingLoaded(RenderGlobal instance, int value) {
+    /**
+     * @author embeddedt, skyboy
+     * @reason occlusion culling
+     */
+    @Overwrite
+    @SuppressWarnings("unchecked")
+    protected int renderSortedRenderers(int start, int end, int pass, double tick) {
 
+        EntityLivingBase entitylivingbase = mc.renderViewEntity;
+        double xOff = entitylivingbase.lastTickPosX + (entitylivingbase.posX - entitylivingbase.lastTickPosX) * tick;
+        double yOff = entitylivingbase.lastTickPosY + (entitylivingbase.posY - entitylivingbase.lastTickPosY) * tick;
+        double zOff = entitylivingbase.lastTickPosZ + (entitylivingbase.posZ - entitylivingbase.lastTickPosZ) * tick;
+
+        RenderList[] allRenderLists = this.allRenderLists;
+        for (int i = 0; i < allRenderLists.length; ++i) {
+            allRenderLists[i].resetList();
+        }
+
+        int loopStart = start;
+        int loopEnd = end;
+        byte dir = 1;
+
+        if (pass == 1) {
+            loopStart = end - 1;
+            loopEnd = start - 1;
+            dir = -1;
+        }
+
+        if (pass == 0 && mc.gameSettings.showDebugInfo) {
+
+            mc.theWorld.theProfiler.startSection("debug_info");
+            int renderersNotInitialized = 0, renderersBeingClipped = 0, renderersBeingOccluded = 0;
+            int renderersBeingRendered = 0, renderersSkippingRenderPass = 0, renderersNeedUpdate = 0;
+            WorldRenderer[] worldRenderers = this.worldRenderers;
+            for (int i = 0, e = worldRenderers.length; i < e; ++i) {
+                WorldRenderer rend = worldRenderers[i];
+                if (!rend.isInitialized) {
+                    ++renderersNotInitialized;
+                } else if (!rend.isInFrustum) {
+                    ++renderersBeingClipped;
+                } else if (!rend.isVisible) {
+                    ++renderersBeingOccluded;
+                } else if (rend.isWaitingOnOcclusionQuery) {
+                    ++renderersSkippingRenderPass;
+                } else {
+                    ++renderersBeingRendered;
+                }
+                if (rend.needsUpdate) {
+                    ++renderersNeedUpdate;
+                }
+            }
+
+            this.dummyRenderInt = renderersNotInitialized;
+            this.renderersBeingClipped = renderersBeingClipped;
+            this.renderersBeingOccluded = renderersBeingOccluded;
+            this.renderersBeingRendered = renderersBeingRendered;
+            this.renderersSkippingRenderPass = renderersSkippingRenderPass;
+            this.renderersNeedUpdate = renderersNeedUpdate;
+            mc.theWorld.theProfiler.endSection();
+        }
+
+        mc.theWorld.theProfiler.startSection("setup_lists");
+        int glListsRendered = 0, allRenderListsLength = 0;
+        WorldRenderer[] sortedWorldRenderers = this.sortedWorldRenderers;
+        for (int i = loopStart; i != loopEnd; i += dir) {
+            WorldRenderer rend = sortedWorldRenderers[i];
+
+            if (rend.isInFrustum & !rend.skipRenderPass[pass]) {
+
+                int renderListIndex;
+
+                l: {
+                    for (int j = 0; j < allRenderListsLength; ++j) {
+                        if (allRenderLists[j].rendersChunk(rend.posXMinus, rend.posYMinus, rend.posZMinus)) {
+                            renderListIndex = j;
+                            break l;
+                        }
+                    }
+                    renderListIndex = allRenderListsLength++;
+                    allRenderLists[renderListIndex].setupRenderList(rend.posXMinus, rend.posYMinus, rend.posZMinus, xOff, yOff, zOff);
+                }
+
+                allRenderLists[renderListIndex].addGLRenderList(rend.getGLCallListForPass(pass));
+                ++glListsRendered;
+            }
+        }
+
+        mc.theWorld.theProfiler.endStartSection("call_lists");
+
+        {
+            int xSort = MathHelper.floor_double(xOff);
+            int zSort = MathHelper.floor_double(zOff);
+            xSort -= xSort & 1023;
+            zSort -= zSort & 1023;
+            Arrays.sort(allRenderLists, new RenderDistanceSorter(xSort, zSort));
+            this.renderAllRenderLists(pass, tick);
+        }
+        mc.theWorld.theProfiler.endSection();
+
+        return glListsRendered;
     }
 }
