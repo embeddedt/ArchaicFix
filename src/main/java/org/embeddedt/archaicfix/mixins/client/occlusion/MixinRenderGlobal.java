@@ -24,10 +24,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Mixin(value = RenderGlobal.class, priority = 900)
 public abstract class MixinRenderGlobal implements IRenderGlobal {
@@ -71,6 +68,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
 
     private IdentityLinkedHashList<WorldRenderer> worldRenderersToUpdateList;
     private IdentityLinkedHashList<WorldRenderer> workerWorldRenderers;
+
     private int prevRenderX, prevRenderY, prevRenderZ;
     private short alphaSortProgress = 0;
     private byte timeCheckInterval = 5, frameCounter, frameTarget;
@@ -175,6 +173,11 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         worldRenderersToUpdate = worldRenderersToUpdateList = new IdentityLinkedHashList<>();
         workerWorldRenderers = new IdentityLinkedHashList<>();
         clientThread = Thread.currentThread();
+    }
+
+    @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/OpenGlCapsChecker;checkARBOcclusion()Z"))
+    private boolean neverEnableOcclusion() {
+        return false;
     }
 
     private static int fixPos(int pos, int amt) {

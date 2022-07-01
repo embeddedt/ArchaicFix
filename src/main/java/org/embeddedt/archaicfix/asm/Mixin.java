@@ -88,6 +88,10 @@ public enum Mixin implements IMixin {
     client_occlusion_MixinGuiVideoSettings(Side.CLIENT, avoid(TargetedMod.OPTIFINE).and(m -> ArchaicConfig.enableOcclusionTweaks), "occlusion.MixinGuiVideoSettings"),
     client_occlusion_MixinWorldRenderer(Side.CLIENT, avoid(TargetedMod.OPTIFINE).and(m -> ArchaicConfig.enableOcclusionTweaks), "occlusion.MixinWorldRenderer"),
 
+    client_renderdistance_MixinGameSettings(Side.CLIENT, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)), "renderdistance.MixinGameSettings"),
+    client_renderdistance_MixinRenderGlobal(Side.CLIENT, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)), "renderdistance.MixinRenderGlobal"),
+    common_renderdistance_MixinPlayerManager(Side.COMMON, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)), "renderdistance.MixinPlayerManager"),
+
     // MOD-FILTERED MIXINS
     common_lighting_fastcraft_MixinChunk(Side.COMMON, require(TargetedMod.FASTCRAFT), "lighting.fastcraft.MixinChunk"),
     common_lighting_fastcraft_MixinChunkProviderServer(Side.COMMON, require(TargetedMod.FASTCRAFT), "lighting.fastcraft.MixinChunkProviderServer"),

@@ -31,6 +31,8 @@ public class ArchaicFix
 
     public static List<ItemStack> initialCreativeItems = null;
 
+    public static final int MAX_RENDER_DISTANCE = 32;
+
     private FixHelper helper;
 
     @EventHandler
@@ -48,6 +50,8 @@ public class ArchaicFix
         Minecraft.memoryReserve = new byte[0];
         if(ArchaicConfig.enableOcclusionTweaks)
             OcclusionHelpers.init();
+
+
         //SoundSystemConfig.setNumberNormalChannels(1073741824);
         //SoundSystemConfig.setNumberStreamingChannels(1073741823);
     }
