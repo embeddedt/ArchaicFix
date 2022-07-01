@@ -81,6 +81,10 @@ public enum Mixin implements IMixin {
     client_lighting_MixinMinecraft(Side.CLIENT, always(), "lighting.MixinMinecraft"),
     client_lighting_MixinWorld(Side.CLIENT, always(), "lighting.MixinWorld"),
 
+    client_occlusion_MixinChunk(Side.CLIENT, always(), "occlusion.MixinChunk"),
+    client_occlusion_MixinRenderGlobal(Side.CLIENT, always(), "occlusion.MixinRenderGlobal"),
+    client_occlusion_MixinGuiVideoSettings(Side.CLIENT, always(), "occlusion.MixinGuiVideoSettings"),
+
     // MOD-FILTERED MIXINS
     common_lighting_fastcraft_MixinChunk(Side.COMMON, require(TargetedMod.FASTCRAFT), "lighting.fastcraft.MixinChunk"),
     common_lighting_fastcraft_MixinChunkProviderServer(Side.COMMON, require(TargetedMod.FASTCRAFT), "lighting.fastcraft.MixinChunkProviderServer"),

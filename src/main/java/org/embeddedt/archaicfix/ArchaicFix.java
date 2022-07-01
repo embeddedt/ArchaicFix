@@ -19,6 +19,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.oredict.OreDictionary;
 import org.embeddedt.archaicfix.ducks.IAcceleratedRecipe;
 import org.embeddedt.archaicfix.helpers.OreDictIterator;
+import org.embeddedt.archaicfix.occlusion.OcclusionHelpers;
 import org.embeddedt.archaicfix.recipe.IFasterCraftingManager;
 import thaumcraft.api.ThaumcraftApi;
 
@@ -48,6 +49,7 @@ public class ArchaicFix
         MinecraftForge.EVENT_BUS.register(helper);
         FMLCommonHandler.instance().bus().register(helper);
         Minecraft.memoryReserve = new byte[0];
+        OcclusionHelpers.init();
         //SoundSystemConfig.setNumberNormalChannels(1073741824);
         //SoundSystemConfig.setNumberStreamingChannels(1073741823);
     }
