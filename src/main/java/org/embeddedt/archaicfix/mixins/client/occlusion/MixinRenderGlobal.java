@@ -254,7 +254,6 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
             }
 
             if (!(worldrenderer.isInFrustum & worldrenderer.isVisible)) {
-                worldRenderersToUpdateList.add(worldrenderer);
                 continue;
             }
 
@@ -388,7 +387,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
                 worldRenderersCheckIndex = (worldRenderersCheckIndex + 1) % renderersLoaded;
                 WorldRenderer rend = sortedWorldRenderers[worldRenderersCheckIndex];
 
-                if ((rend.isInFrustum & rend.isVisible) & rend.needsUpdate) {
+                if ((rend.isInFrustum & rend.isVisible) & (rend.needsUpdate || !rend.isInitialized)) {
                     worldRenderersToUpdate.add(rend);
                 }
             }
