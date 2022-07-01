@@ -213,11 +213,6 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
 
         IdentityLinkedHashList<WorldRenderer> workerWorldRenderers = this.workerWorldRenderers;
         IdentityLinkedHashList<WorldRenderer> worldRenderersToUpdateList = this.worldRenderersToUpdateList;
-        Comparator<WorldRenderer> sorter = new RenderSorter(view).reversed();
-        if(workerWorldRenderers.size() > 10)
-            workerWorldRenderers.sort(sorter);
-        if(worldRenderersToUpdateList.size() > 10)
-            worldRenderersToUpdateList.sort(sorter);
         boolean spareTime = true;
         l: for (int c = 0, i = 0; c < lim; ++c) {
             WorldRenderer worldrenderer;
