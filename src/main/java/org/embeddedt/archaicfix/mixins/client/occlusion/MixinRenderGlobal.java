@@ -239,7 +239,6 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
 
         IdentityLinkedHashList<WorldRenderer> workerWorldRenderers = this.workerWorldRenderers;
         IdentityLinkedHashList<WorldRenderer> worldRenderersToUpdateList = this.worldRenderersToUpdateList;
-        boolean hasSorted = false;
         boolean spareTime = true;
         l: for (int c = 0, i = 0; c < lim; ++c) {
             WorldRenderer worldrenderer;
@@ -247,9 +246,6 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
                 worldrenderer = workerWorldRenderers.shift();
                 worldRenderersToUpdateList.remove(worldrenderer);
             } else {
-                if(!hasSorted) {
-                    hasSorted = true;
-                }
                 worldrenderer = worldRenderersToUpdateList.shift();
             }
 
@@ -258,6 +254,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
             }
 
             if (!(worldrenderer.isInFrustum & worldrenderer.isVisible)) {
+                worldRenderersToUpdateList.add(worldrenderer);
                 continue;
             }
 
@@ -346,8 +343,6 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
     public void pushWorkerRenderer(WorldRenderer wr) {
         workerWorldRenderers.push(wr);
     }
-
-
 
     @Redirect(method = "loadRenderers", at = @At(value = "INVOKE", target = "Ljava/util/Arrays;sort([Ljava/lang/Object;Ljava/util/Comparator;)V", ordinal = 0))
     private void skipSort2(Object[] ts, Comparator<?> comparator) {
