@@ -2,6 +2,8 @@
 
 This mod implements a number of bugfixes, tweaks, and optimizations for Minecraft 1.7.10.
 
+The latest development version can be downloaded here: https://nightly.link/embeddedt/ArchaicFix/workflows/gradle/main/Package.zip
+
 Credits:
 
 * Forge, for making this possible.
