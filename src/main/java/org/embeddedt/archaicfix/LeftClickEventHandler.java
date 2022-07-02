@@ -61,7 +61,12 @@ public final class LeftClickEventHandler {
     private Entity getEntityClosestToStartPos(Entity entityIn, World world, Vec3 startPos, Vec3 endPos) {
         Entity entity = null;
         AxisAlignedBB searchBB = safeGenBoundingBox(startPos.xCoord,startPos.yCoord,startPos.zCoord, endPos.xCoord, endPos.yCoord, endPos.zCoord);
-        List<Entity> list = world.getEntitiesWithinAABBExcludingEntity(entityIn, searchBB, ent -> ent != null && ent.canBeCollidedWith());
+        List<Entity> list = world.getEntitiesWithinAABBExcludingEntity(entityIn, searchBB, new IEntitySelector() {
+            @Override
+            public boolean isEntityApplicable(Entity p_82704_1_) {
+                return p_82704_1_ != null && p_82704_1_.canBeCollidedWith();
+            }
+        });
 
         double d0 = 0.0D;
         AxisAlignedBB axisAlignedBB;
