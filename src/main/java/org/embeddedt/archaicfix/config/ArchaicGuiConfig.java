@@ -2,7 +2,7 @@ package org.embeddedt.archaicfix.config;
 
 import com.falsepattern.lib.config.ConfigException;
 import com.falsepattern.lib.config.SimpleGuiConfig;
-import com.falsepattern.triangulator.Tags;
+import org.embeddedt.archaicfix.Tags;
 
 import net.minecraft.client.gui.GuiScreen;
 
