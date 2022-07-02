@@ -40,18 +40,22 @@ public abstract class MixinWorld {
     public void func_147473_B(int p_147473_1_, int p_147473_2_, int p_147473_3_, CallbackInfoReturnable<Float> cir) {
         if(!ArchaicConfig.betterRegionalDifficulty)
             return;
-        float factor = (float)this.worldInfo.getWorldTotalTime() / 7200000.0F;
+        float factor = this.worldInfo != null ? ((float)this.worldInfo.getWorldTotalTime() / 7200000.0F) : 0;
         factor += this.getCurrentMoonPhaseFactor() * 0.25F;
 
-        if (this.difficultySetting == EnumDifficulty.EASY || this.difficultySetting == EnumDifficulty.PEACEFUL)
+        EnumDifficulty difficulty = this.difficultySetting;
+        if(difficulty == null)
+            difficulty = EnumDifficulty.NORMAL;
+
+        if (difficulty == EnumDifficulty.EASY || difficulty == EnumDifficulty.PEACEFUL)
         {
             factor *= 0.5F;
         }
-        else if (this.difficultySetting == EnumDifficulty.HARD)
+        else if (difficulty == EnumDifficulty.HARD)
         {
             factor *= 2.0F;
         }
 
-        cir.setReturnValue(MathHelper.clamp_float(factor, 0.0F, (float)this.difficultySetting.getDifficultyId() * 0.5F));
+        cir.setReturnValue(MathHelper.clamp_float(factor, 0.0F, (float)difficulty.getDifficultyId() * 0.5F));
     }
 }
