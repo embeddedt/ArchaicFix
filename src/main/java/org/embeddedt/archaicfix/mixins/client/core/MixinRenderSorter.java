@@ -17,7 +17,7 @@ public class MixinRenderSorter {
             double xDiff = e.posX - instance.posXPlus;
             double yDiff = e.posY - instance.posYPlus;
             double zDiff = e.posZ - instance.posZPlus;
-            return (float)(xDiff * xDiff + yDiff * yDiff * Minecraft.getMinecraft().gameSettings.renderDistanceChunks / 2 + zDiff * zDiff);
+            return (float)(Math.pow(xDiff, 2) + Math.pow(yDiff * Minecraft.getMinecraft().gameSettings.renderDistanceChunks / 2, 2) + Math.pow(zDiff, 2));
         } else {
             return instance.distanceToEntitySquared(e);
         }
