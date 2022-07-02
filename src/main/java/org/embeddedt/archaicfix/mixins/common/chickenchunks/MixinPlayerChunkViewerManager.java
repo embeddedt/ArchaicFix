@@ -12,7 +12,7 @@ import java.util.LinkedList;
 
 @Mixin(PlayerChunkViewerManager.class)
 public class MixinPlayerChunkViewerManager {
-    @Shadow public LinkedList<PlayerChunkViewerManager.TicketChange> ticketChanges;
+    @Shadow(remap = false) public LinkedList<PlayerChunkViewerManager.TicketChange> ticketChanges;
 
     private ArrayList<PlayerChunkViewerManager.TicketChange> oldTicketChanges;
 

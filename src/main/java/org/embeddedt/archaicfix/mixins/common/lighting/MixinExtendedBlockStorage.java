@@ -17,7 +17,7 @@ public class MixinExtendedBlockStorage {
 
     /**
      * @author Angeline
-     * @author Reset lightRefCount on call
+     * @reason Reset lightRefCount on call
      */
     @Overwrite
     public void setExtSkylightValue(int x, int y, int z, int value) {
@@ -27,7 +27,7 @@ public class MixinExtendedBlockStorage {
 
     /**
      * @author Angeline
-     * @author Reset lightRefCount on call
+     * @reason Reset lightRefCount on call
      */
     @Overwrite
     public void setExtBlocklightValue(int x, int y, int z, int value) {
@@ -37,7 +37,7 @@ public class MixinExtendedBlockStorage {
 
     /**
      * @author Angeline
-     * @author Reset lightRefCount on call
+     * @reason Reset lightRefCount on call
      */
     @Overwrite
     public void setBlocklightArray(NibbleArray array) {

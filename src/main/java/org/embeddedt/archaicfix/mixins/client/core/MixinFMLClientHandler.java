@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(FMLClientHandler.class)
 public abstract class MixinFMLClientHandler {
-    @Shadow public abstract void showGuiScreen(Object clientGuiElement);
+    @Shadow(remap = false) public abstract void showGuiScreen(Object clientGuiElement);
 
     @Inject(method = "showInGameModOptions", at = @At("HEAD"), cancellable = true, remap = false)
     private void showModsList(GuiIngameMenu guiIngameMenu, CallbackInfo ci) {

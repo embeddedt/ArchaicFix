@@ -75,7 +75,7 @@ public abstract class MixinMinecraft {
         t.start();
     }
 
-    @Redirect(method = "runGameLoop", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;isActive()Z"))
+    @Redirect(method = "runGameLoop", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;isActive()Z", remap = false))
     private boolean alwaysHaveDisplayActive() {
         return true;
     }
