@@ -60,8 +60,8 @@ public enum Mixin implements IMixin {
     common_pregen_MixinChunkProcessor(Side.COMMON, require(TargetedMod.CHUNK_PREGENERATOR), "pregen.MixinChunkProcessor"),
     common_pregen_MixinChunkHelper(Side.COMMON, require(TargetedMod.CHUNK_PREGENERATOR), "pregen.MixinChunkHelper"),
     common_projecte_MixinRecipeShapelessHidden(Side.COMMON, require(TargetedMod.PROJECTE), "projecte.MixinRecipeShapelessHidden"),
-    common_tc4tweaks_MixinGenerateItemHash(Side.COMMON, require(TargetedMod.TC4TWEAKS), "tc4tweaks.MixinGenerateItemHash"),
-    common_tc4tweaks_MixinMappingThread(Side.COMMON, require(TargetedMod.TC4TWEAKS), "tc4tweaks.MixinMappingThread"),
+    common_tc4tweaks_MixinGenerateItemHash(Side.COMMON, require(TargetedMod.TC4TWEAKS).and(m -> ArchaicConfig.betterThaumcraftHashing), "tc4tweaks.MixinGenerateItemHash"),
+    common_tc4tweaks_MixinMappingThread(Side.COMMON, require(TargetedMod.TC4TWEAKS).and(m -> ArchaicConfig.betterThaumcraftHashing), "tc4tweaks.MixinMappingThread"),
     common_thermal_MixinTECraftingHandler(Side.COMMON, require(TargetedMod.THERMALEXPANSION), "thermal.MixinTECraftingHandler"),
     // CLIENT MIXINS
     client_core_MixinThreadDownloadImageData(Side.CLIENT, always(), "core.MixinThreadDownloadImageData"),
