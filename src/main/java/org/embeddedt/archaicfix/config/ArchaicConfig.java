@@ -53,4 +53,8 @@ public class ArchaicConfig {
     @Config.Comment("Increase the amount of armor mobs wear on average. From TMCW.")
     @Config.DefaultBoolean(true)
     public static boolean increaseMobArmor;
+
+    @Config.Comment("Increase the maximum render distance to 32 if OptiFine and FastCraft are not installed.")
+    @Config.DefaultBoolean(false)
+    public static boolean raiseMaxRenderDistance;
 }
