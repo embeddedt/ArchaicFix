@@ -26,7 +26,7 @@ public class MixinShapelessRecipes implements IAcceleratedRecipe {
     {
         ImmutableSet.Builder<Item> builder = ImmutableSet.builder();
         for(Object stack : recipeItems) {
-            if(stack != null)
+            if(stack != null && ((ItemStack)stack).getItem() != null)
                 builder.add(((ItemStack)stack).getItem());
         }
         allPossibleItems = builder.build();

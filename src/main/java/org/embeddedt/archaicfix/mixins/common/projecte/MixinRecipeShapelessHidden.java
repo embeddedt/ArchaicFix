@@ -27,7 +27,8 @@ public class MixinRecipeShapelessHidden implements IAcceleratedRecipe {
                 builder.add(((ItemStack) o).getItem());
             } else if(o instanceof ArrayList) {
                 for(ItemStack stack : ((ArrayList<ItemStack>)o)) {
-                    builder.add(stack.getItem());
+                    if(stack.getItem() != null)
+                        builder.add(stack.getItem());
                 }
             } else if(o != null) {
                 ArchaicLogger.LOGGER.warn("Couldn't optimize input value: " + o);

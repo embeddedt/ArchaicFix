@@ -19,7 +19,7 @@ public class MixinShapedRecipes implements IAcceleratedRecipe {
     private void collectItems(int w, int h, ItemStack[] stacks, ItemStack out, CallbackInfo ci) {
         ImmutableSet.Builder<Item> builder = ImmutableSet.builder();
         for(ItemStack stack : stacks) {
-            if(stack != null)
+            if(stack != null && stack.getItem() != null)
                 builder.add(stack.getItem());
         }
         allPossibleItems = builder.build();
