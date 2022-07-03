@@ -61,4 +61,12 @@ public class ArchaicConfig {
     @Config.Comment("EXPERIMENTAL: Replace the Thaumcraft hashing implementation. This really hasn't been tested and probably breaks everything.")
     @Config.DefaultBoolean(false)
     public static boolean betterThaumcraftHashing;
+
+    @Config.Comment("Log when cascading worldgen occurs.")
+    @Config.DefaultBoolean(true)
+    public static boolean logCascadingWorldgen;
+
+    @Config.Comment("Print a stacktrace when cascading worldgen occurs. Use only for development as this will add more lag in game.")
+    @Config.DefaultBoolean(false)
+    public static boolean logCascadingWorldgenStacktrace;
 }
