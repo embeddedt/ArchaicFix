@@ -28,4 +28,7 @@ dependencies {
         transitive = false
     }
     annotationProcessor("org.projectlombok:lombok:1.18.22")
+
+    String curseMaven = "https://cursemaven.falsepattern.com/" //Use https://cursemaven.com/ if this is down
+    compileOnly(deobfMaven(curseMaven, "curse.maven:mekanism-268560:2475797"))
 }

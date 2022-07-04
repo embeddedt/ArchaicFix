@@ -69,4 +69,8 @@ public class ArchaicConfig {
     @Config.Comment("Print a stacktrace when cascading worldgen occurs. Use only for development as this will add more lag in game.")
     @Config.DefaultBoolean(false)
     public static boolean logCascadingWorldgenStacktrace;
+
+    @Config.Comment("Fix instances of cascading worldgen in Mekanism.")
+    @Config.DefaultBoolean(true)
+    public static boolean fixMekanismCascadingWorldgen;
 }

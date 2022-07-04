@@ -97,6 +97,8 @@ public enum Mixin implements IMixin {
     common_lighting_fastcraft_MixinChunkProviderServer(Side.COMMON, require(TargetedMod.FASTCRAFT), "lighting.fastcraft.MixinChunkProviderServer"),
     common_lighting_fastcraft_MixinWorld(Side.COMMON, require(TargetedMod.FASTCRAFT), "lighting.fastcraft.MixinWorld"),
 
+    common_mekanism_MixinGenHandler(Side.COMMON, require(TargetedMod.MEKANISM), "mekanism.MixinGenHandler"),
+
     // The modFilter argument is a predicate, so you can also use the .and(), .or(), and .negate() methods to mix and match multiple predicates.
     ;
 

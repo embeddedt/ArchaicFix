@@ -21,6 +21,7 @@ public enum TargetedMod implements ITargetedMod {
     TC4TWEAKS("TC4Tweaks", false, startsWith("thaumcraft4tweaks")),
     FASTCRAFT("FastCraft", false, startsWith("fastcraft")),
     OPTIFINE("OptiFine", false, startsWith("optifine")),
+    MEKANISM("Mekanism", false, startsWith("mekanism")),
     ;
 
     @Getter
