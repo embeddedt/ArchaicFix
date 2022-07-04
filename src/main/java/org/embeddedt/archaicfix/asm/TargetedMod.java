@@ -15,6 +15,7 @@ public enum TargetedMod implements ITargetedMod {
     MRTJPCORE("MrTJPCore", false, startsWith("mrtjpcore")),
     CHUNK_PREGENERATOR("ChunkPregenerator", false, startsWith("chunk+pregen")),
     THERMALEXPANSION("ThermalExpansion", false, startsWith("thermalexpansion")),
+    THERMALFOUNDATION("ThermalFoundation", false, startsWith("thermalfoundation")),
     GREGTECH6("GregTech", false, startsWith("gregtech")),
     MATTEROVERDRIVE("MatterOverdrive", false, startsWith("matteroverdrive")),
     PROJECTE("ProjectE", false, startsWith("projecte")),

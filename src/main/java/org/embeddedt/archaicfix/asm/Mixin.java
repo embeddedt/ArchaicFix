@@ -99,6 +99,8 @@ public enum Mixin implements IMixin {
 
     common_mekanism_MixinGenHandler(Side.COMMON, require(TargetedMod.MEKANISM), "mekanism.MixinGenHandler"),
 
+    common_thermal_MixinBlockOre(Side.COMMON, require(TargetedMod.THERMALFOUNDATION), "thermal.MixinBlockOre"),
+
     // The modFilter argument is a predicate, so you can also use the .and(), .or(), and .negate() methods to mix and match multiple predicates.
     ;
 
