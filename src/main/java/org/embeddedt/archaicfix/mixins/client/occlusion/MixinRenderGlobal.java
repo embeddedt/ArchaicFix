@@ -26,7 +26,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.*;
 
-@Mixin(value = RenderGlobal.class, priority = 900)
+@Mixin(value = RenderGlobal.class, priority = -2)
 public abstract class MixinRenderGlobal implements IRenderGlobal {
     @Shadow private int maxBlockY, minBlockY, maxBlockX, minBlockX, maxBlockZ, minBlockZ;
 
