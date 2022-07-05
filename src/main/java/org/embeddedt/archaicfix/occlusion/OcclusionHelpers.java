@@ -159,7 +159,7 @@ public class OcclusionHelpers {
                                     int xm = (k & 1) == 0 ? -1 : 1;
                                     int zm = (k & 2) == 0 ? -1 : 1;
                                     center = extendedRender.getRenderer(x + i * 16 * xm, level, z + j * 16 * zm);
-                                    if (center == null || !center.isInFrustum) {
+                                    if (center == null || !isInFrustum(center)) {
                                         continue;
                                     }
                                     allNull = false;
@@ -198,7 +198,7 @@ public class OcclusionHelpers {
                                 continue;
                             WorldRenderer t = extendedRender.getRenderer(center.posX + pos.x, center.posY + pos.y, center.posZ + pos.z);
 
-                            if (t == null || !t.isInFrustum)
+                            if (t == null || !isInFrustum(t))
                                 continue;
 
                             chunk = getChunk(chunks, t, chunkX, chunkZ, renderDistanceWidth);
@@ -271,7 +271,7 @@ public class OcclusionHelpers {
                                 info.facings.add(pos);
 
                                 WorldRenderer t = extendedRender.getRenderer(rend.posX + pos.x, rend.posY + pos.y, rend.posZ + pos.z);
-                                if (t != null && t.isInFrustum) {
+                                if (t != null && isInFrustum(t)) {
                                     ++considered;
                                     int cost = 1;
 
@@ -367,6 +367,10 @@ public class OcclusionHelpers {
                 return null;
             }
             return chunks[x * renderDistanceWidth + z];
+        }
+
+        private static boolean isInFrustum(WorldRenderer r){
+            return r != null && (!r.skipRenderPass[0] || !r.skipRenderPass[1]) && r.isInFrustum;
         }
 
         private static class CullInfo {
