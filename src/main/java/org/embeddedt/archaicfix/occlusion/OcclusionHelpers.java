@@ -144,7 +144,7 @@ public class OcclusionHelpers {
                         RenderPosition pos = y < 5 ? RenderPosition.UP : RenderPosition.DOWN;
                         {
                             Chunk chunk = getChunk(chunks, center, chunkX, chunkZ, renderDistanceWidth);
-                            CullInfo info = new CullInfo(center, chunk == null ? DUMMY : ((ICulledChunk)chunk).getVisibility()[center.posY >> 4], pos, -2);
+                            CullInfo info = new CullInfo(center, chunk == null ? DUMMY : ((ICulledChunk)chunk).getVisibility()[center.posY >> 4], pos.getOpposite(), -2);
                             info.facings.addAll(RenderPosition.SIDES);
                             info.facings.remove(pos);
                             log.put(center, info);
@@ -164,7 +164,7 @@ public class OcclusionHelpers {
                                     }
                                     allNull = false;
                                     Chunk chunk = getChunk(chunks, center, chunkX, chunkZ, renderDistanceWidth);
-                                    CullInfo info = new CullInfo(center, chunk == null ? DUMMY : ((ICulledChunk)chunk).getVisibility()[center.posY >> 4], pos, -2);
+                                    CullInfo info = new CullInfo(center, chunk == null ? DUMMY : ((ICulledChunk)chunk).getVisibility()[center.posY >> 4], pos.getOpposite(), -2);
                                     info.facings.addAll(RenderPosition.SIDES);
                                     info.facings.remove(pos);
                                     log.put(center, info);
@@ -185,7 +185,7 @@ public class OcclusionHelpers {
                         }
                         {
                             markRenderer(center, view, sides);
-                            CullInfo info = new CullInfo(center, sides, back, (renderDistanceChunks >> 1) * -1 - 3);
+                            CullInfo info = new CullInfo(center, sides, back.getOpposite(), (renderDistanceChunks >> 1) * -1 - 3);
                             info.facings.remove(back);
                             log.put(center, info);
                         }
@@ -203,7 +203,7 @@ public class OcclusionHelpers {
 
                             chunk = getChunk(chunks, t, chunkX, chunkZ, renderDistanceWidth);
 
-                            CullInfo info = new CullInfo(t, chunk == null ? DUMMY : ((ICulledChunk)chunk).getVisibility()[t.posY >> 4], pos, (renderDistanceChunks >> 1) * -1 - 2);
+                            CullInfo info = new CullInfo(t, chunk == null ? DUMMY : ((ICulledChunk)chunk).getVisibility()[t.posY >> 4], pos.getOpposite(), (renderDistanceChunks >> 1) * -1 - 2);
                             info.facings.remove(pos);
                             log.put(t, info);
                             queue.add(info);
@@ -252,7 +252,7 @@ public class OcclusionHelpers {
                         } else {
                             sides = DUMMY;
                         }
-                        RenderPosition opp = info.last;
+                        RenderPosition opp = info.dir;
 
                         markRenderer(rend, view, sides);
 
@@ -286,7 +286,7 @@ public class OcclusionHelpers {
                                         }
 
                                         if (!prev.visited) {
-                                            if (prev.vis.getVisibility().isVisible(pos.facing, prev.last.facing)) {
+                                            if (prev.vis.getVisibility().isVisible(pos.facing, prev.dir.facing)) {
                                                 continue;
                                             }
                                         }
@@ -318,7 +318,7 @@ public class OcclusionHelpers {
                                         } else {
                                             oSides = prev.vis;
                                         }
-                                        data = new CullInfo(t, oSides, pos, info.count + cost);
+                                        data = new CullInfo(t, oSides, pos.getOpposite(), info.count + cost);
                                     }
 
                                     if (prev != null) {
@@ -375,16 +375,17 @@ public class OcclusionHelpers {
             final int count;
             final WorldRenderer rend;
             final VisGraph vis;
-            final RenderPosition last;
+            /** We stepped in this direction when entering the subchunk. */
+            final RenderPosition dir;
             final EnumSet<RenderPosition> facings;
 
-            public CullInfo(WorldRenderer rend, VisGraph vis, RenderPosition pos, int count) {
+            public CullInfo(WorldRenderer rend, VisGraph vis, RenderPosition dir, int count) {
 
                 this.count = count;
                 this.rend = rend;
                 this.vis = vis;
-                this.last = pos.getOpposite();
-                this.facings = EnumSet.of(last);
+                this.dir = dir;
+                this.facings = EnumSet.of(this.dir);
             }
 
         }
