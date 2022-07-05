@@ -157,7 +157,7 @@ public class OcclusionHelpers {
                                     int xm = (k & 1) == 0 ? -1 : 1;
                                     int zm = (k & 2) == 0 ? -1 : 1;
                                     center = extendedRender.getRenderer(x + i * 16 * xm, level, z + j * 16 * zm);
-                                    if (center == null) {
+                                    if (center == null || !center.isInFrustum) {
                                         continue;
                                     }
                                     allNull = false;
@@ -196,7 +196,7 @@ public class OcclusionHelpers {
                                 continue;
                             WorldRenderer t = extendedRender.getRenderer(center.posX + pos.x, center.posY + pos.y, center.posZ + pos.z);
 
-                            if (t == null)
+                            if (t == null || !t.isInFrustum)
                                 continue;
 
                             chunk = getChunk(chunks, t, chunkX, chunkZ, renderDistanceWidth);
