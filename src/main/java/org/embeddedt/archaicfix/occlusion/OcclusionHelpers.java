@@ -268,7 +268,7 @@ public class OcclusionHelpers {
                                 info.facings.add(pos);
 
                                 WorldRenderer t = extendedRender.getRenderer(rend.posX + pos.x, rend.posY + pos.y, rend.posZ + pos.z);
-                                if (t != null) {
+                                if (t != null && t.isInFrustum) {
                                     ++considered;
                                     int cost = 1;
 
