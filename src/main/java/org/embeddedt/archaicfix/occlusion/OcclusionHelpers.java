@@ -75,8 +75,10 @@ public class OcclusionHelpers {
 
         private final Minecraft mc = Minecraft.getMinecraft();
 
-        public void run(boolean immediate) {
+        private final boolean printQueueIterations = Boolean.parseBoolean(System.getProperty("archaicfix.printQueueIterations", "false"));
 
+        public void run(boolean immediate) {
+            int queueIterations = 0;
             l: {
                 if (render == null) {
                     return;
@@ -231,6 +233,7 @@ public class OcclusionHelpers {
                     RenderGlobal render = this.render;
                     RenderPosition[] bias = RenderPosition.POSITIONS_BIAS[back.ordinal() ^ 1];
                     for (; !queue.isEmpty();) {
+                        queueIterations++;
                         CullInfo info = queue.pollFirst();
                         if (info == null) {
                             break;
@@ -332,6 +335,9 @@ public class OcclusionHelpers {
                 theWorld.theProfiler.endStartSection("cleanup");
                 queue.clear();
                 log.clear();
+            }
+            if(printQueueIterations && queueIterations != 0){
+                System.out.println("queue iterations: " + queueIterations);
             }
             dirty = false;
             theWorld.theProfiler.endSection();
