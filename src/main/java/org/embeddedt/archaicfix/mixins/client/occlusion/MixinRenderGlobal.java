@@ -4,17 +4,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.util.RenderDistanceSorter;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.chunk.Chunk;
-import org.embeddedt.archaicfix.occlusion.ICulledChunk;
-import org.embeddedt.archaicfix.occlusion.IRenderGlobal;
-import org.embeddedt.archaicfix.occlusion.OcclusionHelpers;
-import org.embeddedt.archaicfix.occlusion.util.IdentityLinkedHashList;
-import org.objectweb.asm.Opcodes;
+import org.embeddedt.archaicfix.helpers.WorldRendererDistanceHelper;
+import org.embeddedt.archaicfix.occlusion.*;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -66,8 +62,8 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
 
     private Thread clientThread;
 
-    private IdentityLinkedHashList<WorldRenderer> worldRenderersToUpdateList;
-    private IdentityLinkedHashList<WorldRenderer> workerWorldRenderers;
+    private ArrayList<WorldRenderer> worldRenderersToUpdateList;
+    private HashSet<WorldRenderer> worldRenderersToUpdateSet;
 
     private int prevRenderX, prevRenderY, prevRenderZ;
     private short alphaSortProgress = 0;
@@ -75,6 +71,51 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
 
     private int renderersNeedUpdate;
 
+    private boolean resortUpdateList;
+
+    /**
+     * If the update list is not queued for a full resort (e.g. when the player moves or renderers have their positions
+     * changed), uses binary search to add the renderer in the update queue at the appropriate place. Otherwise,
+     * the renderer is just added to the end of the list.
+     * @param wr renderer to add to the list
+     */
+    private void addRendererToUpdateQueue(WorldRenderer wr) {
+        if(worldRenderersToUpdateSet.add(wr)) {
+            if(mc.renderViewEntity == null || resortUpdateList) {
+                worldRenderersToUpdateList.add(wr);
+                resortUpdateList = true;
+                return;
+            }
+            if(worldRenderersToUpdateList.size() > 0) {
+                double targetDistance = WorldRendererDistanceHelper.betterDistanceSquared(mc.renderViewEntity, wr);
+                int low = 0;
+                int high = worldRenderersToUpdateList.size() - 1;
+                int finalIndex = -1;
+                while(low <= high) {
+                    int mid = low + (high - low) / 2;
+                    WorldRenderer other = worldRenderersToUpdateList.get(mid);
+                    double otherDistance = WorldRendererDistanceHelper.betterDistanceSquared(mc.renderViewEntity, other);
+                    if(otherDistance < targetDistance) {
+                        low = mid + 1;
+                    } else if(otherDistance > targetDistance) {
+                        high = mid - 1;
+                    } else {
+                        finalIndex = mid;
+                        break;
+                    }
+                }
+                if(finalIndex == -1)
+                    finalIndex = high;
+                worldRenderersToUpdateList.add(finalIndex+1, wr);
+            } else {
+                worldRenderersToUpdateList.add(wr);
+            }
+        }
+    }
+
+    /**
+     * Queue a renderer to be updated.
+     */
     @Inject(method = "markBlocksForUpdate", at = @At("HEAD"), cancellable = true)
     private void handleOffthreadUpdate(int x1, int y1, int z1, int x2, int y2, int z2, CallbackInfo ci) {
         ci.cancel();
@@ -117,17 +158,13 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
 
                     if (!worldrenderer.needsUpdate || (worldrenderer.isVisible && !worldRenderersToUpdate.contains(worldrenderer))) {
                         worldrenderer.markDirty();
-
-                        if (worldrenderer.distanceToEntitySquared(mc.renderViewEntity) > 2883.0F) {
-                            worldRenderersToUpdate.add(worldrenderer);
-                        } else {
+                        //if (worldrenderer.distanceToEntitySquared(mc.renderViewEntity) <= 2883.0F) {
                             Chunk chunk = theWorld.getChunkFromBlockCoords(worldrenderer.posX, worldrenderer.posZ);
                             if (((ICulledChunk) chunk).getVisibility()[worldrenderer.posY >> 4].isRenderDirty()) {
                                 rebuild = true;
                             }
-                            workerWorldRenderers.remove(worldrenderer);
-                            workerWorldRenderers.unshift(worldrenderer);
-                        }
+                        //}
+                        addRendererToUpdateQueue(worldrenderer);
                     }
                 }
             }
@@ -162,7 +199,6 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         r.append(", E: ").append(renderersSkippingRenderPass);
         r.append(", I: ").append(dummyRenderInt);
         r.append("; U: ").append(renderersNeedUpdate);
-        r.append(", W: ").append(workerWorldRenderers.size());
         r.append(", N: ").append(worldRenderersToUpdate.size());
         return r.toString();
     }
@@ -170,9 +206,29 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void initBetterLists(Minecraft p_i1249_1_, CallbackInfo ci) {
-        worldRenderersToUpdate = worldRenderersToUpdateList = new IdentityLinkedHashList<>();
-        workerWorldRenderers = new IdentityLinkedHashList<>();
+        worldRenderersToUpdateList = new ArrayList<>();
+        /* Make sure any vanilla code modifying the update queue crashes */
+        worldRenderersToUpdate = Collections.unmodifiableList(worldRenderersToUpdateList);
+        worldRenderersToUpdateSet = new HashSet<>();
         clientThread = Thread.currentThread();
+    }
+
+    @Redirect(method = "loadRenderers", at = @At(value = "INVOKE", target = "Ljava/util/List;clear()V", ordinal = 0))
+    private void clearRendererUpdateQueue(List instance) {
+        if(instance == worldRenderersToUpdate) {
+            worldRenderersToUpdateList.clear();
+            worldRenderersToUpdateSet.clear();
+        } else
+            throw new AssertionError("Transformer applied to the wrong List.clear method");
+    }
+
+    @Redirect(method = { "loadRenderers", "markRenderersForNewPosition" }, at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", ordinal = 0))
+    private boolean sortAndAddRendererUpdateQueue(List instance, Object renderer) {
+        if(instance == worldRenderersToUpdate) {
+            addRendererToUpdateQueue((WorldRenderer)renderer);
+            return true;
+        } else
+            throw new AssertionError("Transformer applied to the wrong List.clear method");
     }
 
     @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/OpenGlCapsChecker;checkARBOcclusion()Z"))
@@ -210,20 +266,16 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
     }
 
     private boolean rebuildChunks(EntityLivingBase view, int lim, long start) {
+        ArrayList<WorldRenderer> worldRenderersToUpdateList = this.worldRenderersToUpdateList;
 
-        IdentityLinkedHashList<WorldRenderer> workerWorldRenderers = this.workerWorldRenderers;
-        IdentityLinkedHashList<WorldRenderer> worldRenderersToUpdateList = this.worldRenderersToUpdateList;
+        int lastUpdatedIndex = 0;
         boolean spareTime = true;
         l: for (int c = 0, i = 0; c < lim; ++c) {
             WorldRenderer worldrenderer;
-            if (workerWorldRenderers.size() > 0) {
-                worldrenderer = workerWorldRenderers.shift();
-                worldRenderersToUpdateList.remove(worldrenderer);
+            if(lastUpdatedIndex < worldRenderersToUpdateList.size()) {
+                worldrenderer = worldRenderersToUpdateList.get(lastUpdatedIndex++);
+                worldRenderersToUpdateSet.remove(worldrenderer);
             } else {
-                worldrenderer = worldRenderersToUpdateList.shift();
-            }
-
-            if (worldrenderer == null) {
                 break;
             }
 
@@ -250,6 +302,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
                 i = 0;
             }
         }
+        worldRenderersToUpdateList.subList(0, lastUpdatedIndex).clear();
         if (spareTime & frameCounter == frameTarget & timeCheckInterval < 5) {
             ++timeCheckInterval;
             frameTarget = (byte) (frameCounter + 50);
@@ -257,27 +310,22 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         return spareTime;
     }
 
-    private int prevRotationPitch = -9999;
-    private int prevRotationYaw = -9999;
-
     @Inject(method = "updateRenderers", at = @At("HEAD"), cancellable = true)
     private void performCullingUpdates(EntityLivingBase view, boolean p_72716_2_, CallbackInfoReturnable<Boolean> cir) {
         theWorld.theProfiler.startSection("deferred_updates");
-        if (OcclusionHelpers.deferredAreas.size() > 0) {
-            long start = System.nanoTime();
-            for (int i = 0; OcclusionHelpers.deferredAreas.size() > 0;) {
-                OcclusionHelpers.processUpdate(this);
-
-                if (++i > 5) {
-                    i = 0;
-                    long t = (System.nanoTime() - start) >>> 1;
-                    if (t > 200000L >>> 1)
-                        break;
-                }
-            }
+        while(OcclusionHelpers.deferredAreas.size() > 0) {
+            OcclusionHelpers.processUpdate(this);
         }
         theWorld.theProfiler.endStartSection("rebuild");
-        int lim = worldRenderersToUpdate.size() + workerWorldRenderers.size();
+        /**
+         * Under certain scenarios (such as renderer.setPosition being called, or the player moving), renderers will]
+         * have their distance from the player change. We address that here by sorting the list.
+         */
+        if(resortUpdateList) {
+            worldRenderersToUpdateList.sort(new BasicDistanceSorter(mc.renderViewEntity));
+            resortUpdateList = false;
+        }
+        int lim = worldRenderersToUpdate.size();
         if (lim > 0) {
             ++frameCounter;
             rebuildChunks(view, lim, System.nanoTime());
@@ -286,10 +334,20 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         theWorld.theProfiler.endStartSection("scan");
         int yaw = MathHelper.floor_float(view.rotationYaw + 45) >> 4;
         int pitch = MathHelper.floor_float(view.rotationPitch + 45) >> 4;
-        if (OcclusionHelpers.worker.dirty || yaw != prevRotationYaw || pitch != prevRotationPitch) {
+        if (OcclusionHelpers.worker.dirty ||
+                PreviousActiveRenderInfo.objectX != ActiveRenderInfo.objectX ||
+                PreviousActiveRenderInfo.objectY != ActiveRenderInfo.objectY ||
+                PreviousActiveRenderInfo.objectZ != ActiveRenderInfo.objectZ ||
+                PreviousActiveRenderInfo.rotationX != ActiveRenderInfo.rotationX ||
+                PreviousActiveRenderInfo.rotationYZ != ActiveRenderInfo.rotationYZ ||
+                PreviousActiveRenderInfo.rotationZ != ActiveRenderInfo.rotationZ) {
             OcclusionHelpers.worker.run(true);
-            prevRotationYaw = yaw;
-            prevRotationPitch = pitch;
+            PreviousActiveRenderInfo.objectX = ActiveRenderInfo.objectX;
+            PreviousActiveRenderInfo.objectY = ActiveRenderInfo.objectY;
+            PreviousActiveRenderInfo.objectZ = ActiveRenderInfo.objectZ;
+            PreviousActiveRenderInfo.rotationX = ActiveRenderInfo.rotationX;
+            PreviousActiveRenderInfo.rotationYZ = ActiveRenderInfo.rotationYZ;
+            PreviousActiveRenderInfo.rotationZ = ActiveRenderInfo.rotationZ;
         }
         theWorld.theProfiler.endSection();
         cir.setReturnValue(true);
@@ -314,7 +372,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
 
     @Override
     public void pushWorkerRenderer(WorldRenderer wr) {
-        workerWorldRenderers.push(wr);
+        addRendererToUpdateQueue(wr);
     }
 
     @Redirect(method = "loadRenderers", at = @At(value = "INVOKE", target = "Ljava/util/Arrays;sort([Ljava/lang/Object;Ljava/util/Comparator;)V", ordinal = 0))
@@ -332,6 +390,8 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
     @Redirect(method = "markRenderersForNewPosition", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/WorldRenderer;setPosition(III)V"))
     private void setPositionAndMarkInvisible(WorldRenderer wr, int x, int y, int z) {
         wr.setPosition(x, y, z);
+        if(worldRenderersToUpdateSet.contains(wr))
+            resortUpdateList = true;
         if(!wr.isInitialized) {
             wr.isWaitingOnOcclusionQuery = false;
             wr.isVisible = false;
@@ -351,7 +411,6 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
     public int sortAndRender(EntityLivingBase view, int pass, double tick) {
         theWorld.theProfiler.startSection("sortchunks");
 
-        List<WorldRenderer> worldRenderersToUpdate = this.worldRenderersToUpdate;
         WorldRenderer[] sortedWorldRenderers = this.sortedWorldRenderers;
         if (renderersLoaded > 0) {
             int e = renderersLoaded - 10;
@@ -362,7 +421,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
                 WorldRenderer rend = sortedWorldRenderers[worldRenderersCheckIndex];
 
                 if ((rend.isInFrustum & rend.isVisible) & (rend.needsUpdate || !rend.isInitialized)) {
-                    worldRenderersToUpdate.add(rend);
+                    addRendererToUpdateQueue(rend);
                 }
             }
         }
@@ -373,7 +432,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
             prevChunkSortY = view.chunkCoordY;
             prevChunkSortZ = view.chunkCoordZ;
             markRenderersForNewPosition(MathHelper.floor_double(view.posX), MathHelper.floor_double(view.posY), MathHelper.floor_double(view.posZ));
-            // no sorting done here, it's now implicit as part of occlusion
+            resortUpdateList = true;
         }
         theWorld.theProfiler.endSection();
 
