@@ -73,4 +73,8 @@ public class ArchaicConfig {
     @Config.Comment("Fix instances of cascading worldgen in Mekanism.")
     @Config.DefaultBoolean(true)
     public static boolean fixMekanismCascadingWorldgen;
+
+    @Config.Comment("Fix instances of cascading worldgen in vanilla Minecraft. Turn this option off if you require 100% seed parity.")
+    @Config.DefaultBoolean(true)
+    public static boolean fixVanillaCascadingWorldgen;
 }

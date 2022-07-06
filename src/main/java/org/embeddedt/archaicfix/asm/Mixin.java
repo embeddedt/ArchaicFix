@@ -43,6 +43,7 @@ public enum Mixin implements IMixin {
     common_core_MixinChunk(Side.COMMON, always(), "core.MixinChunk"),
     common_core_MixinStructureStart(Side.COMMON, always(), "core.MixinStructureStart"),
     common_core_MixinOreDictionary(Side.COMMON, always(), "core.MixinOreDictionary"),
+    common_core_MixinChunkProviderHell(Side.COMMON, always(), "core.MixinChunkProviderHell"),
     common_gt6_MixinAdvancedCraftingXToY(Side.COMMON, require(TargetedMod.GREGTECH6), "gt6.MixinAdvancedCraftingXToY"),
     common_gt6_MixinGT6_Main(Side.COMMON, require(TargetedMod.GREGTECH6), "gt6.MixinGT6_Main"),
     common_gt6_MixinCR(Side.COMMON, require(TargetedMod.GREGTECH6), "gt6.MixinCR"),
