@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.culling.Frustrum;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import org.embeddedt.archaicfix.occlusion.util.IntStack;
 
@@ -71,7 +72,7 @@ public class OcclusionHelpers {
         private Frustrum fStack = new Frustrum();
         private IdentityHashMap<WorldRenderer, CullInfo> log = new IdentityHashMap<WorldRenderer, CullInfo>();
         private WorldClient theWorld;
-        private Chunk[] chunkArray = null;
+        private ChunkCache chunkCache = new ChunkCache();
         private RenderGlobal render;
 
         private final Minecraft mc = Minecraft.getMinecraft();
@@ -91,124 +92,97 @@ public class OcclusionHelpers {
                 }
                 theWorld.theProfiler.startSection("prep");
                 WorldRenderer[] renderers = render.sortedWorldRenderers;
-                for (int i = 0, e = render.renderersLoaded; i < e; ++i) {
+
+                for (int i = 0; i < render.renderersLoaded; ++i) {
                     renderers[i].isVisible = false;
                 }
                 render.renderersLoaded = 0;
                 WorldRenderer center;
                 RenderPosition back = RenderPosition.getBackFacingFromVector(view);
-                WorldClient theWorld = this.theWorld;
                 int renderDistanceChunks = render.renderDistanceChunks, renderDistanceWidth = renderDistanceChunks * 2 + 1;
-                Chunk[] chunks;
-                int chunkX, chunkZ;
 
-                ArrayDeque<CullInfo> queue = this.queue;
-                //Vector3 p_view = new Vector3();
-                //Vector3 view_look = new Vector3();
-                {
-                    int x = MathHelper.floor_double(view.posX);
-                    int y = MathHelper.floor_double(view.posY + view.getEyeHeight());
-                    int z = MathHelper.floor_double(view.posZ);
-                    //view_look.set(0, 0, -1);
-                    //view_look.rotate(view.rotationPitch * (float) Math.PI / 180, Vector3.axes[3]);
-                    //view_look.rotate(view.rotationYaw * (float) Math.PI / 180, Vector3.axes[1]);
-                    //view_look.normalize();
+                int viewX = MathHelper.floor_double(view.posX);
+                int viewY = MathHelper.floor_double(view.posY + view.getEyeHeight());
+                int viewZ = MathHelper.floor_double(view.posZ);
 
-                    //p_view.set(view_look).multiply(64).add(x, y, z);
+                theWorld.theProfiler.endStartSection("gather_chunks");
+                chunkCache.gatherChunks(theWorld, viewX >> 4, viewZ >> 4, renderDistanceChunks);
 
-                    theWorld.theProfiler.endStartSection("gather_chunks");
+                theWorld.theProfiler.endStartSection("seed_queue");
+                center = extendedRender.getRenderer(viewX, viewY, viewZ);
+                if (center == null) {
+                    int level = viewY > 5 ? 250 : 5;
+                    center = extendedRender.getRenderer(viewX, level, viewZ);
+                    if (center == null) {
+                        dirty = false;
+                        break l;
+                    }
+                    RenderPosition pos = viewY < 5 ? RenderPosition.UP : RenderPosition.DOWN;
                     {
-                        int t = ++renderDistanceWidth * renderDistanceWidth--;
-                        chunks = chunkArray == null || chunkArray.length != t ? chunkArray = new Chunk[t] : chunkArray;
-
-                        chunkX = (x >> 4) - renderDistanceChunks - 1;
-                        chunkZ = (z >> 4) - renderDistanceChunks - 1;
-
-                        for (int j2 = 0; j2 <= renderDistanceWidth; ++j2) {
-                            int left = j2 * renderDistanceWidth;
-                            for (int k2 = 0; k2 <= renderDistanceWidth; ++k2) {
-                                Chunk chunk = theWorld.getChunkFromChunkCoords(j2 + chunkX, k2 + chunkZ);
-                                chunks[left + k2] = chunk;
+                        Chunk chunk = chunkCache.getChunk(center);
+                        CullInfo info = new CullInfo(center, isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[center.posY >> 4], pos.getOpposite(), -2);
+                        info.facings.addAll(RenderPosition.SIDES);
+                        info.facings.remove(pos);
+                        log.put(center, info);
+                        queue.add(info);
+                    }
+                    boolean allNull = false;
+                    theWorld.theProfiler.startSection("gather_world");
+                    for (int size = 1; !allNull; ++size) {
+                        allNull = true;
+                        for (int i = 0, j = size; i < size;) {
+                            for (int k = 0; k < 4; ++k) {
+                                int xm = (k & 1) == 0 ? -1 : 1;
+                                int zm = (k & 2) == 0 ? -1 : 1;
+                                center = extendedRender.getRenderer(viewX + i * 16 * xm, level, viewZ + j * 16 * zm);
+                                if (center == null || !isInFrustum(center)) {
+                                    continue;
+                                }
+                                allNull = false;
+                                Chunk chunk = chunkCache.getChunk(center);
+                                CullInfo info = new CullInfo(center, isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[center.posY >> 4], pos.getOpposite(), -2);
+                                info.facings.addAll(RenderPosition.SIDES);
+                                info.facings.remove(pos);
+                                log.put(center, info);
+                                queue.add(info);
                             }
+                            ++i;
+                            --j;
                         }
                     }
-
-                    theWorld.theProfiler.endStartSection("seed_queue");
-                    center = extendedRender.getRenderer(x, y, z);
-                    if (center == null) {
-                        int level = y > 5 ? 250 : 5;
-                        center = extendedRender.getRenderer(x, level, z);
-                        if (center == null) {
-                            dirty = false;
-                            break l;
-                        }
-                        RenderPosition pos = y < 5 ? RenderPosition.UP : RenderPosition.DOWN;
-                        {
-                            Chunk chunk = getChunk(chunks, center, chunkX, chunkZ, renderDistanceWidth);
-                            CullInfo info = new CullInfo(center, isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[center.posY >> 4], pos.getOpposite(), -2);
-                            info.facings.addAll(RenderPosition.SIDES);
-                            info.facings.remove(pos);
-                            log.put(center, info);
-                            queue.add(info);
-                        }
-                        boolean allNull = false;
-                        theWorld.theProfiler.startSection("gather_world");
-                        for (int size = 1; !allNull; ++size) {
-                            allNull = true;
-                            for (int i = 0, j = size; i < size;) {
-                                for (int k = 0; k < 4; ++k) {
-                                    int xm = (k & 1) == 0 ? -1 : 1;
-                                    int zm = (k & 2) == 0 ? -1 : 1;
-                                    center = extendedRender.getRenderer(x + i * 16 * xm, level, z + j * 16 * zm);
-                                    if (center == null || !isInFrustum(center)) {
-                                        continue;
-                                    }
-                                    allNull = false;
-                                    Chunk chunk = getChunk(chunks, center, chunkX, chunkZ, renderDistanceWidth);
-                                    CullInfo info = new CullInfo(center, isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[center.posY >> 4], pos.getOpposite(), -2);
-                                    info.facings.addAll(RenderPosition.SIDES);
-                                    info.facings.remove(pos);
-                                    log.put(center, info);
-                                    queue.add(info);
-                                }
-                                ++i;
-                                --j;
-                            }
-                        }
-                        theWorld.theProfiler.endSection();
+                    theWorld.theProfiler.endSection();
+                } else {
+                    Chunk chunk = chunkCache.getChunk(center);
+                    VisGraph sides;
+                    if (!isChunkEmpty(chunk)) {
+                        sides = ((ICulledChunk)chunk).getVisibility()[center.posY >> 4];
                     } else {
-                        Chunk chunk = getChunk(chunks, center, chunkX, chunkZ, renderDistanceWidth);
-                        VisGraph sides;
-                        if (!isChunkEmpty(chunk)) {
-                            sides = ((ICulledChunk)chunk).getVisibility()[center.posY >> 4];
-                        } else {
-                            sides = DUMMY;
-                        }
-                        {
-                            markRenderer(center, view, sides);
-                            CullInfo info = new CullInfo(center, sides, back.getOpposite(), (renderDistanceChunks >> 1) * -1 - 3);
-                            info.facings.remove(back);
-                            log.put(center, info);
-                        }
+                        sides = DUMMY;
+                    }
+                    {
+                        markRenderer(center, view, sides);
+                        CullInfo info = new CullInfo(center, sides, back.getOpposite(), (renderDistanceChunks >> 1) * -1 - 3);
+                        info.facings.remove(back);
+                        log.put(center, info);
+                    }
 
-                        Set<EnumFacing> faces = sides.getVisibleFacingsFrom(x, y, z);
-                        RenderPosition[] bias = RenderPosition.POSITIONS_BIAS[back.ordinal()];
-                        for (int p = 0; p < 6; ++p) {
-                            RenderPosition pos = bias[p];
-                            if (!faces.contains(pos.facing))
-                                continue;
-                            WorldRenderer t = extendedRender.getRenderer(center.posX + pos.x, center.posY + pos.y, center.posZ + pos.z);
+                    Set<EnumFacing> faces = sides.getVisibleFacingsFrom(viewX, viewY, viewZ);
+                    RenderPosition[] bias = RenderPosition.POSITIONS_BIAS[back.ordinal()];
+                    for (int p = 0; p < 6; ++p) {
+                        RenderPosition pos = bias[p];
+                        if (!faces.contains(pos.facing))
+                            continue;
+                        WorldRenderer t = extendedRender.getRenderer(center.posX + pos.x, center.posY + pos.y, center.posZ + pos.z);
 
-                            if (t == null || !isInFrustum(t))
-                                continue;
+                        if (t == null || !isInFrustum(t))
+                            continue;
 
-                            chunk = getChunk(chunks, t, chunkX, chunkZ, renderDistanceWidth);
+                        chunk = chunkCache.getChunk(t);
 
-                            CullInfo info = new CullInfo(t, isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[t.posY >> 4], pos.getOpposite(), (renderDistanceChunks >> 1) * -1 - 2);
-                            info.facings.remove(pos);
-                            log.put(t, info);
-                            queue.add(info);
-                        }
+                        CullInfo info = new CullInfo(t, isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[t.posY >> 4], pos.getOpposite(), (renderDistanceChunks >> 1) * -1 - 2);
+                        info.facings.remove(pos);
+                        log.put(t, info);
+                        queue.add(info);
                     }
                 }
 
@@ -216,20 +190,7 @@ public class OcclusionHelpers {
                 if (!queue.isEmpty()) {
                     @SuppressWarnings("unused")
                     int visited = queue.size(), considered = visited;
-                    //fStack.setPosition(p_view.x, p_view.y, p_view.z);
-                    //Matrix4 view_m = new Matrix4(ClippingHelperImpl.instance.modelviewMatrix);
-                    {
-                        //float m = (float) Math.PI / 180;
-                        //float v = (float) Math.cos(view.rotationPitch * m);
-                        //view_m.camera(new Vector3(
-                        //	v * (float) Math.sin((view.rotationYaw +180) * m),
-                        //	-(float) Math.sin(view.rotationPitch * m),
-                        //	v * (float) Math.cos((view.rotationYaw +180) * m)
-                        //));
-                    }
-                    //Matrix4 view_p = new Matrix4(ClippingHelperImpl.instance.projectionMatrix);
-                    //Vector3 p_chunk = new Vector3();
-                    // TODO: frustrum stack: https://tomcc.github.io/frustum_clamping.html
+
                     IdentityHashMap<WorldRenderer, CullInfo> log = this.log;
                     RenderGlobal render = this.render;
                     RenderPosition[] bias = RenderPosition.POSITIONS_BIAS[back.ordinal() ^ 1];
@@ -245,7 +206,7 @@ public class OcclusionHelpers {
                             continue;
 
                         WorldRenderer rend = info.rend;
-                        Chunk chunk = getChunk(chunks, rend, chunkX, chunkZ, renderDistanceWidth);
+                        Chunk chunk = chunkCache.getChunk(rend);
 
                         VisGraph sides;
                         if (!isChunkEmpty(chunk)) {
@@ -308,7 +269,7 @@ public class OcclusionHelpers {
                                         if (prev == null) {
                                             Chunk o;
                                             if (t.posX != rend.posX | t.posZ != rend.posZ) {
-                                                o = getChunk(chunks, t, chunkX, chunkZ, renderDistanceWidth);
+                                                o = chunkCache.getChunk(t);
                                             } else
                                                 o = chunk;
                                             if (isChunkEmpty(o)) {
@@ -361,15 +322,6 @@ public class OcclusionHelpers {
             }
         }
 
-        private static Chunk getChunk(Chunk[] chunks, WorldRenderer rend, int chunkX, int chunkZ, int renderDistanceWidth) {
-
-            int x = (rend.posX >> 4) - chunkX, z = (rend.posZ >> 4) - chunkZ;
-            if (x < 0 | z < 0 | x > renderDistanceWidth | z > renderDistanceWidth) {
-                return null;
-            }
-            return chunks[x * renderDistanceWidth + z];
-        }
-
         private static boolean isInFrustum(@Nonnull WorldRenderer r){
             /*
              * We want chunks that are either not initialized (meaning they don't know their render pass status) or are
@@ -399,6 +351,36 @@ public class OcclusionHelpers {
                 this.vis = vis;
                 this.dir = dir;
                 this.facings = EnumSet.of(this.dir);
+        private static class ChunkCache {
+
+            private World theWorld;
+            private Chunk[] chunkCache = null;
+            private int cornerX, cornerZ, size;
+
+            public void gatherChunks(World theWorld, int centerChunkX, int centerChunkZ, int renderDistanceChunks) {
+                this.size = renderDistanceChunks * 2 + 1;
+                this.cornerX = centerChunkX - renderDistanceChunks - 1;
+                this.cornerZ = centerChunkZ - renderDistanceChunks - 1;
+                this.theWorld = theWorld;
+
+                int length = (size + 1) * (size + 1);
+                Chunk[] chunks = chunkCache == null || chunkCache.length != length ? chunkCache = new Chunk[length] : chunkCache;
+
+                for (int x = 0; x <= size; ++x) {
+                    int columnStart = x * size;
+                    for (int z = 0; z <= size; ++z) {
+                        Chunk chunk = theWorld.getChunkFromChunkCoords(x + cornerX, z + cornerZ);
+                        chunks[columnStart + z] = chunk;
+                    }
+                }
+            }
+
+            public Chunk getChunk(WorldRenderer rend) {
+                int x = (rend.posX >> 4) - cornerX, z = (rend.posZ >> 4) - cornerZ;
+                if (x < 0 | z < 0 | x > size | z > size) {
+                    return null;
+                }
+                return chunkCache[x * size + z];
             }
 
         }
