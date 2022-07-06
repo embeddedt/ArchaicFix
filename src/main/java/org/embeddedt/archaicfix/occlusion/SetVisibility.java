@@ -50,7 +50,7 @@ public class SetVisibility {
 
 	public boolean isVisible(EnumFacing from, EnumFacing to) {
 
-		return bitSet.get(from.ordinal() + to.ordinal() * COUNT_FACES);
+		return from == null || to == null ? true : bitSet.get(from.ordinal() + to.ordinal() * COUNT_FACES);
 	}
 
 	@Override

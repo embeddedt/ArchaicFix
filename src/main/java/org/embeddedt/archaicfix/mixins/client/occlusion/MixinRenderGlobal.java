@@ -532,7 +532,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         for (int i = loopStart; i != loopEnd; i += dir) {
             WorldRenderer rend = sortedWorldRenderers[i];
 
-            if (rend.isInFrustum & !rend.skipRenderPass[pass]) {
+            if (rend.isVisible && rend.isInFrustum & !rend.skipRenderPass[pass]) {
 
                 int renderListIndex;
 

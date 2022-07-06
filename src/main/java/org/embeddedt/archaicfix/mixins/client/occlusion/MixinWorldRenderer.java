@@ -5,6 +5,7 @@ import net.minecraft.client.shader.TesselatorVertexState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.EmptyChunk;
+import org.embeddedt.archaicfix.occlusion.IWorldRenderer;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -15,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 @Mixin(WorldRenderer.class)
-public class MixinWorldRenderer {
+public class MixinWorldRenderer implements IWorldRenderer {
     @Shadow public boolean isWaitingOnOcclusionQuery;
 
     @Shadow public World worldObj;
@@ -36,6 +37,8 @@ public class MixinWorldRenderer {
 
     @Shadow private TesselatorVertexState vertexState;
 
+    private int arch$lastCullUpdateFrame;
+
     @Inject(method = "markDirty", at = @At("TAIL"))
     private void resetOcclusionFlag(CallbackInfo ci) {
         this.isWaitingOnOcclusionQuery = false;
@@ -54,5 +57,15 @@ public class MixinWorldRenderer {
             vertexState = null;
             ci.cancel();
         }
+    }
+
+    @Override
+    public int getLastCullUpdateFrame() {
+        return arch$lastCullUpdateFrame;
+    }
+
+    @Override
+    public void setLastCullUpdateFrame(int lastCullUpdateFrame) {
+        arch$lastCullUpdateFrame = lastCullUpdateFrame;
     }
 }
