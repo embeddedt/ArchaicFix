@@ -11,6 +11,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.chunk.Chunk;
 import org.embeddedt.archaicfix.occlusion.util.IntStack;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 
 public class OcclusionHelpers {
@@ -369,8 +370,12 @@ public class OcclusionHelpers {
             return chunks[x * renderDistanceWidth + z];
         }
 
-        private static boolean isInFrustum(WorldRenderer r){
-            return r != null && (!r.skipRenderPass[0] || !r.skipRenderPass[1]) && r.isInFrustum;
+        private static boolean isInFrustum(@Nonnull WorldRenderer r){
+            /*
+             * We want chunks that are either not initialized (meaning they don't know their render pass status) or are
+             * not skipping all render passes. These chunks also must be within the camera frustum.
+             */
+            return (!r.isInitialized || !r.isWaitingOnOcclusionQuery) && r.isInFrustum;
         }
 
         private static class CullInfo {
