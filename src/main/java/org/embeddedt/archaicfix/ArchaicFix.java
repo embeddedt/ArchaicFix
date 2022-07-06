@@ -2,6 +2,7 @@ package org.embeddedt.archaicfix;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -18,6 +19,7 @@ import net.minecraftforge.common.MinecraftForge;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
 import org.embeddedt.archaicfix.ducks.IAcceleratedRecipe;
 import org.embeddedt.archaicfix.occlusion.OcclusionHelpers;
+import org.embeddedt.archaicfix.proxy.CommonProxy;
 import org.embeddedt.archaicfix.recipe.IFasterCraftingManager;
 import thaumcraft.api.ThaumcraftApi;
 
@@ -35,6 +37,9 @@ public class ArchaicFix
 
     private FixHelper helper;
 
+    @SidedProxy(clientSide = "org.embeddedt.archaicfix.proxy.ClientProxy", serverSide = "org.embeddedt.archaicfix.proxy.CommonProxy")
+    public static CommonProxy proxy;
+
     @EventHandler
     public void preinit(FMLPreInitializationEvent event)
     {
@@ -47,10 +52,7 @@ public class ArchaicFix
         helper = new FixHelper();
         MinecraftForge.EVENT_BUS.register(helper);
         FMLCommonHandler.instance().bus().register(helper);
-        Minecraft.memoryReserve = new byte[0];
-        if(ArchaicConfig.enableOcclusionTweaks)
-            OcclusionHelpers.init();
-
+        proxy.preinit();
 
         //SoundSystemConfig.setNumberNormalChannels(1073741824);
         //SoundSystemConfig.setNumberStreamingChannels(1073741823);
@@ -107,28 +109,11 @@ public class ArchaicFix
         }
     }
 
-    private void fillCreativeItems() {
-        if(initialCreativeItems == null) {
-            initialCreativeItems = new ArrayList<>();
-            for (Object o : Item.itemRegistry) {
-                Item item = (Item) o;
 
-                if (item != null && item.getCreativeTab() != null) {
-                    item.getSubItems(item, null, initialCreativeItems);
-                }
-            }
-            for(Enchantment enchantment : Enchantment.enchantmentsList) {
-                if (enchantment != null && enchantment.type != null)
-                {
-                    Items.enchanted_book.func_92113_a(enchantment, initialCreativeItems);
-                }
-            }
-        }
-    }
 
     @EventHandler
     public void loadComplete(FMLLoadCompleteEvent event) {
-        fillCreativeItems();
+        proxy.loadcomplete();
         printRecipeDebug();
         removeThaumcraftLeak();
     }
