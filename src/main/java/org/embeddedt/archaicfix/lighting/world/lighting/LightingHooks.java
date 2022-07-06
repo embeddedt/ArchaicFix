@@ -348,7 +348,7 @@ public class LightingHooks {
                 for (int y = 0; y < 16; y++) {
                     for (int z = 0; z < 16; z++) {
                         for (int x = 0; x < 16; x++) {
-                            Block block = storage.getBlockByExtId(y, z, x);
+                            Block block = storage.getBlockByExtId(x, y, z);
                             if(block != Blocks.air) {
                                 int light = LightingEngineHelpers.getLightValueForState(block, world, pos);
 
