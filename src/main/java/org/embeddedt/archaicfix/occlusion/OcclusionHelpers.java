@@ -12,7 +12,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import org.embeddedt.archaicfix.occlusion.util.IntStack;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 
 public class OcclusionHelpers {
@@ -135,7 +134,7 @@ public class OcclusionHelpers {
                                 int xm = (k & 1) == 0 ? -1 : 1;
                                 int zm = (k & 2) == 0 ? -1 : 1;
                                 center = extendedRender.getRenderer(viewX + i * 16 * xm, level, viewZ + j * 16 * zm);
-                                if (center == null || !isInFrustum(center)) {
+                                if (!isInFrustum(center)) {
                                     continue;
                                 }
                                 allNull = false;
@@ -162,7 +161,6 @@ public class OcclusionHelpers {
                     {
                         markRenderer(center, view, sides);
                         CullInfo info = new CullInfo(center, sides, back.getOpposite(), (renderDistanceChunks >> 1) * -1 - 3);
-                        info.facings.remove(back);
                         log.put(center, info);
                     }
 
@@ -174,13 +172,12 @@ public class OcclusionHelpers {
                             continue;
                         WorldRenderer t = extendedRender.getRenderer(center.posX + pos.x, center.posY + pos.y, center.posZ + pos.z);
 
-                        if (t == null || !isInFrustum(t))
+                        if (!isInFrustum(t))
                             continue;
 
                         chunk = chunkCache.getChunk(t);
 
                         CullInfo info = new CullInfo(t, isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[t.posY >> 4], pos.getOpposite(), (renderDistanceChunks >> 1) * -1 - 2);
-                        info.facings.remove(pos);
                         log.put(t, info);
                         queue.add(info);
                     }
@@ -191,8 +188,6 @@ public class OcclusionHelpers {
                     @SuppressWarnings("unused")
                     int visited = queue.size(), considered = visited;
 
-                    IdentityHashMap<WorldRenderer, CullInfo> log = this.log;
-                    RenderGlobal render = this.render;
                     RenderPosition[] bias = RenderPosition.POSITIONS_BIAS[back.ordinal() ^ 1];
                     for (; !queue.isEmpty();) {
                         queueIterations++;
@@ -202,25 +197,16 @@ public class OcclusionHelpers {
                         }
 
                         info.visited = true;
-                        if (info.count > renderDistanceChunks)
+                        if (info.cost > renderDistanceChunks)
                             continue;
 
                         WorldRenderer rend = info.rend;
+                        RenderPosition opp = info.opp;
                         Chunk chunk = chunkCache.getChunk(rend);
 
-                        VisGraph sides;
-                        if (!isChunkEmpty(chunk)) {
-                            sides = ((ICulledChunk)chunk).getVisibility()[rend.posY >> 4];
-                        } else {
-                            sides = DUMMY;
-                        }
-                        RenderPosition opp = info.dir;
+                        VisGraph sides = isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[rend.posY >> 4];
 
                         markRenderer(rend, view, sides);
-
-                        //p_chunk.set(rend.posX + 8, rend.posY + 8, rend.posZ + 8);
-                        //view_p.perspective(0, 0, (float) p_chunk.sub(p_view).mag(), 1250);
-                        //fStack.set(view_m, view_p);
 
                         SetVisibility vis = sides.getVisibility();
                         boolean allVis = vis.isAllVisible(true);
@@ -233,7 +219,7 @@ public class OcclusionHelpers {
                                 info.facings.add(pos);
 
                                 WorldRenderer t = extendedRender.getRenderer(rend.posX + pos.x, rend.posY + pos.y, rend.posZ + pos.z);
-                                if (t != null && isInFrustum(t)) {
+                                if (isInFrustum(t)) {
                                     ++considered;
                                     int cost = 1;
 
@@ -248,7 +234,7 @@ public class OcclusionHelpers {
                                         }
 
                                         if (!prev.visited) {
-                                            if (prev.vis.getVisibility().isVisible(pos.facing, prev.dir.facing)) {
+                                            if (prev.vis.getVisibility().isVisible(pos.facing, prev.opp.facing)) {
                                                 continue;
                                             }
                                         }
@@ -257,9 +243,9 @@ public class OcclusionHelpers {
                                     //if (!fStack.isBoundingBoxInFrustum(t.rendererBoundingBox))
                                     //continue;
 
-                                    if (t.isWaitingOnOcclusionQuery | allVis) {
-                                        cost -= renderDistanceChunks >> 1;
-                                        cost &= ~cost >> 31;
+                                    if (t.isWaitingOnOcclusionQuery || allVis) {
+                                        cost -= renderDistanceChunks / 2;
+                                        cost = cost < 0 ? 0 : cost;
                                     }
 
                                     ++visited;
@@ -267,20 +253,13 @@ public class OcclusionHelpers {
                                     {
                                         VisGraph oSides;
                                         if (prev == null) {
-                                            Chunk o;
-                                            if (t.posX != rend.posX | t.posZ != rend.posZ) {
-                                                o = chunkCache.getChunk(t);
-                                            } else
-                                                o = chunk;
-                                            if (isChunkEmpty(o)) {
-                                                oSides = DUMMY;
-                                            } else {
-                                                oSides = ((ICulledChunk)o).getVisibility()[t.posY >> 4];
-                                            }
+                                            Chunk o = t.posX == rend.posX && t.posZ == rend.posZ ? chunk : chunkCache.getChunk(t);
+
+                                            oSides = isChunkEmpty(o) ? DUMMY : ((ICulledChunk)o).getVisibility()[t.posY >> 4];
                                         } else {
                                             oSides = prev.vis;
                                         }
-                                        data = new CullInfo(t, oSides, pos.getOpposite(), info.count + cost);
+                                        data = new CullInfo(t, oSides, pos.getOpposite(), info.cost + cost);
                                     }
 
                                     if (prev != null) {
@@ -322,12 +301,12 @@ public class OcclusionHelpers {
             }
         }
 
-        private static boolean isInFrustum(@Nonnull WorldRenderer r){
+        private static boolean isInFrustum(WorldRenderer r){
             /*
              * We want chunks that are either not initialized (meaning they don't know their render pass status) or are
              * not skipping all render passes. These chunks also must be within the camera frustum.
              */
-            return (!r.isInitialized || !r.isWaitingOnOcclusionQuery) && r.isInFrustum;
+            return r != null && (!r.isInitialized || !r.isWaitingOnOcclusionQuery) && r.isInFrustum;
         }
 
         private static boolean isChunkEmpty(Chunk chunk) {
@@ -337,20 +316,24 @@ public class OcclusionHelpers {
         private static class CullInfo {
 
             boolean visited = false;
-            final int count;
+            final int cost;
             final WorldRenderer rend;
             final VisGraph vis;
-            /** We stepped in this direction when entering the subchunk. */
-            final RenderPosition dir;
+            /** The direction we came from when stepping into this subchunk. */
+            final RenderPosition opp;
             final EnumSet<RenderPosition> facings;
 
-            public CullInfo(WorldRenderer rend, VisGraph vis, RenderPosition dir, int count) {
+            public CullInfo(WorldRenderer rend, VisGraph vis, RenderPosition opp, int cost) {
 
-                this.count = count;
+                this.cost = cost;
                 this.rend = rend;
                 this.vis = vis;
-                this.dir = dir;
-                this.facings = EnumSet.of(this.dir);
+                this.opp = opp;
+                this.facings = EnumSet.of(this.opp);
+            }
+
+        }
+
         private static class ChunkCache {
 
             private World theWorld;
