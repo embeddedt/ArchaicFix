@@ -438,36 +438,18 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
 
         if(pass == 1){
             theWorld.theProfiler.startSection("alpha_sort");
-            if (prevRenderSortX != view.posX || prevRenderSortY != view.posY || prevRenderSortZ != view.posZ) {
+            if(distanceSquared(view.posX, view.posY, view.posZ, prevRenderSortX, prevRenderSortY, prevRenderSortZ) > 1) {
                 prevRenderSortX = view.posX;
                 prevRenderSortY = view.posY;
                 prevRenderSortZ = view.posZ;
 
-                int x = (int) ((prevRenderSortX - view.chunkCoordX * 16) * 2);
-                int y = (int) ((prevRenderSortY - view.chunkCoordY * 16) * 2);
-                int z = (int) ((prevRenderSortZ - view.chunkCoordZ * 16) * 2);
-
-                if (prevRenderX != x || prevRenderY != y || prevRenderZ != z) {
-                    prevRenderX = x;
-                    prevRenderY = y;
-                    prevRenderZ = z;
-
-                    alphaSortProgress = 0;
-                    //double x = view.posX - prevSortX;
-                    //double y = view.posY - prevSortY;
-                    //double z = view.posZ - prevSortZ;
-                    //if ((x * x + y * y + z * z) > 16) {
-                    //prevSortX = view.posX;
-                    //prevSortY = view.posY;
-                    //prevSortZ = view.posZ;
-                    //} else {
-                    //limit = 2;
-                    //}
-                }
+                alphaSortProgress = 0;
             }
+
             int amt = renderersLoaded < 27 ? renderersLoaded : Math.max(renderersLoaded >> 1, 27);
             if (alphaSortProgress < amt) {
-                for (int i = 0; i < 10 && alphaSortProgress < amt; ++i) {
+                int amountPerFrame = 1;
+                for (int i = 0; i < amountPerFrame && alphaSortProgress < amt; ++i) {
                     WorldRenderer r = sortedWorldRenderers[alphaSortProgress++];
                     r.updateRendererSort(view);
                 }
@@ -583,5 +565,9 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         mc.theWorld.theProfiler.endSection();
 
         return glListsRendered;
+    }
+
+    private static double distanceSquared(double x1, double y1, double z1, double x2, double y2, double z2) {
+        return Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2) + Math.pow(z2 - z1, 2);
     }
 }
