@@ -436,37 +436,34 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         }
         theWorld.theProfiler.endSection();
 
-        s: {
-            if (pass != 1) {
-                break s;
-            }
+        if(pass == 1){
             theWorld.theProfiler.startSection("alpha_sort");
-            l: if (prevRenderSortX != view.posX || prevRenderSortY != view.posY || prevRenderSortZ != view.posZ) {
+            if (prevRenderSortX != view.posX || prevRenderSortY != view.posY || prevRenderSortZ != view.posZ) {
                 prevRenderSortX = view.posX;
                 prevRenderSortY = view.posY;
                 prevRenderSortZ = view.posZ;
-                {
-                    int x = (int) ((prevRenderSortX - view.chunkCoordX * 16) * 2);
-                    int y = (int) ((prevRenderSortY - view.chunkCoordY * 16) * 2);
-                    int z = (int) ((prevRenderSortZ - view.chunkCoordZ * 16) * 2);
-                    if (prevRenderX == x && prevRenderY == y && prevRenderZ == z) {
-                        break l;
-                    }
+
+                int x = (int) ((prevRenderSortX - view.chunkCoordX * 16) * 2);
+                int y = (int) ((prevRenderSortY - view.chunkCoordY * 16) * 2);
+                int z = (int) ((prevRenderSortZ - view.chunkCoordZ * 16) * 2);
+
+                if (prevRenderX != x || prevRenderY != y || prevRenderZ != z) {
                     prevRenderX = x;
                     prevRenderY = y;
                     prevRenderZ = z;
+
+                    alphaSortProgress = 0;
+                    //double x = view.posX - prevSortX;
+                    //double y = view.posY - prevSortY;
+                    //double z = view.posZ - prevSortZ;
+                    //if ((x * x + y * y + z * z) > 16) {
+                    //prevSortX = view.posX;
+                    //prevSortY = view.posY;
+                    //prevSortZ = view.posZ;
+                    //} else {
+                    //limit = 2;
+                    //}
                 }
-                alphaSortProgress = 0;
-                //double x = view.posX - prevSortX;
-                //double y = view.posY - prevSortY;
-                //double z = view.posZ - prevSortZ;
-                //if ((x * x + y * y + z * z) > 16) {
-                //prevSortX = view.posX;
-                //prevSortY = view.posY;
-                //prevSortZ = view.posZ;
-                //} else {
-                //limit = 2;
-                //}
             }
             int amt = renderersLoaded < 27 ? renderersLoaded : Math.max(renderersLoaded >> 1, 27);
             if (alphaSortProgress < amt) {
