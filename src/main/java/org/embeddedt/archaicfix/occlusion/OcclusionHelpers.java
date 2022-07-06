@@ -145,7 +145,7 @@ public class OcclusionHelpers {
                         RenderPosition pos = y < 5 ? RenderPosition.UP : RenderPosition.DOWN;
                         {
                             Chunk chunk = getChunk(chunks, center, chunkX, chunkZ, renderDistanceWidth);
-                            CullInfo info = new CullInfo(center, chunk == null ? DUMMY : ((ICulledChunk)chunk).getVisibility()[center.posY >> 4], pos.getOpposite(), -2);
+                            CullInfo info = new CullInfo(center, isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[center.posY >> 4], pos.getOpposite(), -2);
                             info.facings.addAll(RenderPosition.SIDES);
                             info.facings.remove(pos);
                             log.put(center, info);
@@ -165,7 +165,7 @@ public class OcclusionHelpers {
                                     }
                                     allNull = false;
                                     Chunk chunk = getChunk(chunks, center, chunkX, chunkZ, renderDistanceWidth);
-                                    CullInfo info = new CullInfo(center, chunk == null ? DUMMY : ((ICulledChunk)chunk).getVisibility()[center.posY >> 4], pos.getOpposite(), -2);
+                                    CullInfo info = new CullInfo(center, isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[center.posY >> 4], pos.getOpposite(), -2);
                                     info.facings.addAll(RenderPosition.SIDES);
                                     info.facings.remove(pos);
                                     log.put(center, info);
@@ -179,7 +179,7 @@ public class OcclusionHelpers {
                     } else {
                         Chunk chunk = getChunk(chunks, center, chunkX, chunkZ, renderDistanceWidth);
                         VisGraph sides;
-                        if (chunk != null) {
+                        if (!isChunkEmpty(chunk)) {
                             sides = ((ICulledChunk)chunk).getVisibility()[center.posY >> 4];
                         } else {
                             sides = DUMMY;
@@ -204,7 +204,7 @@ public class OcclusionHelpers {
 
                             chunk = getChunk(chunks, t, chunkX, chunkZ, renderDistanceWidth);
 
-                            CullInfo info = new CullInfo(t, chunk == null ? DUMMY : ((ICulledChunk)chunk).getVisibility()[t.posY >> 4], pos.getOpposite(), (renderDistanceChunks >> 1) * -1 - 2);
+                            CullInfo info = new CullInfo(t, isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[t.posY >> 4], pos.getOpposite(), (renderDistanceChunks >> 1) * -1 - 2);
                             info.facings.remove(pos);
                             log.put(t, info);
                             queue.add(info);
@@ -248,7 +248,7 @@ public class OcclusionHelpers {
                         Chunk chunk = getChunk(chunks, rend, chunkX, chunkZ, renderDistanceWidth);
 
                         VisGraph sides;
-                        if (chunk != null) {
+                        if (!isChunkEmpty(chunk)) {
                             sides = ((ICulledChunk)chunk).getVisibility()[rend.posY >> 4];
                         } else {
                             sides = DUMMY;
@@ -311,7 +311,7 @@ public class OcclusionHelpers {
                                                 o = getChunk(chunks, t, chunkX, chunkZ, renderDistanceWidth);
                                             } else
                                                 o = chunk;
-                                            if (o == null) {
+                                            if (isChunkEmpty(o)) {
                                                 oSides = DUMMY;
                                             } else {
                                                 oSides = ((ICulledChunk)o).getVisibility()[t.posY >> 4];
@@ -376,6 +376,10 @@ public class OcclusionHelpers {
              * not skipping all render passes. These chunks also must be within the camera frustum.
              */
             return (!r.isInitialized || !r.isWaitingOnOcclusionQuery) && r.isInFrustum;
+        }
+
+        private static boolean isChunkEmpty(Chunk chunk) {
+            return chunk == null || chunk.isEmpty();
         }
 
         private static class CullInfo {
