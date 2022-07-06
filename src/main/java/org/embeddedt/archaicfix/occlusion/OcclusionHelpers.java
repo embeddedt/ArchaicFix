@@ -91,11 +91,17 @@ public class OcclusionHelpers {
                 if (theWorld == null || view == null) {
                     return;
                 }
+
+                Frustrum frustum = new Frustrum();
+                // TODO: interpolate using partial tick time
+                frustum.setPosition(view.posX, view.posY, view.posZ);
+
                 theWorld.theProfiler.startSection("prep");
                 WorldRenderer[] renderers = render.sortedWorldRenderers;
 
                 for (int i = 0; i < render.renderersLoaded; ++i) {
                     renderers[i].isVisible = false;
+                    renderers[i].isInFrustum = false;
                 }
                 render.renderersLoaded = 0;
                 WorldRenderer center;
@@ -111,6 +117,7 @@ public class OcclusionHelpers {
 
                 theWorld.theProfiler.endStartSection("seed_queue");
                 center = extendedRender.getRenderer(viewX, viewY, viewZ);
+                isInFrustum(center, frustum); // make sure frustum status gets updated for the starting renderer
                 if (center == null) {
                     int level = viewY > 5 ? 250 : 5;
                     center = extendedRender.getRenderer(viewX, level, viewZ);
@@ -133,7 +140,7 @@ public class OcclusionHelpers {
                                 int xm = (k & 1) == 0 ? -1 : 1;
                                 int zm = (k & 2) == 0 ? -1 : 1;
                                 center = extendedRender.getRenderer(viewX + i * 16 * xm, level, viewZ + j * 16 * zm);
-                                if (!isInFrustum(center)) {
+                                if (!isInFrustum(center, frustum)) {
                                     continue;
                                 }
                                 allNull = false;
@@ -167,7 +174,7 @@ public class OcclusionHelpers {
                             continue;
                         WorldRenderer t = extendedRender.getRenderer(center.posX + pos.x, center.posY + pos.y, center.posZ + pos.z);
 
-                        if (!isInFrustum(t))
+                        if (!isInFrustum(t, frustum))
                             continue;
 
                         chunk = chunkCache.getChunk(t);
@@ -214,12 +221,12 @@ public class OcclusionHelpers {
 
                                 IWorldRenderer extendedT = (IWorldRenderer) t;
 
-                                if (t == null || extendedT.getLastCullUpdateFrame() == frame || !isInFrustum(t))
+                                if (t == null || extendedT.getLastCullUpdateFrame() == frame || !isInFrustum(t, frustum))
                                     continue;
 
                                 extendedT.setLastCullUpdateFrame(frame);
 
-                                if (isInFrustum(t)) {
+                                if (isInFrustum(t, frustum)) {
                                     ++considered;
                                     int cost = 1;
 
@@ -276,12 +283,11 @@ public class OcclusionHelpers {
             }
         }
 
-        private static boolean isInFrustum(WorldRenderer r){
-            /*
-             * We want chunks that are either not initialized (meaning they don't know their render pass status) or are
-             * not skipping all render passes. These chunks also must be within the camera frustum.
-             */
-            return r != null && (!r.isInitialized || !r.isWaitingOnOcclusionQuery) && r.isInFrustum;
+        private static boolean isInFrustum(WorldRenderer r, Frustrum frustum){
+            if(r != null) {
+                r.updateInFrustum(frustum);
+            }
+            return r != null && r.isInFrustum;
         }
 
         private static boolean isChunkEmpty(Chunk chunk) {

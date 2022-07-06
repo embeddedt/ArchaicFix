@@ -3,6 +3,7 @@ package org.embeddedt.archaicfix.mixins.client.occlusion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.util.RenderDistanceSorter;
 import net.minecraft.entity.Entity;
@@ -565,6 +566,16 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         mc.theWorld.theProfiler.endSection();
 
         return glListsRendered;
+    }
+    
+    /**
+     * @author makamys
+     * @reason The frustum status is updated in {@link org.embeddedt.archaicfix.occlusion.OcclusionHelpers.RenderWorker#run(boolean)}
+     * instead.
+     */
+    @Overwrite
+    public void clipRenderersByFrustum(ICamera p_72729_1_, float p_72729_2_) {
+        
     }
 
     private static double distanceSquared(double x1, double y1, double z1, double x2, double y2, double z2) {
