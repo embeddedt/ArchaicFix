@@ -18,6 +18,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.common.MinecraftForge;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
 import org.embeddedt.archaicfix.ducks.IAcceleratedRecipe;
+import org.embeddedt.archaicfix.helpers.FastutilHelper;
 import org.embeddedt.archaicfix.occlusion.OcclusionHelpers;
 import org.embeddedt.archaicfix.proxy.CommonProxy;
 import org.embeddedt.archaicfix.recipe.IFasterCraftingManager;
@@ -25,7 +26,7 @@ import thaumcraft.api.ThaumcraftApi;
 
 import java.util.*;
 
-@Mod(modid = ArchaicFix.MODID, version = ArchaicFix.VERSION, guiFactory = "org.embeddedt.archaicfix.config.ArchaicGuiConfigFactory")
+@Mod(modid = ArchaicFix.MODID, version = ArchaicFix.VERSION, guiFactory = "org.embeddedt.archaicfix.config.ArchaicGuiConfigFactory", dependencies = "required-after:falsepatternlib")
 public class ArchaicFix
 {
     public static final String MODID = Tags.MODID;
@@ -51,6 +52,7 @@ public class ArchaicFix
         } catch(ClassNotFoundException e) {
 
         }
+        FastutilHelper.checkLoad();
     }
 
     @EventHandler

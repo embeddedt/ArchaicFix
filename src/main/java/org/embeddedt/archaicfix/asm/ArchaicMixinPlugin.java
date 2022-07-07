@@ -8,6 +8,7 @@ import com.falsepattern.lib.mixin.ITargetedMod;
 import lombok.Getter;
 import org.apache.logging.log4j.Logger;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
+import org.embeddedt.archaicfix.helpers.FastutilHelper;
 
 public class ArchaicMixinPlugin implements IMixinPlugin {
     @Getter
@@ -19,6 +20,7 @@ public class ArchaicMixinPlugin implements IMixinPlugin {
         } catch (ConfigException e) {
             throw new RuntimeException(e);
         }
+        FastutilHelper.load();
     }
 
     @Override
