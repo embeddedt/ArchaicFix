@@ -1,6 +1,7 @@
 package org.embeddedt.archaicfix.mixins.client.occlusion;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiVideoSettings;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.culling.ICamera;
@@ -60,6 +61,10 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
     @Shadow private RenderList[] allRenderLists;
 
     @Shadow public abstract void renderAllRenderLists(int p_72733_1_, double p_72733_2_);
+
+    @Shadow public int renderDistanceChunks;
+
+    @Shadow public abstract void loadRenderers();
 
     private Thread clientThread;
 
@@ -411,6 +416,11 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
     @Overwrite
     public int sortAndRender(EntityLivingBase view, int pass, double tick) {
         theWorld.theProfiler.startSection("sortchunks");
+
+        if (this.mc.gameSettings.renderDistanceChunks != this.renderDistanceChunks && !(this.mc.currentScreen instanceof GuiVideoSettings))
+        {
+            this.loadRenderers();
+        }
 
         WorldRenderer[] sortedWorldRenderers = this.sortedWorldRenderers;
         if (renderersLoaded > 0) {
