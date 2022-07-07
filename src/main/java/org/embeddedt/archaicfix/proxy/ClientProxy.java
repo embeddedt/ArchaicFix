@@ -4,8 +4,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraftforge.common.MinecraftForge;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
 import org.embeddedt.archaicfix.occlusion.OcclusionHelpers;
+import zone.rong.loliasm.api.LoliStringPool;
 
 import java.util.ArrayList;
 
@@ -18,6 +20,7 @@ public class ClientProxy extends CommonProxy {
         Minecraft.memoryReserve = new byte[0];
         if(ArchaicConfig.enableOcclusionTweaks)
             OcclusionHelpers.init();
+        MinecraftForge.EVENT_BUS.register(new LoliStringPool.EventHandler());
     }
 
     private void fillCreativeItems() {

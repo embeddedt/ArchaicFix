@@ -3,3 +3,5 @@ derived from Minecraft 1.8. As such that component is not considered to be under
 [its LICENSE](src/main/java/org/embeddedt/archaicfix/occlusion/LICENSE) for more information.
 
 Please also refer to [my discussion with skyboy](occlusion_discussion.png) regarding inclusion of this component.
+
+Classes within the zone.rong.loliasm namespace are taken from LoliASM and used under LGPL2.1. 

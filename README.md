@@ -10,6 +10,7 @@ The latest development version can be downloaded here: https://nightly.link/embe
 * Sponge, for providing the Mixin framework.
 * TheMasterCaver, for writing very informative posts on several vanilla issues.
 * makamys, for their assistance with the occlusion culling tweak and various other fixes.
+* LoliASM/Rongmario
 * Countless other individuals on the Mojang bug tracker who took the time to document the reasons for bugs in the game.
 
 ## Requirements
