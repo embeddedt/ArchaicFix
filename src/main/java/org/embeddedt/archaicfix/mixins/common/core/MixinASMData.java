@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import zone.rong.loliasm.api.LoliStringPool;
 
-@Mixin(ASMDataTable.ASMData.class)
+@Mixin(value = ASMDataTable.ASMData.class, remap = false)
 public class MixinASMData {
     @Shadow private String annotationName;
 

@@ -78,7 +78,7 @@ public class ArchaicConfig {
     @Config.DefaultBoolean(true)
     public static boolean fixVanillaCascadingWorldgen;
 
-    @Config.Comment("Force all mixins to be loaded and the cache to be cleared. This saves RAM, but may reveal bugs in mods' mixin configs.")
+    @Config.Comment("Force all mixins to be loaded and the cache to be cleared. This saves RAM, but may reveal bugs in mods' mixin configs. Based on MemoryLeakFix.")
     @Config.DefaultBoolean(false)
     public static boolean clearMixinCache;
 }
