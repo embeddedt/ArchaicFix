@@ -132,7 +132,5 @@ public class ArchaicFix
         proxy.loadcomplete();
         printRecipeDebug();
         removeThaumcraftLeak();
-        if(ArchaicConfig.clearMixinCache)
-            MemoryLeakFix.forceLoadAllMixinsAndClearSpongePoweredCache();
     }
 }
