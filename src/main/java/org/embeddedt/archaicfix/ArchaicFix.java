@@ -41,6 +41,19 @@ public class ArchaicFix
     public static CommonProxy proxy;
 
     @EventHandler
+    public void onConstruct(FMLConstructionEvent event) {
+        try {
+            Class.forName("com.gildedgames.util.threadedlighting.asm.TLTransformer");
+            ArchaicLogger.LOGGER.fatal("=================== WARNING ===================");
+            ArchaicLogger.LOGGER.fatal("A version of GG Util that includes threaded lighting was detected. ArchaicFix has prevented launching to avoid issues. Please download a fixed version of GG Util: https://www.curseforge.com/minecraft/mc-mods/gilded-game-utils-fix.");
+            ArchaicLogger.LOGGER.fatal("===============================================");
+            throw new UnsupportedOperationException("Bad GG Util version");
+        } catch(ClassNotFoundException e) {
+
+        }
+    }
+
+    @EventHandler
     public void preinit(FMLPreInitializationEvent event)
     {
         int nextID = ReflectionHelper.getPrivateValue(Entity.class, null, "field_70152_a", "nextEntityID");
