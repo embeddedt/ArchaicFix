@@ -1,5 +1,6 @@
 package org.embeddedt.archaicfix;
 
+import ca.fxco.memoryleakfix.MemoryLeakFix;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.SidedProxy;
@@ -131,5 +132,7 @@ public class ArchaicFix
         proxy.loadcomplete();
         printRecipeDebug();
         removeThaumcraftLeak();
+        if(ArchaicConfig.clearMixinCache)
+            MemoryLeakFix.forceLoadAllMixinsAndClearSpongePoweredCache();
     }
 }

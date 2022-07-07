@@ -4,4 +4,6 @@ derived from Minecraft 1.8. As such that component is not considered to be under
 
 Please also refer to [my discussion with skyboy](occlusion_discussion.png) regarding inclusion of this component.
 
-Classes within the zone.rong.loliasm namespace are taken from LoliASM and used under LGPL2.1. 
+Classes within the zone.rong.loliasm namespace are taken from LoliASM and used under LGPL 2.1. 
+
+Classes within the ca.fxco namespace are from MemoryLeakFix, licensed under LGPL 2.1.

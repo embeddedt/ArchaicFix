@@ -11,6 +11,7 @@ The latest development version can be downloaded here: https://nightly.link/embe
 * TheMasterCaver, for writing very informative posts on several vanilla issues.
 * makamys, for their assistance with the occlusion culling tweak and various other fixes.
 * LoliASM/Rongmario
+* MemoryLeakFix, for the Mixin cache clearing code. This is backported with credit since the mod is unlikely to be ported to 1.7.10.
 * Countless other individuals on the Mojang bug tracker who took the time to document the reasons for bugs in the game.
 
 ## Requirements
