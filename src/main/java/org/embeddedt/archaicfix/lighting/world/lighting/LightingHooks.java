@@ -423,4 +423,20 @@ public class LightingHooks {
         return ((ILightingEngineProvider) world).getLightingEngine();
     }
 
+    /**
+     * Get the intrinsic or saved block light value in a chunk.
+     * @param chunk the chunk
+     * @param x X coordinate (0-15)
+     * @param y Y coordinate (0-255)
+     * @param z Z coordinate (0-15)
+     * @return light level
+     */
+    public static int getIntrinsicOrSavedBlockLightValue(Chunk chunk, int x, int y, int z) {
+        int savedLightValue = chunk.getSavedLightValue(EnumSkyBlock.Block, x, y, z);
+        int bx = x + (chunk.xPosition * 16);
+        int bz = z + (chunk.zPosition * 16);
+        Block block = chunk.getBlock(x, y, z);
+        int lightValue = block.getLightValue(chunk.worldObj, bx, y, bz);
+        return Math.max(savedLightValue, lightValue);
+    }
 }

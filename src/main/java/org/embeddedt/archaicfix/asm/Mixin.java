@@ -85,6 +85,7 @@ public enum Mixin implements IMixin {
     client_gt6_MixinGT_API_Proxy_Client(Side.CLIENT, require(TargetedMod.GREGTECH6), "gt6.MixinGT_API_Proxy_Client"),
     client_lighting_MixinMinecraft(Side.CLIENT, always(), "lighting.MixinMinecraft"),
     client_lighting_MixinWorld(Side.CLIENT, always(), "lighting.MixinWorld"),
+    client_lighting_MixinChunkCache(Side.CLIENT, always(), "lighting.MixinChunkCache"),
 
     client_occlusion_MixinChunk(Side.CLIENT, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.enableOcclusionTweaks), "occlusion.MixinChunk"),
     client_occlusion_MixinRenderGlobal(Side.CLIENT, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.enableOcclusionTweaks), "occlusion.MixinRenderGlobal"),
