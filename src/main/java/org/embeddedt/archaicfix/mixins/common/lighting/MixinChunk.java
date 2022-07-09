@@ -29,6 +29,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MixinChunk implements IChunkLighting, IChunkLightingData, ILightingEngineProvider {
     private static final EnumFacing[] HORIZONTAL = LightingHooks.HORIZONTAL_FACINGS;
 
+    private int lightRecheckSpeed;
+
+    @Inject(method = "<init>(Lnet/minecraft/world/World;II)V", at = @At("RETURN"))
+    private void initializeRecheckSpeed(World world, int p_i1995_2_, int p_i1995_3_, CallbackInfo ci) {
+        lightRecheckSpeed = world.isRemote ? 64 : 32;
+    }
+
+    @Override
+    public void speedupRelight() {
+        this.lightRecheckSpeed = worldObj.isRemote ? 256 : 32;
+    }
+
     /**
      * Callback injected to the head of getLightSubtracted(BlockPos, int) to force deferred light updates to be processed.
      *
@@ -228,6 +240,55 @@ public abstract class MixinChunk implements IChunkLighting, IChunkLightingData, 
         }
     }
 
+    /**
+     * @author embeddedt
+     * @reason optimize random light checks so they complete faster
+     */
+    @Overwrite
+    public void enqueueRelightChecks()
+    {
+        /* Confirm that surrounding chunks are loaded before we do anything */
+        for (int i = 0; i < lightRecheckSpeed; ++i)
+        {
+            if (this.queuedLightChecks >= 4096)
+            {
+                return;
+            }
+
+            int section = this.queuedLightChecks % 16;
+            int x = this.queuedLightChecks / 16 % 16;
+            int z = this.queuedLightChecks / 256;
+            ++this.queuedLightChecks;
+            int bx = (this.xPosition << 4) + x;
+            int bz = (this.zPosition << 4) + z;
+
+            for (int y = 0; y < 16; ++y)
+            {
+                int by = (section << 4) + y;
+                ExtendedBlockStorage storage = this.storageArrays[section];
+
+                boolean performFullLightUpdate = false;
+                if (storage == null && (y == 0 || y == 15 || x == 0 || x == 15 || z == 0 || z == 15))
+                    performFullLightUpdate = true;
+                else if(storage != null) {
+                    Block block = storage.getBlockByExtId(x, y, z);
+                    if(block.getLightOpacity(this.worldObj, bx, by, bz) >= 255 && block.getLightValue(this.worldObj, bx, by, bz) <= 0) {
+                        int prevLight = storage.getExtBlocklightValue(x, y, z);
+                        if(prevLight != 0) {
+                            storage.setExtBlocklightValue(x, y, z, 0);
+                            this.worldObj.markBlockRangeForRenderUpdate(bx, by, bz, bx, by, bz);
+                        }
+                    } else
+                        performFullLightUpdate = true;
+                }
+                if (performFullLightUpdate)
+                {
+                    this.worldObj.func_147451_t(bx, by, bz);
+                }
+            }
+        }
+    }
+
     @Shadow
     public abstract int getHeightValue(int i, int j);
 
@@ -292,6 +353,8 @@ public abstract class MixinChunk implements IChunkLighting, IChunkLightingData, 
     @Shadow public boolean[] updateSkylightColumns;
 
     @Shadow public boolean isModified;
+
+    @Shadow private int queuedLightChecks;
 
     @Override
     public void setSkylightUpdatedPublic() {
