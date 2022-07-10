@@ -33,7 +33,8 @@ public abstract class MixinChunk implements IChunkLighting, IChunkLightingData, 
 
     @Inject(method = "<init>(Lnet/minecraft/world/World;II)V", at = @At("RETURN"))
     private void initializeRecheckSpeed(World world, int p_i1995_2_, int p_i1995_3_, CallbackInfo ci) {
-        lightRecheckSpeed = world.isRemote ? 64 : 32;
+        boolean isRemote = world != null && world.isRemote;
+        lightRecheckSpeed = isRemote ? 64 : 32;
     }
 
     @Override
