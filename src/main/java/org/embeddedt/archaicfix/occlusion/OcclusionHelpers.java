@@ -99,9 +99,9 @@ public class OcclusionHelpers {
                 theWorld.theProfiler.startSection("prep");
                 WorldRenderer[] renderers = render.sortedWorldRenderers;
 
-                for (int i = 0; i < render.renderersLoaded; ++i) {
-                    renderers[i].isVisible = false;
-                    renderers[i].isInFrustum = false;
+                for (int i = 0; i < render.worldRenderers.length; ++i) {
+                    render.worldRenderers[i].isVisible = false;
+                    render.worldRenderers[i].isInFrustum = false;
                 }
                 render.renderersLoaded = 0;
                 WorldRenderer center;
