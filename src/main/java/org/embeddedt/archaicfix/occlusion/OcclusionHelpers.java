@@ -198,7 +198,7 @@ public class OcclusionHelpers {
                         }
 
                         info.visited = true;
-                        if (info.cost > renderDistanceChunks)
+                        if (info.cost > renderDistanceChunks * 2)
                             continue;
 
                         WorldRenderer rend = info.rend;
@@ -229,10 +229,6 @@ public class OcclusionHelpers {
                                 if (isInFrustum(t, frustum)) {
                                     ++considered;
                                     int cost = 1;
-
-                                    if (stepPos == back) {
-                                        cost += renderDistanceChunks;
-                                    }
 
                                     if (t.isWaitingOnOcclusionQuery || allVis) {
                                         cost -= renderDistanceChunks / 2;
