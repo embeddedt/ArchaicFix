@@ -228,12 +228,7 @@ public class OcclusionHelpers {
 
                                 if (isInFrustum(t, frustum)) {
                                     ++considered;
-                                    int cost = 1;
-
-                                    if (t.isWaitingOnOcclusionQuery || allVis) {
-                                        cost -= renderDistanceChunks / 2;
-                                        cost = cost < 0 ? 0 : cost;
-                                    }
+                                    int cost = t.isWaitingOnOcclusionQuery || allVis ? 0 : 1;
 
                                     ++visited;
                                     CullInfo data;
