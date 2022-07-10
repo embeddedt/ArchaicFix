@@ -226,23 +226,21 @@ public class OcclusionHelpers {
 
                                 extendedT.setLastCullUpdateFrame(frame);
 
-                                if (isInFrustum(t, frustum)) {
-                                    ++considered;
-                                    int cost = t.isWaitingOnOcclusionQuery || allVis ? 0 : 1;
+                                ++considered;
+                                int cost = t.isWaitingOnOcclusionQuery || allVis ? 0 : 1;
 
-                                    ++visited;
-                                    CullInfo data;
-                                    {
-                                        VisGraph oSides;
-                                        Chunk o = t.posX == rend.posX && t.posZ == rend.posZ ? chunk : chunkCache.getChunk(t);
-                                        oSides = isChunkEmpty(o) ? DUMMY : ((ICulledChunk)o).getVisibility()[t.posY >> 4];
-                                        data = new CullInfo(t, oSides, stepPos, info.cost + cost);
-                                    }
-
-                                    data.facings.addAll(info.facings);
-
-                                    queue.add(data);
+                                ++visited;
+                                CullInfo data;
+                                {
+                                    VisGraph oSides;
+                                    Chunk o = t.posX == rend.posX && t.posZ == rend.posZ ? chunk : chunkCache.getChunk(t);
+                                    oSides = isChunkEmpty(o) ? DUMMY : ((ICulledChunk)o).getVisibility()[t.posY >> 4];
+                                    data = new CullInfo(t, oSides, stepPos, info.cost + cost);
                                 }
+
+                                data.facings.addAll(info.facings);
+
+                                queue.add(data);
                             }
                         }
                     }
