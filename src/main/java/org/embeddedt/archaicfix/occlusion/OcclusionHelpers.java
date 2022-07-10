@@ -155,33 +155,10 @@ public class OcclusionHelpers {
                     theWorld.theProfiler.endSection();
                 } else {
                     Chunk chunk = chunkCache.getChunk(center);
-                    VisGraph sides;
-                    if (!isChunkEmpty(chunk)) {
-                        sides = ((ICulledChunk)chunk).getVisibility()[center.posY >> 4];
-                    } else {
-                        sides = DUMMY;
-                    }
-                    {
-                        markRenderer(center, view, sides);
-                        CullInfo info = new CullInfo(center, sides, RenderPosition.NONE, (renderDistanceChunks >> 1) * -1 - 3);
-                    }
-
-                    Set<EnumFacing> faces = sides.getVisibleFacingsFrom(viewX, viewY, viewZ);
-                    RenderPosition[] bias = RenderPosition.POSITIONS_BIAS[back.ordinal()];
-                    for (int p = 0; p < 6; ++p) {
-                        RenderPosition pos = bias[p];
-                        if (!faces.contains(pos.facing))
-                            continue;
-                        WorldRenderer t = extendedRender.getRenderer(center.posX + pos.x, center.posY + pos.y, center.posZ + pos.z);
-
-                        if (!isInFrustum(t, frustum))
-                            continue;
-
-                        chunk = chunkCache.getChunk(t);
-
-                        CullInfo info = new CullInfo(t, isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[t.posY >> 4], pos, (renderDistanceChunks >> 1) * -1 - 2);
-                        queue.add(info);
-                    }
+                    VisGraph sides = isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[center.posY >> 4];
+                    markRenderer(center, view, sides);
+                    CullInfo info = new CullInfo(center, sides, RenderPosition.NONE, renderDistanceChunks * -1 - 3);
+                    queue.add(info);
                 }
 
                 theWorld.theProfiler.endStartSection("process_queue");
