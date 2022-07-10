@@ -187,7 +187,7 @@ public class OcclusionHelpers {
                         markRenderer(rend, view, sides);
 
                         SetVisibility vis = sides.getVisibility();
-                        boolean allVis = vis.isAllVisible(true);
+                        boolean allVis = mc.playerController.currentGameType.getID() == 3 || vis.isAllVisible(true);
                         for (int p = 0; p < 6; ++p) {
                             RenderPosition stepPos = bias[p];
                                 if (stepPos == dir.getOpposite() || info.facings.contains(stepPos.getOpposite()))
