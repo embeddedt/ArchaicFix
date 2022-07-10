@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-@Mixin(Chunk.class)
+@Mixin(value = Chunk.class, priority = 1100)
 public class MixinChunk {
     @Shadow @Final private List<Entity>[] entityLists;
     @Shadow @Final private World worldObj;
