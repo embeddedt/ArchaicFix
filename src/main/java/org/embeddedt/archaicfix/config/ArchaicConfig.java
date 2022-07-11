@@ -85,4 +85,8 @@ public class ArchaicConfig {
     @Config.Comment("Clean up LaunchClassLoader cache.")
     @Config.DefaultBoolean(true)
     public static boolean clearLaunchLoaderCache;
+
+    @Config.Comment("Only show GT6 tooltip data when Shift is pressed.")
+    @Config.DefaultBoolean(true)
+    public static boolean hideGT6TooltipDataBehindKey;
 }
