@@ -105,6 +105,8 @@ public enum Mixin implements IMixin {
 
     common_thermal_MixinBlockOre(Side.COMMON, require(TargetedMod.THERMALFOUNDATION), "thermal.MixinBlockOre"),
 
+    common_botania_MixinBlockSpecialFlower(Side.COMMON, require(TargetedMod.BOTANIA), "botania.MixinBlockSpecialFlower"),
+
     // The modFilter argument is a predicate, so you can also use the .and(), .or(), and .negate() methods to mix and match multiple predicates.
     ;
 
