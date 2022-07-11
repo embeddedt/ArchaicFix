@@ -24,6 +24,7 @@ public enum TargetedMod implements ITargetedMod {
     OPTIFINE("OptiFine", false, startsWith("optifine")),
     MEKANISM("Mekanism", false, startsWith("mekanism")),
     BOTANIA("Botania", false, startsWith("botania")),
+    COFHCORE("CoFHCore", false, startsWith("cofhcore")),
     ;
 
     @Getter
