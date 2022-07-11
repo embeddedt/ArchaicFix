@@ -1,10 +1,15 @@
 package org.embeddedt.archaicfix.proxy;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.server.integrated.IntegratedServer;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.sound.SoundLoadEvent;
 import net.minecraftforge.client.event.sound.SoundSetupEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -29,6 +34,36 @@ public class ClientProxy extends CommonProxy {
             OcclusionHelpers.init();
         MinecraftForge.EVENT_BUS.register(new LoliStringPool.EventHandler());
         MinecraftForge.EVENT_BUS.register(this);
+        FMLCommonHandler.instance().bus().register(this);
+    }
+
+    float lastIntegratedTickTime;
+    @SubscribeEvent
+    public void onTick(TickEvent.ServerTickEvent event) {
+        if(FMLCommonHandler.instance().getSide().isClient() && event.phase == TickEvent.Phase.END) {
+            IntegratedServer srv = Minecraft.getMinecraft().getIntegratedServer();
+            if(srv != null) {
+                long currentTickTime = srv.tickTimeArray[srv.getTickCounter() % 100];
+                lastIntegratedTickTime = lastIntegratedTickTime * 0.8F + (float)currentTickTime / 1000000.0F * 0.2F;
+            } else
+                lastIntegratedTickTime = 0;
+        }
+    }
+
+    @SubscribeEvent
+    public void onRenderOverlayLeft(RenderGameOverlayEvent.Text event) {
+        Minecraft minecraft = Minecraft.getMinecraft();
+        if(!minecraft.gameSettings.showDebugInfo)
+            return;
+        NetHandlerPlayClient cl = minecraft.getNetHandler();
+        if(cl == null)
+            return;
+        IntegratedServer srv = minecraft.getIntegratedServer();
+
+        if (srv != null) {
+            String s = String.format("Integrated server @ %.0f ms ticks", lastIntegratedTickTime);
+            event.left.add(1, s);
+        }
     }
 
     @SubscribeEvent
