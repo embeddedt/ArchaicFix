@@ -55,7 +55,7 @@ public enum Mixin implements IMixin {
     common_lighting_MixinChunkVanilla(Side.COMMON, always(), "lighting.MixinChunkVanilla"),
     common_lighting_MixinExtendedBlockStorage(Side.COMMON, always(), "lighting.MixinExtendedBlockStorage"),
     common_lighting_MixinSPacketChunkData(Side.COMMON, always(), "lighting.MixinSPacketChunkData"),
-    common_lighting_MixinWorld(Side.COMMON, always(), "lighting.MixinWorld"),
+    common_lighting_MixinWorld(Side.COMMON, always(), "lighting.MixinWorld_Lighting"),
     common_mo_MixinMatterRegistry(Side.COMMON, require(TargetedMod.MATTEROVERDRIVE), "mo.MixinMatterRegistry"),
     common_mo_MixinMatterRegistrationHandler(Side.COMMON, require(TargetedMod.MATTEROVERDRIVE), "mo.MixinMatterRegistrationHandler"),
     common_mo_MixinVersionCheckHandler(Side.COMMON, require(TargetedMod.MATTEROVERDRIVE), "mo.MixinVersionCheckHandler"),

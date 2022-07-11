@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Set;
 
 @Mixin(World.class)
-public abstract class MixinWorld implements ILightingEngineProvider {
+public abstract class MixinWorld_Lighting implements ILightingEngineProvider {
     @Shadow protected Set activeChunkSet;
 
     @Shadow public abstract IChunkProvider getChunkProvider();
