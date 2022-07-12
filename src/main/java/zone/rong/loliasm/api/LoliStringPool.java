@@ -97,6 +97,7 @@ public class LoliStringPool {
     }
 
     public static class EventHandler {
+        /*
         @SubscribeEvent
         public void onDebugList(RenderGameOverlayEvent.Text event) {
             Minecraft minecraft = Minecraft.getMinecraft();
@@ -110,6 +111,7 @@ public class LoliStringPool {
                 list.add(String.format("%s%s%s: %s strings processed. %s unique, %s deduplicated.", EnumChatFormatting.AQUA, "<ArchaicFix>", EnumChatFormatting.RESET, deduplicatedCount, size, deduplicatedCount - size));
             }
         }
+        */
     }
 
 
