@@ -93,4 +93,8 @@ public class ArchaicConfig {
     @Config.Comment("Fix the 'TickNextTick list out of synch' error.")
     @Config.DefaultBoolean(true)
     public static boolean fixTickListSynchronization;
+
+    @Config.Comment("Make sure entities don't spawn inside blocks that would make them suffocate. Off by default because it might reduce the number of passive entities that spawn during worldgen.")
+    @Config.DefaultBoolean(false)
+    public static boolean preventEntitySuffocationWorldgen;
 }
