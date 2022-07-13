@@ -89,4 +89,8 @@ public class ArchaicConfig {
     @Config.Comment("Only show GT6 tooltip data when Shift is pressed.")
     @Config.DefaultBoolean(true)
     public static boolean hideGT6TooltipDataBehindKey;
+
+    @Config.Comment("Fix the 'TickNextTick list out of synch' error.")
+    @Config.DefaultBoolean(true)
+    public static boolean fixTickListSynchronization;
 }
