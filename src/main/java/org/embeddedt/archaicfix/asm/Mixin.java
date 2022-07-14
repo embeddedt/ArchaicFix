@@ -88,6 +88,7 @@ public enum Mixin implements IMixin {
     client_lighting_MixinChunkCache(Side.CLIENT, always(), "lighting.MixinChunkCache"),
 
     client_occlusion_MixinChunk(Side.CLIENT, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.enableOcclusionTweaks), "occlusion.MixinChunk"),
+    client_occlusion_MixinEntityRenderer(Side.CLIENT, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.enableOcclusionTweaks), "occlusion.MixinEntityRenderer"),
     client_occlusion_MixinRenderGlobal(Side.CLIENT, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.enableOcclusionTweaks), "occlusion.MixinRenderGlobal"),
     client_occlusion_MixinGuiVideoSettings(Side.CLIENT, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.enableOcclusionTweaks), "occlusion.MixinGuiVideoSettings"),
     client_occlusion_MixinWorldRenderer(Side.CLIENT, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.enableOcclusionTweaks), "occlusion.MixinWorldRenderer"),

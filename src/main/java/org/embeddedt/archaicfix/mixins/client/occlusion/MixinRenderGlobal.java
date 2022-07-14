@@ -276,7 +276,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         return getRenderer(X, Y, Z);
     }
 
-    private boolean rebuildChunks(EntityLivingBase view, int lim, long start) {
+    private boolean rebuildChunks(EntityLivingBase view, int lim, long deadline) {
         ArrayList<WorldRenderer> worldRenderersToUpdateList = this.worldRenderersToUpdateList;
         int lastUpdatedIndex = 0;
         boolean spareTime = true;
@@ -301,8 +301,8 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
             // can't add fields, re-use
 
             if (++i > timeCheckInterval) {
-                long t = System.nanoTime() - start;
-                if (t > 4500000L) {
+                long t = System.nanoTime();
+                if (t > deadline) {
                     if (i == c || frameCounter == frameTarget) {
                         timeCheckInterval = (byte) Math.max(timeCheckInterval - 1, 0);
                         frameTarget = (byte) (frameCounter + 50);
@@ -340,7 +340,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         int lim = worldRenderersToUpdate.size();
         if (lim > 0) {
             ++frameCounter;
-            rebuildChunks(view, lim, System.nanoTime());
+            rebuildChunks(view, lim, OcclusionHelpers.chunkUpdateDeadline);
         }
 
         theWorld.theProfiler.endStartSection("scan");
