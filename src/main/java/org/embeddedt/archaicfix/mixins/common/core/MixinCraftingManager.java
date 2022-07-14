@@ -3,12 +3,14 @@ package org.embeddedt.archaicfix.mixins.common.core;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
+import org.embeddedt.archaicfix.ArchaicLogger;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
 import org.embeddedt.archaicfix.recipe.IFasterCraftingManager;
 import org.embeddedt.archaicfix.recipe.LastMatchedInfo;
@@ -50,8 +52,9 @@ public class MixinCraftingManager implements IFasterCraftingManager {
             IRecipe[] recipes;
             try {
                 recipes = potentialRecipes.get(stacks);
-            } catch (ExecutionException e) {
-                throw new RuntimeException(e);
+            } catch (UncheckedExecutionException | ExecutionException e) {
+                ArchaicLogger.LOGGER.error("An error occured while attempting to cache recipes!", e);
+                return;
             }
             for(IRecipe r : recipes) {
                 if(r.matches(inventory, world)) {
