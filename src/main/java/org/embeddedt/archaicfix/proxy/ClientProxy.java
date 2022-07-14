@@ -1,14 +1,17 @@
 package org.embeddedt.archaicfix.proxy;
 
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.server.integrated.IntegratedServer;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.sound.SoundLoadEvent;
 import net.minecraftforge.client.event.sound.SoundSetupEvent;
@@ -50,19 +53,27 @@ public class ClientProxy extends CommonProxy {
         }
     }
 
-    @SubscribeEvent
-    public void onRenderOverlayLeft(RenderGameOverlayEvent.Text event) {
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onRenderOverlay(RenderGameOverlayEvent.Text event) {
         Minecraft minecraft = Minecraft.getMinecraft();
         if(!minecraft.gameSettings.showDebugInfo)
             return;
         NetHandlerPlayClient cl = minecraft.getNetHandler();
-        if(cl == null)
-            return;
-        IntegratedServer srv = minecraft.getIntegratedServer();
+        if(cl != null) {
+            IntegratedServer srv = minecraft.getIntegratedServer();
 
-        if (srv != null) {
-            String s = String.format("Integrated server @ %.0f ms ticks", lastIntegratedTickTime);
-            event.left.add(1, s);
+            if (srv != null) {
+                String s = String.format("Integrated server @ %.0f ms ticks", lastIntegratedTickTime);
+                event.left.add(1, s);
+            }
+        }
+        if(ArchaicConfig.showBlockDebugInfo && minecraft.objectMouseOver != null && minecraft.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+            if(event.right.get(event.right.size()-1).length() > 0)
+                event.right.add("");
+            Block block = minecraft.theWorld.getBlock(minecraft.objectMouseOver.blockX, minecraft.objectMouseOver.blockY, minecraft.objectMouseOver.blockZ);
+            int meta = minecraft.theWorld.getBlockMetadata(minecraft.objectMouseOver.blockX, minecraft.objectMouseOver.blockY, minecraft.objectMouseOver.blockZ);
+            event.right.add(Block.blockRegistry.getNameForObject(block));
+            event.right.add("meta: " + meta);
         }
     }
 
