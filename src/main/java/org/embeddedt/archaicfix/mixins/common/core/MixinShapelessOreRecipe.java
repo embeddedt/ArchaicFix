@@ -23,7 +23,8 @@ public class MixinShapelessOreRecipe implements IAcceleratedRecipe {
         ImmutableSet.Builder<Item> builder = ImmutableSet.builder();
         for(Object o : input) {
             if(o instanceof ItemStack) {
-                builder.add(((ItemStack) o).getItem());
+                if(((ItemStack)o).getItem() != null)
+                    builder.add(((ItemStack) o).getItem());
             } else if(o instanceof ArrayList) {
                 for(ItemStack stack : ((ArrayList<ItemStack>)o)) {
                     if(stack.getItem() != null)
