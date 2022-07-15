@@ -17,6 +17,7 @@ import java.util.*;
 public class OcclusionHelpers {
     public static RenderWorker worker;
     public static long chunkUpdateDeadline;
+    public static float partialTickTime;
 
     public static void init() {
         worker = new RenderWorker();

@@ -71,7 +71,9 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
 
     private ArrayList<WorldRenderer> worldRenderersToUpdateList;
 
-    private int prevRenderX, prevRenderY, prevRenderZ;
+    private double prevRenderX, prevRenderY, prevRenderZ;
+    private int cameraStaticTime;
+
     private short alphaSortProgress = 0;
     private byte timeCheckInterval = 5, frameCounter, frameTarget;
 
@@ -329,6 +331,33 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
             OcclusionHelpers.processUpdate(this);
         }
         theWorld.theProfiler.endStartSection("rebuild");
+
+        EntityLivingBase viewEntity = mc.renderViewEntity;
+        float tick = OcclusionHelpers.partialTickTime;
+        double viewX = viewEntity.lastTickPosX + (viewEntity.posX - viewEntity.lastTickPosX) * tick;
+        double viewY = viewEntity.lastTickPosY + (viewEntity.posY - viewEntity.lastTickPosY) * tick;
+        double viewZ = viewEntity.lastTickPosZ + (viewEntity.posZ - viewEntity.lastTickPosZ) * tick;
+
+        boolean cameraMoved = viewX != prevRenderX || viewY != prevRenderY || viewZ != prevRenderZ;
+
+        prevRenderX = viewX;
+        prevRenderY = viewY;
+        prevRenderZ = viewZ;
+
+        boolean cameraRotated =
+                PreviousActiveRenderInfo.objectX != ActiveRenderInfo.objectX ||
+                PreviousActiveRenderInfo.objectY != ActiveRenderInfo.objectY ||
+                PreviousActiveRenderInfo.objectZ != ActiveRenderInfo.objectZ ||
+                PreviousActiveRenderInfo.rotationX != ActiveRenderInfo.rotationX ||
+                PreviousActiveRenderInfo.rotationYZ != ActiveRenderInfo.rotationYZ ||
+                PreviousActiveRenderInfo.rotationZ != ActiveRenderInfo.rotationZ;
+
+        if(!cameraRotated && !cameraMoved) {
+            cameraStaticTime++;
+        } else {
+            cameraStaticTime = 0;
+        }
+
         /**
          * Under certain scenarios (such as renderer.setPosition being called, or the player moving), renderers will]
          * have their distance from the player change. We address that here by sorting the list.
@@ -340,19 +369,16 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         int lim = worldRenderersToUpdate.size();
         if (lim > 0) {
             ++frameCounter;
-            rebuildChunks(view, lim, OcclusionHelpers.chunkUpdateDeadline);
+            boolean doUpdateAcceleration = cameraStaticTime > 2;
+            /** If the camera is not moving, assume a deadline of 30 FPS. */
+            rebuildChunks(view, lim, !doUpdateAcceleration ? OcclusionHelpers.chunkUpdateDeadline
+                    : mc.entityRenderer.renderEndNanoTime + (1_000_000_000L / 30L));
         }
 
         theWorld.theProfiler.endStartSection("scan");
         int yaw = MathHelper.floor_float(view.rotationYaw + 45) >> 4;
         int pitch = MathHelper.floor_float(view.rotationPitch + 45) >> 4;
-        if (OcclusionHelpers.worker.dirty ||
-                PreviousActiveRenderInfo.objectX != ActiveRenderInfo.objectX ||
-                PreviousActiveRenderInfo.objectY != ActiveRenderInfo.objectY ||
-                PreviousActiveRenderInfo.objectZ != ActiveRenderInfo.objectZ ||
-                PreviousActiveRenderInfo.rotationX != ActiveRenderInfo.rotationX ||
-                PreviousActiveRenderInfo.rotationYZ != ActiveRenderInfo.rotationYZ ||
-                PreviousActiveRenderInfo.rotationZ != ActiveRenderInfo.rotationZ) {
+        if (OcclusionHelpers.worker.dirty || cameraRotated) {
             OcclusionHelpers.worker.run(true);
             PreviousActiveRenderInfo.objectX = ActiveRenderInfo.objectX;
             PreviousActiveRenderInfo.objectY = ActiveRenderInfo.objectY;

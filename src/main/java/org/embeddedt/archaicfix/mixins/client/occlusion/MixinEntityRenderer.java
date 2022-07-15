@@ -11,11 +11,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinEntityRenderer {
 
     /**
-     * @reason MixinRenderGlobal#performCullingUpdates needs to know the chunk update deadline.
+     * @reason MixinRenderGlobal#performCullingUpdates needs to know the chunk update deadline and the partial tick time
      */
     @Inject(method = "renderWorld", at = @At("HEAD"))
     private void getRendererUpdateDeadline(float partialTickTime, long chunkUpdateDeadline, CallbackInfo ci) {
         OcclusionHelpers.chunkUpdateDeadline = chunkUpdateDeadline;
+        OcclusionHelpers.partialTickTime = partialTickTime;
     }
 
 }
