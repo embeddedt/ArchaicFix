@@ -301,10 +301,10 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
             // can't add fields, re-use
 
             if (++i > timeCheckInterval) {
-                long t = (System.nanoTime() - start) >>> 1;
-                if (t > 4500000L >>> 1) {
-                    if (i == c | frameCounter == frameTarget) {
-                        timeCheckInterval = (byte) (--timeCheckInterval & (~timeCheckInterval));
+                long t = System.nanoTime() - start;
+                if (t > 4500000L) {
+                    if (i == c || frameCounter == frameTarget) {
+                        timeCheckInterval = (byte) Math.max(timeCheckInterval - 1, 0);
                         frameTarget = (byte) (frameCounter + 50);
                     }
                     spareTime = false;
@@ -315,7 +315,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         }
         worldRenderersToUpdateList.subList(0, lastUpdatedIndex).clear();
         deferNewRenderUpdates = false;
-        if (spareTime & frameCounter == frameTarget & timeCheckInterval < 5) {
+        if (spareTime && frameCounter == frameTarget && timeCheckInterval < 5) {
             ++timeCheckInterval;
             frameTarget = (byte) (frameCounter + 50);
         }
