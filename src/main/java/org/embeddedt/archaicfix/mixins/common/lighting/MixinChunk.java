@@ -4,6 +4,7 @@ import com.falsepattern.lib.compat.BlockPos;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -28,19 +29,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(value = Chunk.class)
 public abstract class MixinChunk implements IChunkLighting, IChunkLightingData, ILightingEngineProvider {
     private static final EnumFacing[] HORIZONTAL = LightingHooks.HORIZONTAL_FACINGS;
-
-    private int lightRecheckSpeed;
-
-    @Inject(method = "<init>(Lnet/minecraft/world/World;II)V", at = @At("RETURN"))
-    private void initializeRecheckSpeed(World world, int p_i1995_2_, int p_i1995_3_, CallbackInfo ci) {
-        boolean isRemote = world != null && world.isRemote;
-        lightRecheckSpeed = isRemote ? 64 : 32;
-    }
-
-    @Override
-    public void speedupRelight() {
-        this.lightRecheckSpeed = worldObj.isRemote ? 256 : 32;
-    }
 
     /**
      * Callback injected to the head of getLightSubtracted(BlockPos, int) to force deferred light updates to be processed.
@@ -248,7 +236,17 @@ public abstract class MixinChunk implements IChunkLighting, IChunkLightingData, 
     @Overwrite
     public void enqueueRelightChecks()
     {
-        /* Confirm that surrounding chunks are loaded before we do anything */
+        /* Skip object allocation if we weren't going to run checks anyway */
+        if (this.queuedLightChecks >= 4096)
+            return;
+        boolean isActiveChunk = worldObj.activeChunkSet.contains(new ChunkCoordIntPair(this.xPosition, this.zPosition));
+        int lightRecheckSpeed;
+        if(worldObj.isRemote && isActiveChunk) {
+            lightRecheckSpeed = 256;
+        } else if(worldObj.isRemote)
+            lightRecheckSpeed = 64;
+        else
+            lightRecheckSpeed = 32;
         for (int i = 0; i < lightRecheckSpeed; ++i)
         {
             if (this.queuedLightChecks >= 4096)

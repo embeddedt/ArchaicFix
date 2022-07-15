@@ -51,16 +51,6 @@ public abstract class MixinWorld_Lighting implements ILightingEngineProvider {
         cir.setReturnValue(true);
     }
 
-    @Inject(method = "setActivePlayerChunksAndCheckLight", at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/profiler/Profiler;startSection(Ljava/lang/String;)V", args = {"ldc=playerCheckLight"}))
-    private void speedUpLightChecks(CallbackInfo ci) {
-        for(ChunkCoordIntPair pair : (Set<ChunkCoordIntPair>)this.activeChunkSet) {
-            Chunk chunk = LightingEngineHelpers.getLoadedChunk(getChunkProvider(), pair.chunkXPos, pair.chunkZPos);
-            if(chunk != null) {
-                ((IChunkLighting)chunk).speedupRelight();
-            }
-        }
-    }
-
     @Override
     public LightingEngine getLightingEngine() {
         return this.lightingEngine;
