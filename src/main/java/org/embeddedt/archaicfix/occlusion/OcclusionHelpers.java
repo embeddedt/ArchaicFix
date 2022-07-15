@@ -392,6 +392,8 @@ public class OcclusionHelpers {
 
         private final int _x, _y, _z;
 
+        private static final RenderPosition[] VALUES = values();
+
         public static RenderPosition getBackFacingFromVector(EntityLivingBase e) {
 
             float x, y, z;
@@ -414,11 +416,10 @@ public class OcclusionHelpers {
             }
             RenderPosition ret = NORTH;
             float max = Float.MIN_VALUE;
-            RenderPosition[] values = values();
-            int i = values.length;
+            int i = VALUES.length;
 
             for (int j = 0; j < i; ++j) {
-                RenderPosition face = values[j];
+                RenderPosition face = VALUES[j];
                 float cur = x * -face._x + y * -face._y + z * -face._z;
 
                 if (cur > max) {
