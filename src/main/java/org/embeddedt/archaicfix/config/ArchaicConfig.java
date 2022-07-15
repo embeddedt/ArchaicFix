@@ -60,7 +60,7 @@ public class ArchaicConfig {
 
     @Config.Comment("What the maximum render distance should be if raiseMaxRenderDistance is enabled.")
     @Config.DefaultInt(32)
-    @Config.RangeInt(min = 16, max = 48)
+    @Config.RangeInt(min = 16, max = 128)
     public static int newMaxRenderDistance;
 
     @Config.Comment("EXPERIMENTAL: Replace the Thaumcraft hashing implementation. This really hasn't been tested and probably breaks everything.")
