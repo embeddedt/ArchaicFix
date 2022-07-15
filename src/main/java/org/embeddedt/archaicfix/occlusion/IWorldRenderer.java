@@ -8,4 +8,7 @@ public interface IWorldRenderer {
     /** Sets the number of the last frame when this renderer was visited by the occlusion culling algorithm. */
     public void setLastCullUpdateFrame(int lastCullUpdateFrame);
 
+    boolean arch$isInUpdateList();
+    void arch$setInUpdateList(boolean b);
+
 }

@@ -39,6 +39,8 @@ public class MixinWorldRenderer implements IWorldRenderer {
 
     private int arch$lastCullUpdateFrame;
 
+    private boolean arch$isInUpdateList;
+
     @Inject(method = "markDirty", at = @At("TAIL"))
     private void resetOcclusionFlag(CallbackInfo ci) {
         this.isWaitingOnOcclusionQuery = false;
@@ -67,5 +69,15 @@ public class MixinWorldRenderer implements IWorldRenderer {
     @Override
     public void setLastCullUpdateFrame(int lastCullUpdateFrame) {
         arch$lastCullUpdateFrame = lastCullUpdateFrame;
+    }
+
+    @Override
+    public boolean arch$isInUpdateList() {
+        return arch$isInUpdateList;
+    }
+
+    @Override
+    public void arch$setInUpdateList(boolean b) {
+        arch$isInUpdateList = b;
     }
 }
