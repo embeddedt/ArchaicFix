@@ -35,8 +35,6 @@ public class ArchaicFix
 
     public static List<ItemStack> initialCreativeItems = null;
 
-    public static final int MAX_RENDER_DISTANCE = 32;
-
     private FixHelper helper;
 
     @SidedProxy(clientSide = "org.embeddedt.archaicfix.proxy.ClientProxy", serverSide = "org.embeddedt.archaicfix.proxy.CommonProxy")

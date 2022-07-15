@@ -54,9 +54,14 @@ public class ArchaicConfig {
     @Config.DefaultBoolean(true)
     public static boolean increaseMobArmor;
 
-    @Config.Comment("Increase the maximum render distance to 32 if OptiFine and FastCraft are not installed.")
+    @Config.Comment("Increase the maximum render distance if OptiFine and FastCraft are not installed.")
     @Config.DefaultBoolean(false)
     public static boolean raiseMaxRenderDistance;
+
+    @Config.Comment("What the maximum render distance should be if raiseMaxRenderDistance is enabled.")
+    @Config.DefaultInt(32)
+    @Config.RangeInt(min = 16, max = 48)
+    public static int newMaxRenderDistance;
 
     @Config.Comment("EXPERIMENTAL: Replace the Thaumcraft hashing implementation. This really hasn't been tested and probably breaks everything.")
     @Config.DefaultBoolean(false)
