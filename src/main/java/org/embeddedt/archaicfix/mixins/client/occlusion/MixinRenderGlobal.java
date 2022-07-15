@@ -302,7 +302,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
             worldrenderer.isWaitingOnOcclusionQuery = worldrenderer.skipAllRenderPasses();
             // can't add fields, re-use
 
-            if (++i > timeCheckInterval) {
+            if (!worldrenderer.isWaitingOnOcclusionQuery && ++i > timeCheckInterval) {
                 long t = System.nanoTime();
                 if (t > deadline) {
                     if (i == c || frameCounter == frameTarget) {
