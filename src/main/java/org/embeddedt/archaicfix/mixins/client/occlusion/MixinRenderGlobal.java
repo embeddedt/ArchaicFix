@@ -299,7 +299,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
             boolean e = worldrenderer.isWaitingOnOcclusionQuery;
             worldrenderer.updateRenderer(view);
             worldrenderer.isVisible &= !e;
-            worldrenderer.isWaitingOnOcclusionQuery = worldrenderer.skipAllRenderPasses();
+            worldrenderer.isWaitingOnOcclusionQuery = worldrenderer.skipAllRenderPasses() || (mc.theWorld.getChunkFromBlockCoords(worldrenderer.posX, worldrenderer.posZ) instanceof EmptyChunk);
             // can't add fields, re-use
 
             if (!worldrenderer.isWaitingOnOcclusionQuery && ++i > timeCheckInterval) {
@@ -358,7 +358,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
             cameraStaticTime = 0;
         }
 
-        /**
+        /*
          * Under certain scenarios (such as renderer.setPosition being called, or the player moving), renderers will]
          * have their distance from the player change. We address that here by sorting the list.
          */
@@ -370,7 +370,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         if (lim > 0) {
             ++frameCounter;
             boolean doUpdateAcceleration = cameraStaticTime > 2;
-            /** If the camera is not moving, assume a deadline of 30 FPS. */
+            /* If the camera is not moving, assume a deadline of 30 FPS. */
             rebuildChunks(view, lim, !doUpdateAcceleration ? OcclusionHelpers.chunkUpdateDeadline
                     : mc.entityRenderer.renderEndNanoTime + (1_000_000_000L / 30L));
         }
@@ -410,7 +410,8 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
 
     @Override
     public void pushWorkerRenderer(WorldRenderer wr) {
-        addRendererToUpdateQueue(wr);
+        if(!(mc.theWorld.getChunkFromBlockCoords(wr.posX, wr.posZ) instanceof EmptyChunk))
+            addRendererToUpdateQueue(wr);
     }
 
     @Redirect(method = "loadRenderers", at = @At(value = "INVOKE", target = "Ljava/util/Arrays;sort([Ljava/lang/Object;Ljava/util/Comparator;)V", ordinal = 0))
