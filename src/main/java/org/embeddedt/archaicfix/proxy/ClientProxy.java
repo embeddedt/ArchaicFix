@@ -94,7 +94,11 @@ public class ClientProxy extends CommonProxy {
                 Item item = (Item) o;
 
                 if (item != null && item.getCreativeTab() != null) {
-                    item.getSubItems(item, null, initialCreativeItems);
+                    try {
+                        item.getSubItems(item, null, initialCreativeItems);
+                    } catch(Exception e) {
+                        ArchaicLogger.LOGGER.error("Item " + item + " threw an error while populating the creative item list!", e);
+                    }
                 }
             }
             for(Enchantment enchantment : Enchantment.enchantmentsList) {
