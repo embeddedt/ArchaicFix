@@ -106,4 +106,16 @@ public class ArchaicConfig {
     @Config.Comment("Show block registry name and meta value in F3, similar to 1.8+.")
     @Config.DefaultBoolean(false)
     public static boolean showBlockDebugInfo;
+
+    @Config.Comment("Prevent entities outside a certain distance from being ticked. This does not affect tile entities, and is essentially another view distance slider.")
+    @Config.DefaultBoolean(false)
+    public static boolean optimizeEntityTicking;
+
+    @Config.Comment("Squared distance outside which most entities aren't ticked, default is 64 blocks.")
+    @Config.DefaultInt(4096)
+    public static int optimizeEntityTickingDistance;
+
+    @Config.Comment("List of entities to ignore for entity ticking optimization.")
+    @Config.DefaultStringList({ "Wither", "EnderDragon" })
+    public static String[] optimizeEntityTickingIgnoreList;
 }
