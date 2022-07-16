@@ -200,10 +200,8 @@ public class OcclusionHelpers {
 
                                 IWorldRenderer extendedT = (IWorldRenderer) t;
 
-                                if (t == null || extendedT.getLastCullUpdateFrame() == frame || !isInFrustum(t, frustum))
+                                if (t == null || !extendedT.arch$setLastCullUpdateFrame(frame) || !isInFrustum(t, frustum))
                                     continue;
-
-                                extendedT.setLastCullUpdateFrame(frame);
 
                                 ++considered;
                                 int cost = t.isWaitingOnOcclusionQuery || allVis ? 0 : 1;

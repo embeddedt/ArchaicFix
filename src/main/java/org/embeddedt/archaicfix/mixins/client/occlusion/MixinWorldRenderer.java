@@ -62,13 +62,10 @@ public class MixinWorldRenderer implements IWorldRenderer {
     }
 
     @Override
-    public int getLastCullUpdateFrame() {
-        return arch$lastCullUpdateFrame;
-    }
-
-    @Override
-    public void setLastCullUpdateFrame(int lastCullUpdateFrame) {
+    public boolean arch$setLastCullUpdateFrame(int lastCullUpdateFrame) {
+        int prevVal = arch$lastCullUpdateFrame;
         arch$lastCullUpdateFrame = lastCullUpdateFrame;
+        return arch$lastCullUpdateFrame != prevVal;
     }
 
     @Override
