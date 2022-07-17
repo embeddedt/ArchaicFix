@@ -404,7 +404,6 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         if(theWorld != null) {
             renderersLoaded = 0;
         }
-        OcclusionHelpers.frustumChecksPending = 0;
     }
 
     @Inject(method = "loadRenderers", at = @At("TAIL"))
