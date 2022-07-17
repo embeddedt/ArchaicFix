@@ -19,7 +19,7 @@ The latest development version can be downloaded here: https://nightly.link/embe
 * SpongeMixins
 * FalsePatternLib
 
-# Compatibility notes
+## Compatibility notes
 
 * ArchaicFix is not compatible with versions of GG Util that include threaded lighting. You may use the [fixed version](https://www.curseforge.com/minecraft/mc-mods/gilded-game-utils-fix) instead.
 
