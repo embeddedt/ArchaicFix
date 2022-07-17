@@ -1,6 +1,7 @@
 package org.embeddedt.archaicfix.mixins.common.core;
 
 import com.google.common.collect.ImmutableSet;
+import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
@@ -11,6 +12,7 @@ import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.WorldChunkManager;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.common.ForgeChunkManager;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
@@ -23,6 +25,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -35,6 +39,10 @@ public abstract class MixinWorld {
     @Shadow public abstract float getCurrentMoonPhaseFactor();
 
     @Shadow protected WorldInfo worldInfo;
+
+    @Shadow public List playerEntities;
+
+    @Shadow public abstract Chunk getChunkFromChunkCoords(int p_72964_1_, int p_72964_2_);
 
     @Redirect(method = "getBiomeGenForCoordsBody", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/biome/WorldChunkManager;getBiomeGenAt(II)Lnet/minecraft/world/biome/BiomeGenBase;"))
     private BiomeGenBase skipBiomeGenOnClient(WorldChunkManager manager, int x, int z) {
@@ -92,6 +100,38 @@ public abstract class MixinWorld {
         }
         if(((EntityLivingBase)entity).deathTime <= 0 && finalDist > ArchaicConfig.optimizeEntityTickingDistance) {
             ci.cancel();
+        }
+    }
+
+    @Inject(method = "setActivePlayerChunksAndCheckLight", at = @At("TAIL"))
+    private void saveInactiveChunks(CallbackInfo ci) {
+        int renderDistance = FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().getViewDistance();
+        if(this.isRemote || ArchaicConfig.optimizeBlockTickingDistance <= 0 || renderDistance <= ArchaicConfig.optimizeBlockTickingDistance)
+            return;
+        EntityPlayer entityplayer;
+        int j;
+        int k;
+
+        int activeDistance = ArchaicConfig.optimizeBlockTickingDistance;
+
+        for (int i = 0; i < this.playerEntities.size(); ++i)
+        {
+            entityplayer = (EntityPlayer)this.playerEntities.get(i);
+            j = MathHelper.floor_double(entityplayer.posX / 16.0D);
+            k = MathHelper.floor_double(entityplayer.posZ / 16.0D);
+
+            for (int offX = -renderDistance; offX <= renderDistance; ++offX)
+            {
+                for (int offZ = -renderDistance; offZ <= renderDistance; ++offZ)
+                {
+                    if(Math.abs(offX) <= activeDistance && Math.abs(offZ) <= activeDistance)
+                        continue;
+                    Chunk chunk = this.getChunkFromChunkCoords(offX + j, offZ + k);
+                    if(!chunk.field_150815_m) {
+                        chunk.func_150804_b(false);
+                    }
+                }
+            }
         }
     }
 }

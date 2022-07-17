@@ -115,6 +115,10 @@ public class ArchaicConfig {
     @Config.DefaultInt(4096)
     public static int optimizeEntityTickingDistance;
 
+    @Config.Comment("Distance in chunks at which blocks are ticked, the default value of 0 means to use the render distance.")
+    @Config.DefaultInt(0)
+    public static int optimizeBlockTickingDistance;
+
     @Config.Comment("List of entities to ignore for entity ticking optimization.")
     @Config.DefaultStringList({ "Wither", "EnderDragon" })
     public static String[] optimizeEntityTickingIgnoreList;
