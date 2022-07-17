@@ -68,6 +68,7 @@ public class OcclusionHelpers {
         }
 
         public volatile boolean dirty = false;
+        public int dirtyFrustumRenderers;
         private int frame = 0;
         private ArrayDeque<CullInfo> queue = new ArrayDeque<CullInfo>();
         @SuppressWarnings("unused")
@@ -103,7 +104,6 @@ public class OcclusionHelpers {
 
                 for (int i = 0; i < render.worldRenderers.length; ++i) {
                     render.worldRenderers[i].isVisible = false;
-                    render.worldRenderers[i].isInFrustum = false;
                 }
                 render.renderersLoaded = 0;
                 WorldRenderer center;
@@ -251,7 +251,12 @@ public class OcclusionHelpers {
 
         private static boolean isInFrustum(WorldRenderer r, Frustrum frustum){
             if(r != null) {
-                r.updateInFrustum(frustum);
+                if(r.isInFrustum) {
+                    /** Defer checking if visible renderers are still in the frustum */
+                    ((IWorldRenderer)r).arch$setIsFrustumCheckPending(true);
+                } else {
+                    r.updateInFrustum(frustum);
+                }
             }
             return r != null && r.isInFrustum;
         }

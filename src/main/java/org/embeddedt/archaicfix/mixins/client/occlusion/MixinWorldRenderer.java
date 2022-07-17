@@ -6,6 +6,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.EmptyChunk;
 import org.embeddedt.archaicfix.occlusion.IWorldRenderer;
+import org.embeddedt.archaicfix.occlusion.OcclusionHelpers;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -40,6 +41,7 @@ public class MixinWorldRenderer implements IWorldRenderer {
     private int arch$lastCullUpdateFrame;
 
     private boolean arch$isInUpdateList;
+    private boolean arch$isFrustumCheckPending;
 
     @Inject(method = "markDirty", at = @At("TAIL"))
     private void resetOcclusionFlag(CallbackInfo ci) {
@@ -76,5 +78,15 @@ public class MixinWorldRenderer implements IWorldRenderer {
     @Override
     public void arch$setInUpdateList(boolean b) {
         arch$isInUpdateList = b;
+    }
+
+    @Override
+    public boolean arch$isFrustumCheckPending() {
+        return arch$isFrustumCheckPending;
+    }
+
+    @Override
+    public void arch$setIsFrustumCheckPending(boolean b) {
+        arch$isFrustumCheckPending = b;
     }
 }

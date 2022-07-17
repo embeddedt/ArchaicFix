@@ -67,6 +67,9 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
 
     @Shadow public abstract void loadRenderers();
 
+    @Shadow
+    private int frustumCheckOffset;
+
     private Thread clientThread;
 
     private ArrayList<WorldRenderer> worldRenderersToUpdateList;
@@ -401,6 +404,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         if(theWorld != null) {
             renderersLoaded = 0;
         }
+        OcclusionHelpers.frustumChecksPending = 0;
     }
 
     @Inject(method = "loadRenderers", at = @At("TAIL"))
@@ -613,12 +617,28 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
 
     /**
      * @author makamys
-     * @reason The frustum status is updated in {@link org.embeddedt.archaicfix.occlusion.OcclusionHelpers.RenderWorker#run(boolean)}
-     * instead.
+     * @reason Integrate with the logic in {@link org.embeddedt.archaicfix.occlusion.OcclusionHelpers.RenderWorker#run(boolean)}.
      */
     @Overwrite
     public void clipRenderersByFrustum(ICamera p_72729_1_, float p_72729_2_) {
+        for (int i = 0; i < this.worldRenderers.length; ++i) {
+            WorldRenderer wr = this.worldRenderers[i];
+            IWorldRenderer iwr = (IWorldRenderer)wr;
+            if (wr.isInFrustum && (i + this.frustumCheckOffset & 15) == 0 && iwr.arch$isFrustumCheckPending()) {
+                wr.updateInFrustum(p_72729_1_);
+                iwr.arch$setIsFrustumCheckPending(false);
+                if(!wr.isInFrustum) {
+                    OcclusionHelpers.worker.dirtyFrustumRenderers++;
+                }
+            }
+        }
 
+        ++this.frustumCheckOffset;
+
+        if(this.frustumCheckOffset % 15 == 0 && OcclusionHelpers.worker.dirtyFrustumRenderers > 0) {
+            OcclusionHelpers.worker.dirty = true;
+            OcclusionHelpers.worker.dirtyFrustumRenderers = 0;
+        }
     }
 
     private static double distanceSquared(double x1, double y1, double z1, double x2, double y2, double z2) {

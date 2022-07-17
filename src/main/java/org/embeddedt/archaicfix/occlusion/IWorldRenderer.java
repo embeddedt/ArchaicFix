@@ -9,4 +9,7 @@ public interface IWorldRenderer {
     boolean arch$isInUpdateList();
     void arch$setInUpdateList(boolean b);
 
+    boolean arch$isFrustumCheckPending();
+    void arch$setIsFrustumCheckPending(boolean b);
+
 }
