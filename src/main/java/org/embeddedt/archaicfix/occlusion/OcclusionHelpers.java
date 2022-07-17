@@ -11,6 +11,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import org.embeddedt.archaicfix.occlusion.util.IntStack;
+import org.embeddedt.archaicfix.occlusion.util.RecyclingList;
 
 import java.util.*;
 
@@ -67,6 +68,8 @@ public class OcclusionHelpers {
             DUMMY.computeVisibility();
         }
 
+        private static RecyclingList<CullInfo> cullInfoBuf = new RecyclingList<>(() -> new CullInfo());
+
         public volatile boolean dirty = false;
         public int dirtyFrustumRenderers;
         private int frame = 0;
@@ -84,6 +87,7 @@ public class OcclusionHelpers {
         public void run(boolean immediate) {
             frame++;
             queue.clear();
+            cullInfoBuf.reset();
             int queueIterations = 0;
             l: {
                 if (render == null) {
@@ -130,7 +134,7 @@ public class OcclusionHelpers {
                     RenderPosition pos = viewY < 5 ? RenderPosition.UP : RenderPosition.DOWN;
                     {
                         Chunk chunk = chunkCache.getChunk(center);
-                        CullInfo info = new CullInfo(center, isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[center.posY >> 4], RenderPosition.NONE, -2);
+                        CullInfo info = cullInfoBuf.next().init(center, isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[center.posY >> 4], RenderPosition.NONE, -2);
                         queue.add(info);
                     }
                     boolean allNull = false;
@@ -147,7 +151,7 @@ public class OcclusionHelpers {
                                 }
                                 allNull = false;
                                 Chunk chunk = chunkCache.getChunk(center);
-                                CullInfo info = new CullInfo(center, isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[center.posY >> 4], RenderPosition.NONE, -2);
+                                CullInfo info = cullInfoBuf.next().init(center, isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[center.posY >> 4], RenderPosition.NONE, -2);
                                 queue.add(info);
                             }
                             ++i;
@@ -159,7 +163,7 @@ public class OcclusionHelpers {
                     Chunk chunk = chunkCache.getChunk(center);
                     VisGraph sides = isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[center.posY >> 4];
                     markRenderer(center, view, sides);
-                    CullInfo info = new CullInfo(center, sides, RenderPosition.NONE, renderDistanceChunks * -1 - 3);
+                    CullInfo info = cullInfoBuf.next().init(center, sides, RenderPosition.NONE, renderDistanceChunks * -1 - 3);
                     queue.add(info);
                 }
 
@@ -212,7 +216,7 @@ public class OcclusionHelpers {
                                     VisGraph oSides;
                                     Chunk o = t.posX == rend.posX && t.posZ == rend.posZ ? chunk : chunkCache.getChunk(t);
                                     oSides = isChunkEmpty(o) ? DUMMY : ((ICulledChunk)o).getVisibility()[t.posY >> 4];
-                                    data = new CullInfo(t, oSides, stepPos, info.cost + cost);
+                                    data = cullInfoBuf.next().init(t, oSides, stepPos, info.cost + cost);
                                 }
 
                                 data.facings |= info.facings;
@@ -267,22 +271,30 @@ public class OcclusionHelpers {
 
         private static class CullInfo {
 
-            boolean visited = false;
-            final int cost;
-            final WorldRenderer rend;
-            final VisGraph vis;
+            boolean visited;
+            int cost;
+            WorldRenderer rend;
+            VisGraph vis;
             /** The direction we stepped in to reach this subchunk. */
-            final RenderPosition dir;
+            RenderPosition dir;
             /** All the directions we have stepped in to reach this subchunk. */
             byte facings;
 
-            public CullInfo(WorldRenderer rend, VisGraph vis, RenderPosition dir, int cost) {
+            public CullInfo() {
+
+            }
+
+            public CullInfo init(WorldRenderer rend, VisGraph vis, RenderPosition dir, int cost) {
                 this.cost = cost;
                 this.rend = rend;
                 this.vis = vis;
                 this.dir = dir;
                 this.facings = 0;
                 this.facings |= (1 << this.dir.ordinal());
+
+                this.visited = false;
+
+                return this;
             }
 
         }
