@@ -23,6 +23,8 @@ public abstract class MixinWorldRenderer implements IWorldRenderer {
 
     @Shadow private int glRenderList;
 
+    @Shadow private int bytesDrawn;
+
     public boolean arch$isInView() {
         if(Minecraft.getMinecraft().renderViewEntity == null)
             return true;
@@ -47,7 +49,7 @@ public abstract class MixinWorldRenderer implements IWorldRenderer {
      */
     @Inject(method = "setDontDraw", at = @At("TAIL"))
     private void clearOldRenderList(CallbackInfo ci) {
-        if(this.glRenderList == -1)
+        if(this.glRenderList == -1 || this.bytesDrawn <= 0)
             return;
         for(int pass = 0; pass < 2; pass++) {
             GL11.glNewList(this.glRenderList + pass, GL11.GL_COMPILE);
