@@ -10,6 +10,8 @@ public class SetVisibility {
 
 	private static final int COUNT_FACES = EnumFacing.values().length;
 	private final BitSet bitSet;
+	private boolean isAllVisibleTrue;
+	private boolean isAllVisibleFalse;
 
 	public SetVisibility() {
 
@@ -35,17 +37,25 @@ public class SetVisibility {
 
 		bitSet.set(from.ordinal() + to.ordinal() * COUNT_FACES, visible);
 		bitSet.set(to.ordinal() + from.ordinal() * COUNT_FACES, visible);
+		updateIsAllVisible();
 	}
 
 	public void setAllVisible(boolean visible) {
 
 		bitSet.set(0, bitSet.size(), visible);
+		updateIsAllVisible();
 	}
 
 	public boolean isAllVisible(boolean visible) {
+		return visible ? isAllVisibleTrue : isAllVisibleFalse;
+	}
 
-		int i = visible ? bitSet.nextClearBit(0) : bitSet.nextSetBit(0);
-		return i < 0 || i >= (COUNT_FACES * COUNT_FACES);
+	private void updateIsAllVisible() {
+		int iTrue = bitSet.nextClearBit(0);
+		isAllVisibleTrue = iTrue < 0 || iTrue >= (COUNT_FACES * COUNT_FACES);
+
+		int iFalse = bitSet.nextSetBit(0);
+		isAllVisibleFalse = iFalse < 0 || iFalse >= (COUNT_FACES * COUNT_FACES);
 	}
 
 	public boolean isVisible(EnumFacing from, EnumFacing to) {
