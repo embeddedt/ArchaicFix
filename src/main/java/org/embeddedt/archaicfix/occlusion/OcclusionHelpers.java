@@ -89,59 +89,56 @@ public class OcclusionHelpers {
             queue.clear();
             cullInfoBuf.reset();
             int queueIterations = 0;
-            l: {
-                if (render == null) {
-                    return;
-                }
-                IRenderGlobal extendedRender = (IRenderGlobal)render;
-                EntityLivingBase view = mc.renderViewEntity;
-                if (theWorld == null || view == null) {
-                    return;
-                }
 
-                Frustrum frustum = new Frustrum();
-                // TODO: interpolate using partial tick time
-                frustum.setPosition(view.posX, view.posY, view.posZ);
+            if (render == null) {
+                return;
+            }
+            IRenderGlobal extendedRender = (IRenderGlobal)render;
+            EntityLivingBase view = mc.renderViewEntity;
+            if (theWorld == null || view == null) {
+                return;
+            }
 
-                theWorld.theProfiler.startSection("prep");
-                WorldRenderer[] renderers = render.sortedWorldRenderers;
+            Frustrum frustum = new Frustrum();
+            // TODO: interpolate using partial tick time
+            frustum.setPosition(view.posX, view.posY, view.posZ);
 
-                for (int i = 0; i < render.worldRenderers.length; ++i) {
-                    render.worldRenderers[i].isVisible = false;
-                }
-                render.renderersLoaded = 0;
-                WorldRenderer center;
-                RenderPosition back = RenderPosition.getBackFacingFromVector(view);
-                int renderDistanceChunks = render.renderDistanceChunks, renderDistanceWidth = renderDistanceChunks * 2 + 1;
+            theWorld.theProfiler.startSection("prep");
+            WorldRenderer[] renderers = render.sortedWorldRenderers;
 
-                int viewX = MathHelper.floor_double(view.posX);
-                int viewY = MathHelper.floor_double(view.posY + view.getEyeHeight());
-                int viewZ = MathHelper.floor_double(view.posZ);
+            for (int i = 0; i < render.worldRenderers.length; ++i) {
+                render.worldRenderers[i].isVisible = false;
+            }
+            render.renderersLoaded = 0;
+            WorldRenderer center;
+            RenderPosition back = RenderPosition.getBackFacingFromVector(view);
+            int renderDistanceChunks = render.renderDistanceChunks, renderDistanceWidth = renderDistanceChunks * 2 + 1;
 
-                theWorld.theProfiler.endStartSection("gather_chunks");
-                chunkCache.gatherChunks(theWorld, viewX >> 4, viewZ >> 4, renderDistanceChunks);
+            int viewX = MathHelper.floor_double(view.posX);
+            int viewY = MathHelper.floor_double(view.posY + view.getEyeHeight());
+            int viewZ = MathHelper.floor_double(view.posZ);
 
-                theWorld.theProfiler.endStartSection("seed_queue");
-                center = extendedRender.getRenderer(viewX, viewY, viewZ);
-                isInFrustum(center, frustum); // make sure frustum status gets updated for the starting renderer
-                if (center == null) {
-                    int level = viewY > 5 ? 250 : 5;
-                    center = extendedRender.getRenderer(viewX, level, viewZ);
-                    if (center == null) {
-                        dirty = false;
-                        break l;
-                    }
+            theWorld.theProfiler.endStartSection("gather_chunks");
+            chunkCache.gatherChunks(theWorld, viewX >> 4, viewZ >> 4, renderDistanceChunks);
+
+            theWorld.theProfiler.endStartSection("seed_queue");
+            center = extendedRender.getRenderer(viewX, viewY, viewZ);
+            isInFrustum(center, frustum); // make sure frustum status gets updated for the starting renderer
+            if (center == null) {
+                int level = viewY > 5 ? 250 : 5;
+                center = extendedRender.getRenderer(viewX, level, viewZ);
+                if (center != null) {
                     RenderPosition pos = viewY < 5 ? RenderPosition.UP : RenderPosition.DOWN;
                     {
                         Chunk chunk = chunkCache.getChunk(center);
-                        CullInfo info = cullInfoBuf.next().init(center, isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[center.posY >> 4], RenderPosition.NONE, -2);
+                        CullInfo info = cullInfoBuf.next().init(center, isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk) chunk).getVisibility()[center.posY >> 4], RenderPosition.NONE, -2);
                         queue.add(info);
                     }
                     boolean allNull = false;
                     theWorld.theProfiler.startSection("gather_world");
                     for (int size = 1; !allNull; ++size) {
                         allNull = true;
-                        for (int i = 0, j = size; i < size;) {
+                        for (int i = 0, j = size; i < size; ) {
                             for (int k = 0; k < 4; ++k) {
                                 int xm = (k & 1) == 0 ? -1 : 1;
                                 int zm = (k & 2) == 0 ? -1 : 1;
@@ -151,7 +148,7 @@ public class OcclusionHelpers {
                                 }
                                 allNull = false;
                                 Chunk chunk = chunkCache.getChunk(center);
-                                CullInfo info = cullInfoBuf.next().init(center, isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[center.posY >> 4], RenderPosition.NONE, -2);
+                                CullInfo info = cullInfoBuf.next().init(center, isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk) chunk).getVisibility()[center.posY >> 4], RenderPosition.NONE, -2);
                                 queue.add(info);
                             }
                             ++i;
@@ -159,76 +156,77 @@ public class OcclusionHelpers {
                         }
                     }
                     theWorld.theProfiler.endSection();
-                } else {
-                    Chunk chunk = chunkCache.getChunk(center);
-                    VisGraph sides = isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[center.posY >> 4];
-                    markRenderer(center, view, sides);
-                    CullInfo info = cullInfoBuf.next().init(center, sides, RenderPosition.NONE, renderDistanceChunks * -1 - 3);
-                    queue.add(info);
                 }
+            } else {
+                Chunk chunk = chunkCache.getChunk(center);
+                VisGraph sides = isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[center.posY >> 4];
+                markRenderer(center, view, sides);
+                CullInfo info = cullInfoBuf.next().init(center, sides, RenderPosition.NONE, renderDistanceChunks * -1 - 3);
+                queue.add(info);
+            }
 
-                theWorld.theProfiler.endStartSection("process_queue");
-                if (!queue.isEmpty()) {
-                    @SuppressWarnings("unused")
-                    int visited = queue.size(), considered = visited;
+            theWorld.theProfiler.endStartSection("process_queue");
+            if (!queue.isEmpty()) {
+                @SuppressWarnings("unused")
+                int visited = queue.size(), considered = visited;
 
-                    RenderPosition[] bias = RenderPosition.POSITIONS_BIAS[back.ordinal() ^ 1];
-                    for (; !queue.isEmpty();) {
-                        queueIterations++;
-                        CullInfo info = queue.pollFirst();
-                        if (info == null) {
-                            break;
-                        }
+                RenderPosition[] bias = RenderPosition.POSITIONS_BIAS[back.ordinal() ^ 1];
+                for (; !queue.isEmpty();) {
+                    queueIterations++;
+                    CullInfo info = queue.pollFirst();
+                    if (info == null) {
+                        break;
+                    }
 
-                        info.visited = true;
-                        if (info.cost > renderDistanceChunks * 2)
+                    info.visited = true;
+                    if (info.cost > renderDistanceChunks * 2)
+                        continue;
+
+                    WorldRenderer rend = info.rend;
+                    RenderPosition dir = info.dir;
+                    Chunk chunk = chunkCache.getChunk(rend);
+
+                    VisGraph sides = isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[rend.posY >> 4];
+
+                    markRenderer(rend, view, sides);
+
+                    SetVisibility vis = sides.getVisibility();
+                    boolean allVis = mc.playerController.currentGameType.getID() == 3 || vis.isAllVisible(true);
+                    for (int p = 0; p < 6; ++p) {
+                        RenderPosition stepPos = bias[p];
+                        if (stepPos == dir.getOpposite() || ((info.facings & (1 << stepPos.getOpposite().ordinal())) != 0))
                             continue;
 
-                        WorldRenderer rend = info.rend;
-                        RenderPosition dir = info.dir;
-                        Chunk chunk = chunkCache.getChunk(rend);
+                        if (allVis || vis.isVisible(dir.getOpposite().facing, stepPos.facing)) {
+                            WorldRenderer t = extendedRender.getRenderer(rend.posX + stepPos.x, rend.posY + stepPos.y, rend.posZ + stepPos.z);
 
-                        VisGraph sides = isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[rend.posY >> 4];
+                            IWorldRenderer extendedT = (IWorldRenderer) t;
 
-                        markRenderer(rend, view, sides);
-
-                        SetVisibility vis = sides.getVisibility();
-                        boolean allVis = mc.playerController.currentGameType.getID() == 3 || vis.isAllVisible(true);
-                        for (int p = 0; p < 6; ++p) {
-                            RenderPosition stepPos = bias[p];
-                                if (stepPos == dir.getOpposite() || ((info.facings & (1 << stepPos.getOpposite().ordinal())) != 0))
+                            if (t == null || !extendedT.arch$setLastCullUpdateFrame(frame) || !isInFrustum(t, frustum))
                                 continue;
 
-                            if (allVis || vis.isVisible(dir.getOpposite().facing, stepPos.facing)) {
-                                WorldRenderer t = extendedRender.getRenderer(rend.posX + stepPos.x, rend.posY + stepPos.y, rend.posZ + stepPos.z);
+                            ++considered;
+                            int cost = t.isWaitingOnOcclusionQuery || allVis ? 0 : 1;
 
-                                IWorldRenderer extendedT = (IWorldRenderer) t;
-
-                                if (t == null || !extendedT.arch$setLastCullUpdateFrame(frame) || !isInFrustum(t, frustum))
-                                    continue;
-
-                                ++considered;
-                                int cost = t.isWaitingOnOcclusionQuery || allVis ? 0 : 1;
-
-                                ++visited;
-                                CullInfo data;
-                                {
-                                    VisGraph oSides;
-                                    Chunk o = t.posX == rend.posX && t.posZ == rend.posZ ? chunk : chunkCache.getChunk(t);
-                                    oSides = isChunkEmpty(o) ? DUMMY : ((ICulledChunk)o).getVisibility()[t.posY >> 4];
-                                    data = cullInfoBuf.next().init(t, oSides, stepPos, info.cost + cost);
-                                }
-
-                                data.facings |= info.facings;
-
-                                queue.add(data);
+                            ++visited;
+                            CullInfo data;
+                            {
+                                VisGraph oSides;
+                                Chunk o = t.posX == rend.posX && t.posZ == rend.posZ ? chunk : chunkCache.getChunk(t);
+                                oSides = isChunkEmpty(o) ? DUMMY : ((ICulledChunk)o).getVisibility()[t.posY >> 4];
+                                data = cullInfoBuf.next().init(t, oSides, stepPos, info.cost + cost);
                             }
+
+                            data.facings |= info.facings;
+
+                            queue.add(data);
                         }
                     }
                 }
-                theWorld.theProfiler.endStartSection("cleanup");
-                queue.clear();
             }
+            theWorld.theProfiler.endStartSection("cleanup");
+            queue.clear();
+
             if(printQueueIterations && queueIterations != 0){
                 System.out.println("queue iterations: " + queueIterations);
             }
