@@ -192,7 +192,7 @@ public class OcclusionHelpers {
                         boolean allVis = mc.playerController.currentGameType.getID() == 3 || vis.isAllVisible(true);
                         for (int p = 0; p < 6; ++p) {
                             RenderPosition stepPos = bias[p];
-                                if (stepPos == dir.getOpposite() || (info.facingsStepped & (1 << stepPos.getOpposite().ordinal())) != 0)
+                                if (stepPos == dir.getOpposite() || info.facings.contains(stepPos.getOpposite()))
                                 continue;
 
                             if (allVis || vis.isVisible(dir.getOpposite().facing, stepPos.facing)) {
@@ -215,7 +215,7 @@ public class OcclusionHelpers {
                                     data = new CullInfo(t, oSides, stepPos, info.cost + cost);
                                 }
 
-                                data.facingsStepped |= info.facingsStepped;
+                                data.facings.addAll(info.facings);
 
                                 queue.add(data);
                             }
@@ -274,14 +274,14 @@ public class OcclusionHelpers {
             /** The direction we stepped in to reach this subchunk. */
             final RenderPosition dir;
             /** All the directions we have stepped in to reach this subchunk. */
-            int facingsStepped;
+            final EnumSet<RenderPosition> facings;
 
             public CullInfo(WorldRenderer rend, VisGraph vis, RenderPosition dir, int cost) {
                 this.cost = cost;
                 this.rend = rend;
                 this.vis = vis;
                 this.dir = dir;
-                this.facingsStepped = (1 << this.dir.ordinal());
+                this.facings = EnumSet.of(this.dir);
             }
 
         }
