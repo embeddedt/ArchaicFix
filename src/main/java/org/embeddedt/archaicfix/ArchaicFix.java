@@ -116,9 +116,18 @@ public class ArchaicFix
 
             }
             if(thaumcraftGhostApiPresent) {
-                ArchaicLogger.LOGGER.info("Cleared " + ThaumcraftApi.objectTags.size() + " unused Thaumcraft aspects");
-                ThaumcraftApi.objectTags.clear();
-                ThaumcraftApi.groupedObjectTags.clear();
+                try {
+                    ArchaicLogger.LOGGER.info("Cleared " + ThaumcraftApi.objectTags.size() + " unused Thaumcraft aspects");
+                    ThaumcraftApi.objectTags.clear();
+                } catch (IncompatibleClassChangeError e) {
+                    ArchaicLogger.LOGGER.info("Thaumcraft does not have an objectTags field");
+                }
+                try {
+                    ArchaicLogger.LOGGER.info("Cleared " + ThaumcraftApi.groupedObjectTags.size() + " unused Thaumcraft grouped aspects");
+                    ThaumcraftApi.groupedObjectTags.clear();
+                } catch (IncompatibleClassChangeError e) {
+                    ArchaicLogger.LOGGER.info("Thaumcraft does not have a groupedObjectTags field");
+                }
             }
         }
     }
