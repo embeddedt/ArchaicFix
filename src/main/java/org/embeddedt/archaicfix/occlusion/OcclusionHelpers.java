@@ -162,52 +162,23 @@ public class OcclusionHelpers {
             } else {
                 Chunk chunk = chunkCache.getChunk(center);
                 VisGraph sides = isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[center.posY >> 4];
-                markRenderer(center, view, sides);
                 CullInfo info = cullInfoBuf.next().init(center, sides, RenderPosition.NONE, renderDistanceChunks * -1 - 3);
+                markRenderer(info, view);
                 queue.add(info);
             }
 
             theWorld.theProfiler.endStartSection("process_queue");
             if (!queue.isEmpty()) {
-                @SuppressWarnings("unused")
-
-                RenderPosition[] bias = RenderPosition.POSITIONS_BIAS[back.ordinal() ^ 1];
-                for (; !queue.isEmpty();) {
+                while(!queue.isEmpty()) {
                     queueIterations++;
                     CullInfo info = queue.pollFirst();
 
-                    WorldRenderer rend = info.rend;
-                    RenderPosition dir = info.dir;
-                    Chunk chunk = chunkCache.getChunk(rend);
+                    markRenderer(info, view);
 
-                    VisGraph sides = isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[rend.posY >> 4];
-
-                    markRenderer(rend, view, sides);
-
-                    SetVisibility vis = sides.getVisibility();
-                    boolean allVis = mc.playerController.currentGameType.getID() == 3 || vis.isAllVisible(true);
                     for (int p = 0; p < 6; ++p) {
-                        RenderPosition stepPos = bias[p];
-                        if (stepPos == dir.getOpposite() || ((info.facings & (1 << stepPos.getOpposite().ordinal())) != 0))
-                            continue;
-
-                        if (allVis || vis.isVisible(dir.getOpposite().facing, stepPos.facing)) {
-                            WorldRenderer t = extendedRender.getRenderer(rend.posX + stepPos.x, rend.posY + stepPos.y, rend.posZ + stepPos.z);
-
-                            IWorldRenderer extendedT = (IWorldRenderer) t;
-
-                            if (t == null || !extendedT.arch$setLastCullUpdateFrame(frame) || !isInFrustum(t, frustum))
-                                continue;
-
-                            int cost = t.isWaitingOnOcclusionQuery || allVis ? 0 : 1;
-
-                            Chunk o = t.posX == rend.posX && t.posZ == rend.posZ ? chunk : chunkCache.getChunk(t);
-                            VisGraph oSides = isChunkEmpty(o) ? DUMMY : ((ICulledChunk)o).getVisibility()[t.posY >> 4];
-                            CullInfo data = cullInfoBuf.next().init(t, oSides, stepPos, info.cost + cost);
-
-                            data.facings |= info.facings;
-
-                            queue.add(data);
+                        RenderPosition stepPos = RenderPosition.POSITIONS_BIAS[back.ordinal() ^ 1][p];
+                        if(canStep(info, stepPos)) {
+                            maybeEnqueueNeighbor(info, stepPos, queue, frustum);
                         }
                     }
                 }
@@ -222,8 +193,41 @@ public class OcclusionHelpers {
             theWorld.theProfiler.endSection();
         }
 
-        private void markRenderer(WorldRenderer rend, EntityLivingBase view, VisGraph vis) {
+        private boolean canStep(CullInfo info, RenderPosition stepPos) {
+            boolean allVis = mc.playerController.currentGameType.getID() == 3 || info.vis.getVisibility().isAllVisible(true);
 
+            if (stepPos == info.dir.getOpposite() || ((info.facings & (1 << stepPos.getOpposite().ordinal())) != 0))
+                return false;
+
+            if (!allVis && !info.vis.getVisibility().isVisible(info.dir.getOpposite().facing, stepPos.facing)) {
+                return false;
+            }
+
+            return true;
+        }
+
+        private void maybeEnqueueNeighbor(CullInfo info, RenderPosition stepPos, Queue queue, Frustrum frustum) {
+            boolean allVis = mc.playerController.currentGameType.getID() == 3 || info.vis.getVisibility().isAllVisible(true);
+
+            WorldRenderer t = ((IRenderGlobal)render).getRenderer(info.rend.posX + stepPos.x, info.rend.posY + stepPos.y, info.rend.posZ + stepPos.z);
+            IWorldRenderer extendedT = (IWorldRenderer) t;
+
+            if (t == null || !extendedT.arch$setLastCullUpdateFrame(frame) || !isInFrustum(t, frustum))
+                return;
+
+            int cost = t.isWaitingOnOcclusionQuery || allVis ? 0 : 1;
+
+            Chunk o = chunkCache.getChunk(t);
+            VisGraph oSides = isChunkEmpty(o) ? DUMMY : ((ICulledChunk)o).getVisibility()[t.posY >> 4];
+            CullInfo data = cullInfoBuf.next().init(t, oSides, stepPos, info.cost + cost);
+
+            data.facings |= info.facings;
+
+            queue.add(data);
+        }
+
+        private void markRenderer(CullInfo info, EntityLivingBase view) {
+            WorldRenderer rend = info.rend;
             if (!rend.isVisible) {
                 rend.isVisible = true;
                 if (!rend.isWaitingOnOcclusionQuery) {
@@ -231,7 +235,7 @@ public class OcclusionHelpers {
                     render.sortedWorldRenderers[render.renderersLoaded++] = rend;
                 }
             }
-            if (!rend.isInitialized | rend.needsUpdate || vis.isRenderDirty()) {
+            if (rend.needsUpdate || !rend.isInitialized || info.vis.isRenderDirty()) {
                 rend.needsUpdate = true;
                 if (!rend.isInitialized || (rend.needsUpdate && rend.distanceToEntitySquared(view) <= 1128.0F)) {
                     ((IRenderGlobal)render).pushWorkerRenderer(rend);
