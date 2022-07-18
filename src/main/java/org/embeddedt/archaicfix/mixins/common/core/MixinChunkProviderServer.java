@@ -1,7 +1,10 @@
 package org.embeddedt.archaicfix.mixins.common.core;
 
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.val;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.profiler.Profiler;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.WorldChunkManager;
@@ -31,8 +34,9 @@ public abstract class MixinChunkProviderServer implements ILazyChunkProviderServ
     @Shadow(remap = false) public abstract Chunk originalLoadChunk(int p_73158_1_, int p_73158_2_);
 
     @Shadow public WorldServer worldObj;
-    private HashSet<Pair<ChunkCoordIntPair, Runnable>> chunksToLoadSlow = new HashSet<>();
+    private ObjectOpenHashSet<Pair<ChunkCoordIntPair, Runnable>> chunksToLoadSlow = new ObjectOpenHashSet<>();
     private ArrayList<Pair<ChunkCoordIntPair, Runnable>> chunksToLoadSlowQueue = new ArrayList<>();
+    private ObjectOpenHashSet<Pair<ChunkCoordIntPair, Runnable>> chunksToLoadDropQueue = new ObjectOpenHashSet<>();
 
     @Redirect(method = "unloadChunksIfNotNearSpawn", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/common/DimensionManager;shouldLoadSpawn(I)Z", remap = false))
     private boolean neverLoadSpawn(int dim) {
@@ -59,7 +63,8 @@ public abstract class MixinChunkProviderServer implements ILazyChunkProviderServ
             cir.setReturnValue(null);
             ChunkCoordIntPair c = new ChunkCoordIntPair(chunkX, chunkZ);
             val pair= Pair.of(c, runnable);
-            if(chunksToLoadSlow.add(pair)) {
+            if(!chunksToLoadSlow.contains(pair)) {
+                chunksToLoadSlow.add(pair);
                 chunksToLoadSlowQueue.add(pair);
             }
         }
@@ -67,31 +72,48 @@ public abstract class MixinChunkProviderServer implements ILazyChunkProviderServ
 
     @Inject(method = "unloadQueuedChunks", at = @At("RETURN"))
     private void loadLazyChunks(CallbackInfoReturnable<Boolean> cir) {
+        if(!ArchaicConfig.lazyChunkLoading)
+            return;
+        Profiler profiler = this.worldObj.theProfiler;
+        profiler.startSection("lazychunks");
+        if(chunksToLoadDropQueue.size() > 0) {
+            profiler.startSection("drop");
+            chunksToLoadSlowQueue.removeIf(k -> chunksToLoadDropQueue.contains(k));
+            chunksToLoadSlow.removeAll(chunksToLoadDropQueue);
+            chunksToLoadDropQueue.clear();
+            profiler.endSection();
+        }
         if(chunksToLoadSlowQueue.size() > 0) {
+            profiler.startSection("sort");
             ChunkCoordIntPair[] playerChunks = new ChunkCoordIntPair[this.worldObj.playerEntities.size()];
             for(int i = 0; i < this.worldObj.playerEntities.size(); i++) {
                 EntityPlayer player = (EntityPlayer)this.worldObj.playerEntities.get(i);
                 playerChunks[i] = new ChunkCoordIntPair(player.chunkCoordX, player.chunkCoordZ);
             }
             chunksToLoadSlowQueue.sort(new ChunkQueueSorter(playerChunks));
+            profiler.endStartSection("load");
             int i;
-            for(i = 0; i < 1; i++) {
-                val chunkPair = chunksToLoadSlowQueue.get(0);
+            int amount = Math.min(5, chunksToLoadSlowQueue.size());
+            for(i = 0; i < amount; i++) {
+                val chunkPair = chunksToLoadSlowQueue.get(i);
                 chunksToLoadSlow.remove(chunkPair);
                 this.originalLoadChunk(chunkPair.getLeft().chunkXPos, chunkPair.getLeft().chunkZPos);
                 chunkPair.getRight().run();
             }
             chunksToLoadSlowQueue.subList(0, i).clear();
+            profiler.endSection();
         }
+        profiler.endSection();
     }
 
     @Override
     public boolean dropLazyChunk(int x, int z, Runnable runnable) {
+        if(!ArchaicConfig.lazyChunkLoading)
+            return false;
         ChunkCoordIntPair c = new ChunkCoordIntPair(x, z);
         val pair= Pair.of(c, runnable);
         if(chunksToLoadSlow.contains(pair)) {
-            chunksToLoadSlow.remove(pair);
-            chunksToLoadSlowQueue.remove(pair);
+            chunksToLoadDropQueue.add(pair);
             return true;
         }
         return false;
