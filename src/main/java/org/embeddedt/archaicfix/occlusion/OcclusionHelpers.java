@@ -95,26 +95,66 @@ public class OcclusionHelpers {
             if (render == null) {
                 return;
             }
-            IRenderGlobal extendedRender = (IRenderGlobal)render;
             EntityLivingBase view = mc.renderViewEntity;
             if (theWorld == null || view == null) {
                 return;
             }
 
-            Frustrum frustum = new Frustrum();
-            // TODO: interpolate using partial tick time
-            frustum.setPosition(view.posX, view.posY, view.posZ);
+            Frustrum frustum = getFrustum();
 
             theWorld.theProfiler.startSection("prep");
+
+            prepareRenderers();
+
+            RenderPosition back = RenderPosition.getBackFacingFromVector(view);
+
+            seedQueue(frustum);
+
+            theWorld.theProfiler.endStartSection("process_queue");
+            while(!queue.isEmpty()) {
+                queueIterations++;
+                CullInfo info = queue.pollFirst();
+
+                markRenderer(info, view);
+
+                for (int p = 0; p < 6; ++p) {
+                    RenderPosition stepPos = RenderPosition.POSITIONS_BIAS[back.ordinal() ^ 1][p];
+                    if(canStep(info, stepPos)) {
+                        maybeEnqueueNeighbor(info, stepPos, queue, frustum);
+                    }
+                }
+            }
+            theWorld.theProfiler.endStartSection("cleanup");
+            queue.clear();
+
+            if(printQueueIterations && queueIterations != 0){
+                System.out.println("queue iterations: " + queueIterations);
+            }
+            dirty = false;
+            theWorld.theProfiler.endSection();
+        }
+
+        private void prepareRenderers() {
             WorldRenderer[] renderers = render.sortedWorldRenderers;
 
             for (int i = 0; i < render.worldRenderers.length; ++i) {
                 render.worldRenderers[i].isVisible = false;
             }
             render.renderersLoaded = 0;
-            WorldRenderer center;
-            RenderPosition back = RenderPosition.getBackFacingFromVector(view);
-            int renderDistanceChunks = render.renderDistanceChunks, renderDistanceWidth = renderDistanceChunks * 2 + 1;
+        }
+
+        private Frustrum getFrustum() {
+            EntityLivingBase view = mc.renderViewEntity;
+
+            Frustrum frustum = new Frustrum();
+            // TODO: interpolate using partial tick time
+            frustum.setPosition(view.posX, view.posY, view.posZ);
+            return frustum;
+        }
+
+        private void seedQueue(Frustrum frustum) {
+            int renderDistanceChunks = render.renderDistanceChunks;
+            EntityLivingBase view = mc.renderViewEntity;
 
             int viewX = MathHelper.floor_double(view.posX);
             int viewY = MathHelper.floor_double(view.posY + view.getEyeHeight());
@@ -123,10 +163,19 @@ public class OcclusionHelpers {
             theWorld.theProfiler.endStartSection("gather_chunks");
             chunkCache.gatherChunks(theWorld, viewX >> 4, viewZ >> 4, renderDistanceChunks);
 
+            IRenderGlobal extendedRender = (IRenderGlobal)render;
+
             theWorld.theProfiler.endStartSection("seed_queue");
-            center = extendedRender.getRenderer(viewX, viewY, viewZ);
+
+            WorldRenderer center = extendedRender.getRenderer(viewX, viewY, viewZ);
             isInFrustum(center, frustum); // make sure frustum status gets updated for the starting renderer
-            if (center == null) {
+            if (center != null) {
+                Chunk chunk = chunkCache.getChunk(center);
+                VisGraph sides = isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[center.posY >> 4];
+                CullInfo info = cullInfoBuf.next().init(center, sides, RenderPosition.NONE, renderDistanceChunks * -1 - 3);
+                markRenderer(info, view);
+                queue.add(info);
+            } else {
                 int level = viewY > 5 ? 250 : 5;
                 center = extendedRender.getRenderer(viewX, level, viewZ);
                 if (center != null) {
@@ -159,38 +208,7 @@ public class OcclusionHelpers {
                     }
                     theWorld.theProfiler.endSection();
                 }
-            } else {
-                Chunk chunk = chunkCache.getChunk(center);
-                VisGraph sides = isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[center.posY >> 4];
-                CullInfo info = cullInfoBuf.next().init(center, sides, RenderPosition.NONE, renderDistanceChunks * -1 - 3);
-                markRenderer(info, view);
-                queue.add(info);
             }
-
-            theWorld.theProfiler.endStartSection("process_queue");
-            if (!queue.isEmpty()) {
-                while(!queue.isEmpty()) {
-                    queueIterations++;
-                    CullInfo info = queue.pollFirst();
-
-                    markRenderer(info, view);
-
-                    for (int p = 0; p < 6; ++p) {
-                        RenderPosition stepPos = RenderPosition.POSITIONS_BIAS[back.ordinal() ^ 1][p];
-                        if(canStep(info, stepPos)) {
-                            maybeEnqueueNeighbor(info, stepPos, queue, frustum);
-                        }
-                    }
-                }
-            }
-            theWorld.theProfiler.endStartSection("cleanup");
-            queue.clear();
-
-            if(printQueueIterations && queueIterations != 0){
-                System.out.println("queue iterations: " + queueIterations);
-            }
-            dirty = false;
-            theWorld.theProfiler.endSection();
         }
 
         private boolean canStep(CullInfo info, RenderPosition stepPos) {

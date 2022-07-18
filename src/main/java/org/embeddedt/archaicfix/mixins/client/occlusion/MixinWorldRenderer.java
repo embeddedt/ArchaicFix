@@ -65,9 +65,9 @@ public class MixinWorldRenderer implements IWorldRenderer {
 
     @Override
     public boolean arch$setLastCullUpdateFrame(int lastCullUpdateFrame) {
-        int prevVal = arch$lastCullUpdateFrame;
+        if(arch$lastCullUpdateFrame == lastCullUpdateFrame) return false;
         arch$lastCullUpdateFrame = lastCullUpdateFrame;
-        return arch$lastCullUpdateFrame != prevVal;
+        return true;
     }
 
     @Override
