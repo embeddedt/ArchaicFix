@@ -253,22 +253,22 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
     }
 
     private static int fixPos(int pos, int amt) {
-        int r = MathHelper.bucketInt(pos, 16) % amt;
-        return r + (amt & (r >> 31));
+        int r = Math.floorDiv(pos, 16) % amt;
+        if(r < 0) {
+            r += amt;
+        }
+        return r;
     }
 
     @Override
     public WorldRenderer getRenderer(int x, int y, int z) {
+        if ((y - 15) > maxBlockY || y < minBlockY || (x - 15) > maxBlockX || x < minBlockX || (z - 15) > maxBlockZ || z < minBlockZ)
+            return null;
 
-        if ((y - 15) > maxBlockY | y < minBlockY)
-            return null;
-        if ((x - 15) > maxBlockX | x < minBlockX)
-            return null;
-        if ((z - 15) > maxBlockZ | z < minBlockZ)
-            return null;
         x = fixPos(x, renderChunksWide);
         y = fixPos(y, renderChunksTall);
         z = fixPos(z, renderChunksDeep);
+
         return worldRenderers[(z * renderChunksTall + y) * renderChunksWide + x];
     }
 

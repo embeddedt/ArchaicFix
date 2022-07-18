@@ -40,7 +40,7 @@ public class VisGraph {
 	private final BitSet visibleBlocks = new BitSet(4096);
 	private short transparentBlocks = 4096;
 	private boolean dirty = true, computedVis = true;
-	private SetVisibility visibility;
+	private SetVisibility visibility = ALL_VIS;
 
 	private static int getIndex(int x, int y, int z) {
 
@@ -73,12 +73,7 @@ public class VisGraph {
 	}
 
 	public SetVisibility getVisibility() {
-
-		SetVisibility setvisibility = visibility;
-		if (setvisibility != null) {
-			return setvisibility;
-		}
-		return ALL_VIS;
+		return visibility;
 	}
 
 	@SuppressWarnings("unchecked")

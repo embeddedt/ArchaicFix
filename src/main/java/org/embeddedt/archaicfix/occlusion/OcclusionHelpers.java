@@ -170,19 +170,11 @@ public class OcclusionHelpers {
             theWorld.theProfiler.endStartSection("process_queue");
             if (!queue.isEmpty()) {
                 @SuppressWarnings("unused")
-                int visited = queue.size(), considered = visited;
 
                 RenderPosition[] bias = RenderPosition.POSITIONS_BIAS[back.ordinal() ^ 1];
                 for (; !queue.isEmpty();) {
                     queueIterations++;
                     CullInfo info = queue.pollFirst();
-                    if (info == null) {
-                        break;
-                    }
-
-                    info.visited = true;
-                    if (info.cost > renderDistanceChunks * 2)
-                        continue;
 
                     WorldRenderer rend = info.rend;
                     RenderPosition dir = info.dir;
@@ -207,17 +199,11 @@ public class OcclusionHelpers {
                             if (t == null || !extendedT.arch$setLastCullUpdateFrame(frame) || !isInFrustum(t, frustum))
                                 continue;
 
-                            ++considered;
                             int cost = t.isWaitingOnOcclusionQuery || allVis ? 0 : 1;
 
-                            ++visited;
-                            CullInfo data;
-                            {
-                                VisGraph oSides;
-                                Chunk o = t.posX == rend.posX && t.posZ == rend.posZ ? chunk : chunkCache.getChunk(t);
-                                oSides = isChunkEmpty(o) ? DUMMY : ((ICulledChunk)o).getVisibility()[t.posY >> 4];
-                                data = cullInfoBuf.next().init(t, oSides, stepPos, info.cost + cost);
-                            }
+                            Chunk o = t.posX == rend.posX && t.posZ == rend.posZ ? chunk : chunkCache.getChunk(t);
+                            VisGraph oSides = isChunkEmpty(o) ? DUMMY : ((ICulledChunk)o).getVisibility()[t.posY >> 4];
+                            CullInfo data = cullInfoBuf.next().init(t, oSides, stepPos, info.cost + cost);
 
                             data.facings |= info.facings;
 
@@ -271,7 +257,6 @@ public class OcclusionHelpers {
 
         private static class CullInfo {
 
-            boolean visited;
             int cost;
             WorldRenderer rend;
             VisGraph vis;
@@ -291,8 +276,6 @@ public class OcclusionHelpers {
                 this.dir = dir;
                 this.facings = 0;
                 this.facings |= (1 << this.dir.ordinal());
-
-                this.visited = false;
 
                 return this;
             }
