@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.util.RenderDistanceSorter;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.EmptyChunk;
@@ -408,6 +409,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
 
     @Inject(method = "loadRenderers", at = @At("TAIL"))
     private void resetOcclusionWorker(CallbackInfo ci) {
+        OcclusionHelpers.updateRendererNeighbors((RenderGlobal)(Object)this, worldRenderers, renderChunksWide, renderChunksDeep, renderChunksTall);
         OcclusionHelpers.worker.dirty = true;
     }
 
@@ -442,6 +444,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
 
     @Inject(method = "markRenderersForNewPosition", at = @At("TAIL"))
     private void runWorker(int p_72722_1_, int p_72722_2_, int p_72722_3_, CallbackInfo ci) {
+        OcclusionHelpers.updateRendererNeighbors((RenderGlobal)(Object)this, worldRenderers, renderChunksWide, renderChunksDeep, renderChunksTall);
         OcclusionHelpers.worker.run(true);
     }
 

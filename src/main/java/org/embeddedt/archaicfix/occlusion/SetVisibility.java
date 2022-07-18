@@ -98,7 +98,7 @@ public class SetVisibility {
 
 		for (j = 0; j < i; ++j) {
 			enumfacing = aenumfacing[j];
-			stringbuilder.append(' ').append(enumfacing.toString().toUpperCase().charAt(0));
+			stringbuilder.append(' ').append(enumFacingToStringFixed(enumfacing).toUpperCase().charAt(0));
 		}
 
 		stringbuilder.append('\n');
@@ -107,7 +107,7 @@ public class SetVisibility {
 
 		for (j = 0; j < i; ++j) {
 			enumfacing = aenumfacing[j];
-			stringbuilder.append(enumfacing.toString().toUpperCase().charAt(0));
+			stringbuilder.append(enumFacingToStringFixed(enumfacing).toUpperCase().charAt(0));
 			EnumFacing[] aenumfacing1 = EnumFacing.values();
 			int k = aenumfacing1.length;
 
@@ -126,6 +126,11 @@ public class SetVisibility {
 		}
 
 		return stringbuilder.toString();
+	}
+
+	// Do not trust MCP.
+	private static String enumFacingToStringFixed(EnumFacing f) {
+		return new String[]{"DOWN", "UP", "NORTH", "SOUTH", "WEST", "EAST"}[f.ordinal()];
 	}
 
 }

@@ -50,6 +50,19 @@ public class OcclusionHelpers {
         render.internalMarkBlockUpdate(x, y, z, x2, y2, z2);
     }
 
+    public static void updateRendererNeighbors(RenderGlobal rg, WorldRenderer[] worldRenderers, int renderChunksWide, int renderChunksDeep, int renderChunksTall) {
+        if(worldRenderers == null) return;
+        for(WorldRenderer rend : worldRenderers) {
+            for(EnumFacing dir : EnumFacing.values()) {
+                ((IWorldRenderer)rend).arch$setNeighbor(dir, ((IRenderGlobal)rg).getRenderer(
+                        rend.posX + dir.getFrontOffsetX() * 16,
+                        rend.posY + dir.getFrontOffsetY() * 16,
+                        rend.posZ + dir.getFrontOffsetZ() * 16
+                ));
+            }
+        }
+    }
+
     public static class RenderWorker {
 
         public RenderWorker() {
@@ -227,7 +240,7 @@ public class OcclusionHelpers {
         private void maybeEnqueueNeighbor(CullInfo info, RenderPosition stepPos, Queue queue, Frustrum frustum) {
             boolean allVis = mc.playerController.currentGameType.getID() == 3 || info.vis.getVisibility().isAllVisible(true);
 
-            WorldRenderer t = ((IRenderGlobal)render).getRenderer(info.rend.posX + stepPos.x, info.rend.posY + stepPos.y, info.rend.posZ + stepPos.z);
+            WorldRenderer t = ((IWorldRenderer)info.rend).arch$getNeighbor(stepPos.facing);
             IWorldRenderer extendedT = (IWorldRenderer) t;
 
             if (t == null || !extendedT.arch$setLastCullUpdateFrame(frame) || !isInFrustum(t, frustum))
@@ -340,10 +353,11 @@ public class OcclusionHelpers {
     }
 
     private static enum RenderPosition {
+        // EnumFacing.EAST and EnumFacing.WEST is flipped in MCP
         DOWN(EnumFacing.DOWN, 0, -1, 0),
         UP(EnumFacing.UP, 0, 16, 0),
-        WEST(EnumFacing.WEST, -1, 0, 0),
-        EAST(EnumFacing.EAST, 16, 0, 0),
+        WEST(EnumFacing.EAST, -1, 0, 0),
+        EAST(EnumFacing.WEST, 16, 0, 0),
         NORTH(EnumFacing.NORTH, 0, 0, -1),
         SOUTH(EnumFacing.SOUTH, 0, 0, 16),
         NONE(null, 0, 0, 0),
@@ -453,5 +467,11 @@ public class OcclusionHelpers {
 
             return ret;
         }
+    }
+
+    private static int positiveMod(int val, int div) {
+        int rem = val % div;
+        if(rem < 0) rem += div;
+        return rem;
     }
 }

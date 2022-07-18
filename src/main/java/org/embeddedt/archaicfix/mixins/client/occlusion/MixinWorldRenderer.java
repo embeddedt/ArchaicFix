@@ -3,6 +3,7 @@ package org.embeddedt.archaicfix.mixins.client.occlusion;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.shader.TesselatorVertexState;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.EmptyChunk;
 import org.embeddedt.archaicfix.occlusion.IWorldRenderer;
@@ -42,6 +43,13 @@ public class MixinWorldRenderer implements IWorldRenderer {
 
     private boolean arch$isInUpdateList;
     private boolean arch$isFrustumCheckPending;
+
+    private WorldRenderer[] arch$neighbors;
+
+    @Inject(method = "<init>*", at = @At("RETURN"))
+    private void init(CallbackInfo ci) {
+        this.arch$neighbors = new WorldRenderer[EnumFacing.values().length];
+    }
 
     @Inject(method = "markDirty", at = @At("TAIL"))
     private void resetOcclusionFlag(CallbackInfo ci) {
@@ -88,5 +96,15 @@ public class MixinWorldRenderer implements IWorldRenderer {
     @Override
     public void arch$setIsFrustumCheckPending(boolean b) {
         arch$isFrustumCheckPending = b;
+    }
+
+    @Override
+    public WorldRenderer arch$getNeighbor(EnumFacing dir) {
+        return arch$neighbors[dir.ordinal()];
+    }
+
+    @Override
+    public void arch$setNeighbor(EnumFacing dir, WorldRenderer neighbor) {
+        arch$neighbors[dir.ordinal()] = neighbor;
     }
 }
