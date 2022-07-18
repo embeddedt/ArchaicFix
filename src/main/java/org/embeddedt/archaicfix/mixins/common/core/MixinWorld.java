@@ -13,9 +13,12 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.WorldChunkManager;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.common.ForgeChunkManager;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
+import org.embeddedt.archaicfix.lighting.world.lighting.LightingEngineHelpers;
+import org.embeddedt.archaicfix.lighting.world.lighting.LightingHooks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -43,6 +46,8 @@ public abstract class MixinWorld {
     @Shadow public List playerEntities;
 
     @Shadow public abstract Chunk getChunkFromChunkCoords(int p_72964_1_, int p_72964_2_);
+
+    @Shadow protected IChunkProvider chunkProvider;
 
     @Redirect(method = "getBiomeGenForCoordsBody", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/biome/WorldChunkManager;getBiomeGenAt(II)Lnet/minecraft/world/biome/BiomeGenBase;"))
     private BiomeGenBase skipBiomeGenOnClient(WorldChunkManager manager, int x, int z) {
@@ -126,8 +131,8 @@ public abstract class MixinWorld {
                 {
                     if(Math.abs(offX) <= activeDistance && Math.abs(offZ) <= activeDistance)
                         continue;
-                    Chunk chunk = this.getChunkFromChunkCoords(offX + j, offZ + k);
-                    if(!chunk.field_150815_m) {
+                    Chunk chunk = LightingEngineHelpers.getLoadedChunk(this.chunkProvider, offX + j, offZ + k);
+                    if(chunk != null && !chunk.func_150802_k()) {
                         chunk.func_150804_b(false);
                     }
                 }
