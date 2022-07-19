@@ -21,6 +21,7 @@ public class OcclusionHelpers {
     public static float partialTickTime;
 
     public static final boolean DEBUG_ALWAYS_RUN_OCCLUSION = Boolean.parseBoolean(System.getProperty("archaicfix.debug.alwaysRunOcclusion", "false"));
+    public static final boolean DEBUG_PRINT_QUEUE_ITERATIONS = Boolean.parseBoolean(System.getProperty("archaicfix.debug.printQueueIterations", "false"));
 
     public static void init() {
         worker = new RenderWorker();
@@ -97,8 +98,6 @@ public class OcclusionHelpers {
 
         private final Minecraft mc = Minecraft.getMinecraft();
 
-        private final boolean printQueueIterations = Boolean.parseBoolean(System.getProperty("archaicfix.printQueueIterations", "false"));
-
         public void run(boolean immediate) {
             frame++;
             queue.clear();
@@ -140,7 +139,7 @@ public class OcclusionHelpers {
             theWorld.theProfiler.endStartSection("cleanup");
             queue.clear();
 
-            if(printQueueIterations && queueIterations != 0){
+            if(DEBUG_PRINT_QUEUE_ITERATIONS && queueIterations != 0){
                 System.out.println("queue iterations: " + queueIterations);
             }
             dirty = false;
