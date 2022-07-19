@@ -7,7 +7,11 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.network.NetworkCheckHandler;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.ReflectionHelper;
+import cpw.mods.fml.relauncher.Side;
 import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
@@ -16,6 +20,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraftforge.common.MinecraftForge;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
 import org.embeddedt.archaicfix.ducks.IAcceleratedRecipe;
@@ -36,6 +41,9 @@ public class ArchaicFix
     public static List<ItemStack> initialCreativeItems = null;
 
     private FixHelper helper;
+
+    public static final SimpleNetworkWrapper NETWORK = NetworkRegistry.INSTANCE.newSimpleChannel("archaicfix");
+    public static volatile boolean IS_VANILLA_SERVER = false;
 
     @SidedProxy(clientSide = "org.embeddedt.archaicfix.proxy.ClientProxy", serverSide = "org.embeddedt.archaicfix.proxy.CommonProxy")
     public static CommonProxy proxy;
@@ -139,5 +147,21 @@ public class ArchaicFix
         proxy.loadcomplete();
         printRecipeDebug();
         removeThaumcraftLeak();
+    }
+
+    @NetworkCheckHandler
+    public boolean doVersionCheck(Map<String, String> mods, Side side) {
+        if(mods.containsKey(Tags.MODID)) {
+            String otherVersion = mods.get(Tags.MODID);
+            if(!otherVersion.equals(Tags.VERSION)) {
+                ArchaicLogger.LOGGER.error("Remote side " + side + " has different version " + otherVersion);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean isArchaicConnection(NetHandlerPlayServer connection) {
+        return FixHelper.unmoddedNetHandlers.contains(connection);
     }
 }
