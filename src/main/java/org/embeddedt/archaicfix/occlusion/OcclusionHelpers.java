@@ -20,6 +20,8 @@ public class OcclusionHelpers {
     public static long chunkUpdateDeadline;
     public static float partialTickTime;
 
+    public static final boolean DEBUG_ALWAYS_RUN_OCCLUSION = Boolean.parseBoolean(System.getProperty("archaicfix.debug.alwaysRunOcclusion", "false"));
+
     public static void init() {
         worker = new RenderWorker();
     }

@@ -381,7 +381,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         theWorld.theProfiler.endStartSection("scan");
         int yaw = MathHelper.floor_float(view.rotationYaw + 45) >> 4;
         int pitch = MathHelper.floor_float(view.rotationPitch + 45) >> 4;
-        if (OcclusionHelpers.worker.dirty || cameraRotated) {
+        if (OcclusionHelpers.worker.dirty || cameraRotated || OcclusionHelpers.DEBUG_ALWAYS_RUN_OCCLUSION) {
             OcclusionHelpers.worker.run(true);
             PreviousActiveRenderInfo.objectX = ActiveRenderInfo.objectX;
             PreviousActiveRenderInfo.objectY = ActiveRenderInfo.objectY;
