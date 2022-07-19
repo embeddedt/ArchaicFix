@@ -85,12 +85,14 @@ public abstract class MixinChunkProviderServer implements ILazyChunkProviderServ
         }
         if(chunksToLoadSlowQueue.size() > 0) {
             profiler.startSection("sort");
-            ChunkCoordIntPair[] playerChunks = new ChunkCoordIntPair[this.worldObj.playerEntities.size()];
-            for(int i = 0; i < this.worldObj.playerEntities.size(); i++) {
-                EntityPlayer player = (EntityPlayer)this.worldObj.playerEntities.get(i);
-                playerChunks[i] = new ChunkCoordIntPair(player.chunkCoordX, player.chunkCoordZ);
+            if(this.worldObj.playerEntities.size() > 0) {
+                ChunkCoordIntPair[] playerChunks = new ChunkCoordIntPair[this.worldObj.playerEntities.size()];
+                for(int i = 0; i < this.worldObj.playerEntities.size(); i++) {
+                    EntityPlayer player = (EntityPlayer)this.worldObj.playerEntities.get(i);
+                    playerChunks[i] = new ChunkCoordIntPair(player.chunkCoordX, player.chunkCoordZ);
+                }
+                chunksToLoadSlowQueue.sort(new ChunkQueueSorter(playerChunks));
             }
-            chunksToLoadSlowQueue.sort(new ChunkQueueSorter(playerChunks));
             profiler.endStartSection("load");
             int i;
             int amount = Math.min(5, chunksToLoadSlowQueue.size());

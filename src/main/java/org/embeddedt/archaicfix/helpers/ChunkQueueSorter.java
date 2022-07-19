@@ -13,13 +13,13 @@ public class ChunkQueueSorter implements Comparator<Pair<ChunkCoordIntPair, Runn
     }
 
     private int averagePlayerDistance(ChunkCoordIntPair pair) {
-        int theDistanceSum = 0;
+        int shortestDistance = Integer.MAX_VALUE;
         for(ChunkCoordIntPair p : playerChunks) {
             int xDist = p.chunkXPos - pair.chunkXPos;
             int zDist = p.chunkZPos - pair.chunkZPos;
-            theDistanceSum += (xDist * xDist) + (zDist * zDist);
+            shortestDistance = Math.min(shortestDistance, (xDist * xDist) + (zDist * zDist));
         }
-        return theDistanceSum / playerChunks.length;
+        return shortestDistance;
     }
 
     @Override
