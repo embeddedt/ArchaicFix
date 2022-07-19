@@ -129,8 +129,7 @@ public class OcclusionHelpers {
 
                 markRenderer(info, view);
 
-                for (int p = 0; p < 6; ++p) {
-                    RenderPosition stepPos = RenderPosition.POSITIONS_BIAS[back.ordinal() ^ 1][p];
+                for (RenderPosition stepPos : CullInfo.ALLOWED_STEPS[info.facings & 0b111111]) {
                     if(canStep(info, stepPos)) {
                         maybeEnqueueNeighbor(info, stepPos, queue, frustum);
                     }
@@ -226,9 +225,6 @@ public class OcclusionHelpers {
         private boolean canStep(CullInfo info, RenderPosition stepPos) {
             boolean allVis = mc.playerController.currentGameType.getID() == 3 || info.vis.getVisibility().isAllVisible(true);
 
-            if (stepPos == info.dir.getOpposite() || ((info.facings & (1 << stepPos.getOpposite().ordinal())) != 0))
-                return false;
-
             if (!allVis && !info.vis.getVisibility().isVisible(info.dir.getOpposite().facing, stepPos.facing)) {
                 return false;
             }
@@ -291,6 +287,50 @@ public class OcclusionHelpers {
 
         private static class CullInfo {
 
+            public static final RenderPosition[][] ALLOWED_STEPS;
+
+            static {
+                ALLOWED_STEPS = generateAllowedSteps();
+            }
+
+            private static RenderPosition[][] generateAllowedSteps() {
+                RenderPosition[][] allowedSteps = new RenderPosition[(int) Math.pow(2, 6) + 1][];
+
+                for (int xStep = -1; xStep <= 1; xStep++) {
+                    for (int yStep = -1; yStep <= 1; yStep++) {
+                        for (int zStep = -1; zStep <= 1; zStep++) {
+                            byte mask = 0;
+
+                            //                    SNEWUD
+                            mask |= new byte[]{ 0b000100,
+                                                0b000000,
+                                                0b001000
+                            }[xStep + 1];
+
+                            //                    SNEWUD
+                            mask |= new byte[]{ 0b000001,
+                                                0b000000,
+                                                0b000010
+                            }[yStep + 1];
+
+                            //                    SNEWUD
+                            mask |= new byte[]{ 0b010000,
+                                                0b000000,
+                                                0b100000
+                            }[zStep + 1];
+
+                            byte finalMask = mask;
+                            allowedSteps[mask] =
+                                    Arrays.asList(RenderPosition.DOWN, RenderPosition.UP, RenderPosition.NORTH, RenderPosition.SOUTH, RenderPosition.WEST, RenderPosition.EAST)
+                                            .stream()
+                                            .filter(p -> (1 << (p.getOpposite().ordinal()) & finalMask) == 0)
+                                            .toArray(RenderPosition[]::new);
+                        }
+                    }
+                }
+                return allowedSteps;
+            }
+
             int cost;
             WorldRenderer rend;
             VisGraph vis;
@@ -351,7 +391,7 @@ public class OcclusionHelpers {
         }
     }
 
-    private static enum RenderPosition {
+    public static enum RenderPosition {
         // EnumFacing.EAST and EnumFacing.WEST is flipped in MCP
         DOWN(EnumFacing.DOWN, 0, -1, 0),
         UP(EnumFacing.UP, 0, 16, 0),
