@@ -110,8 +110,10 @@ public abstract class MixinWorld {
 
     @Inject(method = "setActivePlayerChunksAndCheckLight", at = @At("TAIL"))
     private void saveInactiveChunks(CallbackInfo ci) {
+        if(this.isRemote || ArchaicConfig.optimizeBlockTickingDistance <= 0)
+            return;
         int renderDistance = FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().getViewDistance();
-        if(this.isRemote || ArchaicConfig.optimizeBlockTickingDistance <= 0 || renderDistance <= ArchaicConfig.optimizeBlockTickingDistance)
+        if(renderDistance <= ArchaicConfig.optimizeBlockTickingDistance)
             return;
         EntityPlayer entityplayer;
         int j;
