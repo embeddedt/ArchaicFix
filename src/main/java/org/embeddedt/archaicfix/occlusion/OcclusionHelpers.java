@@ -231,17 +231,15 @@ public class OcclusionHelpers {
 
             return true;
         }
-
+        
         private void maybeEnqueueNeighbor(CullInfo info, RenderPosition stepPos, Queue queue, Frustrum frustum) {
-            boolean allVis = mc.playerController.currentGameType.getID() == 3 || info.vis.getVisibility() == VisGraph.ALL_VIS;
-
             WorldRenderer t = ((IWorldRenderer)info.rend).arch$getNeighbor(stepPos.facing);
             IWorldRenderer extendedT = (IWorldRenderer) t;
 
             if (t == null || !extendedT.arch$setLastCullUpdateFrame(frame) || !isInFrustum(t, frustum))
                 return;
 
-            int cost = t.isWaitingOnOcclusionQuery || allVis ? 0 : 1;
+            int cost = 0;
 
             Chunk o = chunkCache.getChunk(t);
             VisGraph oSides = isChunkEmpty(o) ? DUMMY : ((ICulledChunk)o).getVisibility()[t.posY >> 4];
