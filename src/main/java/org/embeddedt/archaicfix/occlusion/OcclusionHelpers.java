@@ -223,9 +223,9 @@ public class OcclusionHelpers {
         }
 
         private boolean canStep(CullInfo info, RenderPosition stepPos) {
-            boolean allVis = mc.playerController.currentGameType.getID() == 3 || info.vis.getVisibility().isAllVisible(true);
+            boolean allVis = mc.playerController.currentGameType.getID() == 3;
 
-            if (!allVis && !info.vis.getVisibility().isVisible(info.dir.getOpposite().facing, stepPos.facing)) {
+            if (!allVis && !SetVisibility.isVisible(info.vis.getVisibility(), info.dir.getOpposite().facing, stepPos.facing)) {
                 return false;
             }
 
@@ -233,7 +233,7 @@ public class OcclusionHelpers {
         }
 
         private void maybeEnqueueNeighbor(CullInfo info, RenderPosition stepPos, Queue queue, Frustrum frustum) {
-            boolean allVis = mc.playerController.currentGameType.getID() == 3 || info.vis.getVisibility().isAllVisible(true);
+            boolean allVis = mc.playerController.currentGameType.getID() == 3 || info.vis.getVisibility() == VisGraph.ALL_VIS;
 
             WorldRenderer t = ((IWorldRenderer)info.rend).arch$getNeighbor(stepPos.facing);
             IWorldRenderer extendedT = (IWorldRenderer) t;

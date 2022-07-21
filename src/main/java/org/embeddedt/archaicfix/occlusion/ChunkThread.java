@@ -37,9 +37,9 @@ public class ChunkThread extends Thread {
                 }
                 for (VisGraph graph : ((ICulledChunk)chunk).getVisibility()) {
                     if (graph.isDirty()) {
-                        SetVisibility a = graph.getVisibility();
+                        long a = graph.getVisibility();
                         graph.computeVisibility();
-                        work |= !a.equals(graph.getVisibility());
+                        work |= a != graph.getVisibility();
                     }
                 }
                 if ((i & 7) == 0) {

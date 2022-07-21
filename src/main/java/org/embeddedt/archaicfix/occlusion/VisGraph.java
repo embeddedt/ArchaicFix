@@ -13,10 +13,9 @@ public class VisGraph {
 	private static final int Z_OFFSET = (int) Math.pow(16.0D, 1.0D);
 	private static final int Y_OFFSET = (int) Math.pow(16.0D, 2.0D);
 	private static final int[] EDGES = new int[1352];
-	private static final SetVisibility ALL_VIS = new SetVisibility();
+	public static final long ALL_VIS = 0xFFFFFFFFFFFFFFFFL;
 
 	static {
-		ALL_VIS.setAllVisible(true);
 		int var2 = 0;
 
 		for (int var3 = 0; var3 < 16; ++var3) {
@@ -40,7 +39,7 @@ public class VisGraph {
 	private final BitSet visibleBlocks = new BitSet(4096);
 	private short transparentBlocks = 4096;
 	private boolean dirty = true, computedVis = true;
-	private SetVisibility visibility = ALL_VIS;
+	private long visibility = ALL_VIS;
 
 	private static int getIndex(int x, int y, int z) {
 
@@ -72,7 +71,7 @@ public class VisGraph {
 		}
 	}
 
-	public SetVisibility getVisibility() {
+	public long getVisibility() {
 		return visibility;
 	}
 
@@ -80,12 +79,12 @@ public class VisGraph {
 	public void computeVisibility() {
 
 		dirty = false;
-		SetVisibility setvisibility = new SetVisibility();
+		long setvisibility = 0;
 
 		if (4096 - transparentBlocks < 256) {
-			setvisibility.setAllVisible(true);
+			setvisibility = ALL_VIS;
 		} else if (transparentBlocks == 0) {
-			setvisibility.setAllVisible(false);
+			setvisibility = 0;
 		} else {
 			int[] edges = EDGES;
 			int i = edges.length;
@@ -97,7 +96,7 @@ public class VisGraph {
 				int k = edges[j];
 
 				if (!opaqueBlocks.get(k)) {
-					setvisibility.setManyVisible(computeVisibleFacingsFrom(k, linkedlist));
+					setvisibility = SetVisibility.setManyVisible(setvisibility, computeVisibleFacingsFrom(k, linkedlist));
 				}
 				linkedlist.setSize(0);
 			}

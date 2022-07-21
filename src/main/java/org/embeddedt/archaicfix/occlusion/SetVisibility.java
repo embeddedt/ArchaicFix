@@ -1,6 +1,5 @@
 package org.embeddedt.archaicfix.occlusion;
 
-import java.util.BitSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -9,17 +8,8 @@ import net.minecraft.util.EnumFacing;
 public class SetVisibility {
 
 	private static final int COUNT_FACES = EnumFacing.values().length;
-	private final BitSet bitSet;
-	private boolean isAllVisibleTrue;
-	private boolean isAllVisibleFalse;
 
-	public SetVisibility() {
-
-		this.bitSet = new BitSet(COUNT_FACES * COUNT_FACES);
-	}
-
-	public void setManyVisible(Set<EnumFacing> faces) {
-
+	public static long setManyVisible(long bitSet, Set<EnumFacing> faces) {
 		Iterator<EnumFacing> iterator = faces.iterator();
 
 		while (iterator.hasNext()) {
@@ -28,66 +18,33 @@ public class SetVisibility {
 
 			while (iterator1.hasNext()) {
 				EnumFacing enumfacing1 = iterator1.next();
-				setVisible(enumfacing, enumfacing1, true);
+				bitSet = setVisible(bitSet, enumfacing, enumfacing1, true);
 			}
 		}
+		return bitSet;
 	}
 
-	public void setVisible(EnumFacing from, EnumFacing to, boolean visible) {
+	public static long setVisible(long bitSet, EnumFacing from, EnumFacing to, boolean visible) {
+		bitSet = setBit(bitSet, from.ordinal() + to.ordinal() * COUNT_FACES, visible);
+		bitSet = setBit(bitSet, to.ordinal() + from.ordinal() * COUNT_FACES, visible);
 
-		bitSet.set(from.ordinal() + to.ordinal() * COUNT_FACES, visible);
-		bitSet.set(to.ordinal() + from.ordinal() * COUNT_FACES, visible);
-		updateIsAllVisible();
+		return bitSet;
 	}
 
-	public void setAllVisible(boolean visible) {
-
-		bitSet.set(0, bitSet.size(), visible);
-		updateIsAllVisible();
-	}
-
-	public boolean isAllVisible(boolean visible) {
-		return visible ? isAllVisibleTrue : isAllVisibleFalse;
-	}
-
-	private void updateIsAllVisible() {
-		int iTrue = bitSet.nextClearBit(0);
-		isAllVisibleTrue = iTrue < 0 || iTrue >= (COUNT_FACES * COUNT_FACES);
-
-		int iFalse = bitSet.nextSetBit(0);
-		isAllVisibleFalse = iFalse < 0 || iFalse >= (COUNT_FACES * COUNT_FACES);
-	}
-
-	public boolean isVisible(EnumFacing from, EnumFacing to) {
-
-		return from == null || to == null ? true : bitSet.get(from.ordinal() + to.ordinal() * COUNT_FACES);
-	}
-
-	@Override
-	public boolean equals(Object o) {
-
-		if (o instanceof SetVisibility) {
-			return ((SetVisibility) o).bitSet.equals(bitSet);
+	private static long setBit(long bitSet, int index, boolean value) {
+		if(value) {
+			bitSet |= (1L << index);
+		} else {
+			bitSet &= ~(1L << index);
 		}
-		return false;
+		return bitSet;
 	}
 
-	@Override
-	public int hashCode() {
-
-		return bitSet.hashCode();
+	public static boolean isVisible(long bitSet, EnumFacing from, EnumFacing to) {
+		return from == null || to == null ? true : (bitSet & (1L << (from.ordinal() + to.ordinal() * COUNT_FACES))) != 0;
 	}
 
-	@Override
-	public SetVisibility clone() {
-
-		SetVisibility r = new SetVisibility();
-		r.bitSet.or(bitSet);
-		return r;
-	}
-
-	@Override
-	public String toString() {
+	public static String toString(long bitSet) {
 
 		StringBuilder stringbuilder = new StringBuilder();
 		stringbuilder.append(' ');
@@ -117,7 +74,7 @@ public class SetVisibility {
 				if (enumfacing == enumfacing1) {
 					stringbuilder.append("  ");
 				} else {
-					boolean flag = this.isVisible(enumfacing, enumfacing1);
+					boolean flag = isVisible(bitSet, enumfacing, enumfacing1);
 					stringbuilder.append(' ').append(flag ? 'Y' : 'n');
 				}
 			}
