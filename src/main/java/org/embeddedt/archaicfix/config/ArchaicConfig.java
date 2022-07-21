@@ -30,7 +30,7 @@ public class ArchaicConfig {
     public static boolean fixMobSpawnsAtLowRenderDist;
 
     @Config.Comment("Replace the regional difficulty calculation with a TMCW-style one that increases with playtime, not time per chunk.")
-    @Config.DefaultBoolean(true)
+    @Config.DefaultBoolean(false)
     public static boolean betterRegionalDifficulty;
 
     @Config.Comment("Allow 65000 block updates to be performed per tick, rather than 1000.")
@@ -51,7 +51,7 @@ public class ArchaicConfig {
     public static boolean itemLagReduction;
 
     @Config.Comment("Increase the amount of armor mobs wear on average. From TMCW.")
-    @Config.DefaultBoolean(true)
+    @Config.DefaultBoolean(false)
     public static boolean increaseMobArmor;
 
     @Config.Comment("Increase the maximum render distance if OptiFine and FastCraft are not installed.")
