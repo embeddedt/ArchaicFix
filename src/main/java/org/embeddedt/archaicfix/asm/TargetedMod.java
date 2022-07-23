@@ -23,7 +23,7 @@ public enum TargetedMod implements ITargetedMod {
     FASTCRAFT("FastCraft", false, startsWith("fastcraft")),
     OPTIFINE("OptiFine", false, startsWith("optifine")),
     MEKANISM("Mekanism", false, startsWith("mekanism")),
-    BOTANIA("Botania", false, startsWith("botania")),
+    BOTANIA("Botania", false, startsWith("botania+").or(startsWith("botania "))),
     COFHCORE("CoFHCore", false, startsWith("cofhcore")),
     ;
 
