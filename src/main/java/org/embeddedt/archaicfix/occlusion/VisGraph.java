@@ -147,9 +147,9 @@ public class VisGraph {
 		int j = index >> 0 & 15;
 
 		if (j == 0) {
-			set.add(EnumFacing.WEST);
+			set.add(EnumFacing.EAST /* WEST */);
 		} else if (j == 15) {
-			set.add(EnumFacing.EAST);
+			set.add(EnumFacing.WEST /* EAST */);
 		}
 
 		int k = index >> 8 & 15;
@@ -196,13 +196,13 @@ public class VisGraph {
 			}
 
 			return index + Z_OFFSET;
-		case WEST:
+		case EAST: /* WEST */
 			if ((index >> 0 & 15) == 0) {
 				return -1;
 			}
 
 			return index - X_OFFSET;
-		case EAST:
+		case WEST: /* EAST */
 			if ((index >> 0 & 15) == 15) {
 				return -1;
 			}

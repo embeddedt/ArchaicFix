@@ -393,8 +393,8 @@ public class OcclusionHelpers {
         // EnumFacing.EAST and EnumFacing.WEST is flipped in MCP
         DOWN(EnumFacing.DOWN, 0, -1, 0),
         UP(EnumFacing.UP, 0, 16, 0),
-        WEST(EnumFacing.EAST, -1, 0, 0),
-        EAST(EnumFacing.WEST, 16, 0, 0),
+        WEST(EnumFacing.EAST /* WEST */, -1, 0, 0),
+        EAST(EnumFacing.WEST /* EAST */, 16, 0, 0),
         NORTH(EnumFacing.NORTH, 0, 0, -1),
         SOUTH(EnumFacing.SOUTH, 0, 0, 16),
         NONE(null, 0, 0, 0),
