@@ -21,9 +21,9 @@ public class ArchaicConfig {
     @Config.DefaultBoolean(false)
     public static boolean enableNewButtonAppearance;
 
-    @Config.Comment("Have NEI take over creative searching. Much more performant, but requires the GTNH fork of NEI to be installed.")
+    @Config.Comment("Use a faster and asynchronous implementation of creative search.")
     @Config.DefaultBoolean(true)
-    public static boolean useNeiForCreativeSearch;
+    public static boolean asyncCreativeSearch;
 
     @Config.Comment("Cap the integrated server render distance at a minimum of 8 chunks, and adjust despawn ranges so mobs will always despawn properly on low render distances.")
     @Config.DefaultBoolean(true)

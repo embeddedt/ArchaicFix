@@ -44,6 +44,7 @@ public class ArchaicFix
 
     public static final SimpleNetworkWrapper NETWORK = NetworkRegistry.INSTANCE.newSimpleChannel("archaicfix");
     public static volatile boolean IS_VANILLA_SERVER = false;
+    public static boolean NEI_INSTALLED = false;
 
     @SidedProxy(clientSide = "org.embeddedt.archaicfix.proxy.ClientProxy", serverSide = "org.embeddedt.archaicfix.proxy.CommonProxy")
     public static CommonProxy proxy;
@@ -75,7 +76,7 @@ public class ArchaicFix
         MinecraftForge.EVENT_BUS.register(helper);
         FMLCommonHandler.instance().bus().register(helper);
         proxy.preinit();
-
+        NEI_INSTALLED = Loader.isModLoaded("NotEnoughItems");
         //SoundSystemConfig.setNumberNormalChannels(1073741824);
         //SoundSystemConfig.setNumberStreamingChannels(1073741823);
     }
