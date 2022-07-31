@@ -22,10 +22,6 @@ import org.embeddedt.archaicfix.helpers.SoundDeviceThread;
 import org.embeddedt.archaicfix.occlusion.OcclusionHelpers;
 import zone.rong.loliasm.api.LoliStringPool;
 
-import java.util.ArrayList;
-
-import static org.embeddedt.archaicfix.ArchaicFix.initialCreativeItems;
-
 public class ClientProxy extends CommonProxy {
     SoundDeviceThread soundThread = null;
     public static volatile boolean soundSystemReloadLock = false;
@@ -85,34 +81,5 @@ public class ClientProxy extends CommonProxy {
             soundThread = new SoundDeviceThread();
             soundThread.start();
         }
-    }
-
-    private void fillCreativeItems() {
-        if(initialCreativeItems == null) {
-            initialCreativeItems = new ArrayList<>();
-            for (Object o : Item.itemRegistry) {
-                Item item = (Item) o;
-
-                if (item != null && item.getCreativeTab() != null) {
-                    try {
-                        item.getSubItems(item, null, initialCreativeItems);
-                    } catch(Exception e) {
-                        ArchaicLogger.LOGGER.error("Item " + item + " threw an error while populating the creative item list!", e);
-                    }
-                }
-            }
-            for(Enchantment enchantment : Enchantment.enchantmentsList) {
-                if (enchantment != null && enchantment.type != null)
-                {
-                    Items.enchanted_book.func_92113_a(enchantment, initialCreativeItems);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void loadcomplete() {
-        super.loadcomplete();
-        fillCreativeItems();
     }
 }

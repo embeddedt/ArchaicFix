@@ -38,8 +38,6 @@ public class ArchaicFix
     public static final String MODID = Tags.MODID;
     public static final String VERSION = Tags.VERSION;
 
-    public static List<ItemStack> initialCreativeItems = null;
-
     private FixHelper helper;
 
     public static final SimpleNetworkWrapper NETWORK = NetworkRegistry.INSTANCE.newSimpleChannel("archaicfix");
