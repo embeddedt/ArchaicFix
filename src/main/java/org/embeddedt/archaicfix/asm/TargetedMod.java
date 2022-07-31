@@ -25,7 +25,7 @@ public enum TargetedMod implements ITargetedMod {
     MEKANISM("Mekanism", false, startsWith("mekanism")),
     BOTANIA("Botania", false, startsWith("botania+").or(startsWith("botania "))),
     COFHCORE("CoFHCore", false, startsWith("cofhcore")),
-    EXTRAUTILS("ExtraUtilities", true, startsWith("extrautilities"))
+    EXTRAUTILS("ExtraUtilities", false, startsWith("extrautilities"))
     ;
 
     @Getter

@@ -35,5 +35,5 @@ dependencies {
 
     String curseMaven = "https://cursemaven.falsepattern.com/" //Use https://cursemaven.com/ if this is down
     compileOnly(deobfMaven(curseMaven, "curse.maven:mekanism-268560:2475797"))
-    compile(deobfMaven(curseMaven, "curse.maven:extrautils-225561:2264383"))
+    compileOnly(deobfMaven(curseMaven, "curse.maven:extrautils-225561:2264383"))
 }
