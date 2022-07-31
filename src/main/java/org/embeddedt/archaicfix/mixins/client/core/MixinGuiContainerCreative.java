@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 public abstract class MixinGuiContainerCreative extends InventoryEffectRenderer {
     private static List<ItemStack> initialCreativeItems = null;
     private static final ForkJoinPool creativeSearchPool = new ForkJoinPool();
-    private static final Function<ItemStack, String> VANILLA_SUPPLIER = stack -> String.join("", stack.getTooltip(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().gameSettings.advancedItemTooltips));
+    private static final Function<ItemStack, String> VANILLA_SUPPLIER = stack -> String.join("", stack.getTooltip(Minecraft.getMinecraft().thePlayer, Minecraft.getMinecraft().gameSettings.advancedItemTooltips)).toLowerCase();
 
     @Shadow private static int selectedTabIndex;
 
@@ -103,6 +103,7 @@ public abstract class MixinGuiContainerCreative extends InventoryEffectRenderer 
                                     initialCreativeItems.parallelStream()
                                             .filter(stack -> {
                                                 String s = nameSupplier.apply(stack);
+                                                System.out.println(s);
                                                 if(s != null)
                                                     return s.contains(search);
                                                 else
