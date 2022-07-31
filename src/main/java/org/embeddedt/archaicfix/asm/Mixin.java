@@ -111,6 +111,10 @@ public enum Mixin implements IMixin {
 
     common_botania_MixinBlockSpecialFlower(Side.COMMON, require(TargetedMod.BOTANIA), "botania.MixinBlockSpecialFlower"),
 
+    common_extrautils_MixinEventHandlerSiege(Side.COMMON, require(TargetedMod.EXTRAUTILS), "extrautils.MixinEventHandlerSiege"),
+    common_extrautils_MixinEventHandlerServer(Side.COMMON, require(TargetedMod.EXTRAUTILS), "extrautils.MixinEventHandlerServer"),
+    common_extrautils_MixinItemDivisionSigil(Side.COMMON, require(TargetedMod.EXTRAUTILS), "extrautils.MixinItemDivisionSigil"),
+
     // The modFilter argument is a predicate, so you can also use the .and(), .or(), and .negate() methods to mix and match multiple predicates.
     ;
 
