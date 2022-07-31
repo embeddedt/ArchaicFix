@@ -130,4 +130,8 @@ public class ArchaicConfig {
     @Config.Comment("Disable OptiFine's version checker.")
     @Config.DefaultBoolean(true)
     public static boolean disableOFVersionCheck;
+
+    @Config.Comment("Fix TileEntity unloading being laggy.")
+    @Config.DefaultBoolean(true)
+    public static boolean fixTEUnloadLag;
 }
