@@ -1,7 +1,6 @@
 package org.embeddedt.archaicfix.mixins.client.core;
 
 import com.google.common.collect.ImmutableList;
-import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
@@ -73,7 +72,7 @@ public abstract class MixinGuiContainerCreative extends InventoryEffectRenderer 
                     List<ItemStack> filteredItems;
                     if(search.length() > 0) {
                         try {
-                            val nameSupplier = ArchaicFix.NEI_INSTALLED ? new NEISearchHelper() : VANILLA_SUPPLIER;
+                            Function<ItemStack, String> nameSupplier = ArchaicFix.NEI_INSTALLED ? new NEISearchHelper() : VANILLA_SUPPLIER;
                             filteredItems = creativeSearchPool.submit(() ->
                                     ArchaicFix.initialCreativeItems.parallelStream()
                                             .filter(stack -> {
