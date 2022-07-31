@@ -1,16 +1,11 @@
 package org.embeddedt.archaicfix.mixins.client.core;
 
-import com.mojang.authlib.GameProfile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiScreenWorking;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.server.integrated.IntegratedServer;
-import net.minecraft.util.Session;
-import org.embeddedt.archaicfix.helpers.PreventSPDeadlockThread;
-import org.spongepowered.asm.lib.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -64,15 +59,6 @@ public abstract class MixinMinecraft {
             displayGuiScreen(null);
             ci.cancel();
         }
-    }
-
-    @Inject(method = "launchIntegratedServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/integrated/IntegratedServer;func_147137_ag()Lnet/minecraft/network/NetworkSystem;"))
-    private void startLoginCheckThread(CallbackInfo ci) {
-        IntegratedServer currentServer = this.theIntegratedServer;
-        if(currentServer == null || currentServer.isServerStopped())
-            return;
-        PreventSPDeadlockThread t = new PreventSPDeadlockThread(currentServer);
-        t.start();
     }
 
     @Redirect(method = "runGameLoop", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;isActive()Z", remap = false))

@@ -134,4 +134,8 @@ public class ArchaicConfig {
     @Config.Comment("Fix TileEntity unloading being laggy.")
     @Config.DefaultBoolean(true)
     public static boolean fixTEUnloadLag;
+
+    @Config.Comment("Attempt to fix hanging in SP when logging in.")
+    @Config.DefaultBoolean(true)
+    public static boolean fixLoginRaceCondition;
 }

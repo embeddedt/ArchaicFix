@@ -2,6 +2,9 @@ package org.embeddedt.archaicfix;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent;
+import cpw.mods.fml.common.network.handshake.IHandshakeState;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.Attribute;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.item.crafting.CraftingManager;
@@ -12,14 +15,13 @@ import org.embeddedt.archaicfix.ducks.IAcceleratedRecipe;
 import org.embeddedt.archaicfix.helpers.OreDictIterator;
 import org.embeddedt.archaicfix.recipe.IFasterCraftingManager;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.*;
 
 public class FixHelper {
     public static ArrayList<IAcceleratedRecipe> recipesHoldingPotentialItems = new ArrayList<>();
     public static Set<Object> unmoddedNetHandlers = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
+
+    public static Map<ChannelHandlerContext, Attribute<IHandshakeState<?>>> handshakeStateMap = Collections.synchronizedMap(new WeakHashMap<>());
 
     @SubscribeEvent
     public void onSizeUpdate(LivingEvent.LivingUpdateEvent event) {
