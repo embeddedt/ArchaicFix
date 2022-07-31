@@ -103,7 +103,6 @@ public abstract class MixinGuiContainerCreative extends InventoryEffectRenderer 
                                     initialCreativeItems.parallelStream()
                                             .filter(stack -> {
                                                 String s = nameSupplier.apply(stack);
-                                                System.out.println(s);
                                                 if(s != null)
                                                     return s.contains(search);
                                                 else
