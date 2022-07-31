@@ -26,7 +26,7 @@ public class MixinNetworkDispatcher {
             self.setConnectionState(state);
     }
 
-    @Redirect(method = "insertIntoChannel", at = @At(value = "INVOKE", target =
+    @Redirect(method = "handlerAdded", at = @At(value = "INVOKE", target =
             "Lio/netty/channel/ChannelConfig;setAutoRead(Z)Lio/netty/channel/ChannelConfig;"), remap = false)
     public ChannelConfig archaic_raceConditionWorkAround2(ChannelConfig self, boolean autoRead) {
         if (ArchaicConfig.fixLoginRaceCondition && side == Side.CLIENT) {
