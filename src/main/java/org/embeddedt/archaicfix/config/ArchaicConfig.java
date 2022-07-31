@@ -138,4 +138,8 @@ public class ArchaicConfig {
     @Config.Comment("Attempt to fix hanging in SP when logging in.")
     @Config.DefaultBoolean(true)
     public static boolean fixLoginRaceCondition;
+
+    @Config.Comment("Fix MC-1406.")
+    @Config.DefaultBoolean(true)
+    public static boolean fixPlacementFlicker;
 }
