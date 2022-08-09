@@ -350,7 +350,7 @@ public class LightingHooks {
                         for (int x = 0; x < 16; x++) {
                             Block block = storage.getBlockByExtId(x, y, z);
                             if(block != Blocks.air) {
-                                int light = LightingEngineHelpers.getLightValueForState(block, world, pos);
+                                int light = LightingEngineHelpers.getLightValueForState(block, world, pos.getX(), pos.getY(), pos.getZ());
 
                                 if (light > 0) {
                                     pos.setPos(xBase + x, yBase + y, zBase + z);
@@ -436,7 +436,7 @@ public class LightingHooks {
         int bx = x + (chunk.xPosition * 16);
         int bz = z + (chunk.zPosition * 16);
         Block block = chunk.getBlock(x, y, z);
-        int lightValue = block.getLightValue(chunk.worldObj, bx, y, bz);
+        int lightValue = LightingEngineHelpers.getLightValueForState(block, chunk.worldObj, bx, y, bz);
         return Math.max(savedLightValue, lightValue);
     }
 }

@@ -1,5 +1,6 @@
 package org.embeddedt.archaicfix.lighting.world.lighting;
 
+import atomicstryker.dynamiclights.client.DynamicLights;
 import com.falsepattern.lib.compat.BlockPos;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
@@ -29,8 +30,11 @@ public class LightingEngineHelpers {
         return DEFAULT_BLOCK_STATE;
     }
 
-    static int getLightValueForState(final Block state, final IBlockAccess world, final BlockPos pos) {
-        return state.getLightValue(world, pos.getX(), pos.getY(), pos.getZ());
+    static int getLightValueForState(final Block state, final IBlockAccess world, final int x, final int y, final int z) {
+        if(LightingEngine.isDynamicLightsLoaded) {
+            return DynamicLights.getLightValue(world, state, x, y, z);
+        } else
+            return state.getLightValue(world, x, y, z);
     }
 
     public static Chunk getLoadedChunk(final IChunkProvider provider, int chunkX, int chunkZ) {

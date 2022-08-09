@@ -104,7 +104,7 @@ public class LightingEngine implements ILightingEngine {
     public LightingEngine(final World world) {
         this.world = world;
         this.profiler = world.theProfiler;
-        isDynamicLightsLoaded = Loader.isModLoaded("dynamiclights");
+        isDynamicLightsLoaded = Loader.isModLoaded("DynamicLights");
 
         PooledLongQueue.Pool pool = new PooledLongQueue.Pool();
 
@@ -586,7 +586,7 @@ public class LightingEngine implements ILightingEngine {
             }
         }
 
-        return MathHelper.clamp_int(LightingEngineHelpers.getLightValueForState(state, this.world, this.curPos), 0, MAX_LIGHT);
+        return MathHelper.clamp_int(LightingEngineHelpers.getLightValueForState(state, this.world, this.curPos.getX(), this.curPos.getY(), this.curPos.getZ()), 0, MAX_LIGHT);
     }
 
     private int getPosOpacity(final BlockPos pos, final Block state) {
