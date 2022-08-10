@@ -287,7 +287,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         int lastUpdatedIndex = 0;
         boolean spareTime = true;
         deferNewRenderUpdates = true;
-        l: for (int c = 0, i = 0; c < lim; ++c) {
+        for (int c = 0, i = 0; c < lim; ++c) {
             WorldRenderer worldrenderer;
             if(lastUpdatedIndex < worldRenderersToUpdateList.size()) {
                 worldrenderer = worldRenderersToUpdateList.get(lastUpdatedIndex++);
@@ -314,7 +314,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
                         frameTarget = (byte) (frameCounter + 50);
                     }
                     spareTime = false;
-                    break l;
+                    break;
                 }
                 i = 0;
             }
