@@ -10,6 +10,11 @@ public class ArchaicConfig {
     @Config.RequiresMcRestart
     public static boolean enableOcclusionTweaks;
 
+    @Config.Comment("Enables multi-threaded chunk updating. WIP")
+    @Config.DefaultBoolean(false)
+    @Config.RequiresMcRestart
+    public static boolean enableThreadedChunkUpdates;
+
     @Config.DefaultBoolean(true)
     public static boolean hideDownloadingTerrainScreen;
 
