@@ -84,6 +84,8 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
     private int renderersNeedUpdate;
 
     private boolean resortUpdateList;
+    
+    private IRendererUpdateOrderProvider DEFAULT_RENDERER_UPDATE_ORDER_PROVIDER = new DefaultRendererUpdateOrderProvider();
 
     /* Make sure other threads can see changes to this */
     private volatile boolean deferNewRenderUpdates;
@@ -282,19 +284,14 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         return getRenderer(X, Y, Z);
     }
 
-    private boolean rebuildChunks(EntityLivingBase view, long deadline) {
-        ArrayList<WorldRenderer> worldRenderersToUpdateList = this.worldRenderersToUpdateList;
-        int lastUpdatedIndex = 0;
+    private boolean rebuildChunks(EntityLivingBase view, long deadline, IRendererUpdateOrderProvider orderProvider) {
         boolean spareTime = true;
         deferNewRenderUpdates = true;
-        for (int c = 0, i = 0; c < worldRenderersToUpdateList.size(); ++c) {
-            WorldRenderer worldrenderer;
-            if(lastUpdatedIndex < worldRenderersToUpdateList.size()) {
-                worldrenderer = worldRenderersToUpdateList.get(lastUpdatedIndex++);
-                ((IWorldRenderer)worldrenderer).arch$setInUpdateList(false);
-            } else {
-                break;
-            }
+        orderProvider.prepare(worldRenderersToUpdateList);
+        for (int c = 0, i = 0; orderProvider.hasNext(worldRenderersToUpdateList); ++c) {
+            WorldRenderer worldrenderer = orderProvider.next(worldRenderersToUpdateList);
+            
+            ((IWorldRenderer)worldrenderer).arch$setInUpdateList(false);
 
             if (!(worldrenderer.isInFrustum & worldrenderer.isVisible)) {
                 continue;
@@ -319,7 +316,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
                 i = 0;
             }
         }
-        worldRenderersToUpdateList.subList(0, lastUpdatedIndex).clear();
+        orderProvider.cleanup(worldRenderersToUpdateList);
         deferNewRenderUpdates = false;
         if (spareTime && frameCounter == frameTarget && timeCheckInterval < 5) {
             ++timeCheckInterval;
@@ -375,7 +372,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
             boolean doUpdateAcceleration = cameraStaticTime > 2;
             /* If the camera is not moving, assume a deadline of 30 FPS. */
             rebuildChunks(view, !doUpdateAcceleration ? OcclusionHelpers.chunkUpdateDeadline
-                    : mc.entityRenderer.renderEndNanoTime + (1_000_000_000L / 30L));
+                    : mc.entityRenderer.renderEndNanoTime + (1_000_000_000L / 30L), DEFAULT_RENDERER_UPDATE_ORDER_PROVIDER);
         }
 
         theWorld.theProfiler.endStartSection("scan");
