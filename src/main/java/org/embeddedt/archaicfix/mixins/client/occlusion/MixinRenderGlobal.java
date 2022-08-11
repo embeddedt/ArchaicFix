@@ -9,7 +9,6 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.util.RenderDistanceSorter;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.EmptyChunk;
@@ -85,7 +84,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
 
     private boolean resortUpdateList;
     
-    private IRendererUpdateOrderProvider DEFAULT_RENDERER_UPDATE_ORDER_PROVIDER = new DefaultRendererUpdateOrderProvider();
+    private IRendererUpdateOrderProvider rendererUpdateOrderProvider;
 
     /* Make sure other threads can see changes to this */
     private volatile boolean deferNewRenderUpdates;
@@ -228,6 +227,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         /* Make sure any vanilla code modifying the update queue crashes */
         worldRenderersToUpdate = Collections.unmodifiableList(worldRenderersToUpdateList);
         clientThread = Thread.currentThread();
+        rendererUpdateOrderProvider = new DefaultRendererUpdateOrderProvider();
     }
 
     @Redirect(method = "loadRenderers", at = @At(value = "INVOKE", target = "Ljava/util/List;clear()V", ordinal = 0))
@@ -284,12 +284,12 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         return getRenderer(X, Y, Z);
     }
 
-    private boolean rebuildChunks(EntityLivingBase view, long deadline, IRendererUpdateOrderProvider orderProvider) {
+    private boolean rebuildChunks(EntityLivingBase view, long deadline) {
         boolean spareTime = true;
         deferNewRenderUpdates = true;
-        orderProvider.prepare(worldRenderersToUpdateList);
-        for (int c = 0, i = 0; orderProvider.hasNext(worldRenderersToUpdateList); ++c) {
-            WorldRenderer worldrenderer = orderProvider.next(worldRenderersToUpdateList);
+        rendererUpdateOrderProvider.prepare(worldRenderersToUpdateList);
+        for (int c = 0, i = 0; rendererUpdateOrderProvider.hasNext(worldRenderersToUpdateList); ++c) {
+            WorldRenderer worldrenderer = rendererUpdateOrderProvider.next(worldRenderersToUpdateList);
             
             ((IWorldRenderer)worldrenderer).arch$setInUpdateList(false);
 
@@ -316,7 +316,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
                 i = 0;
             }
         }
-        orderProvider.cleanup(worldRenderersToUpdateList);
+        rendererUpdateOrderProvider.cleanup(worldRenderersToUpdateList);
         deferNewRenderUpdates = false;
         if (spareTime && frameCounter == frameTarget && timeCheckInterval < 5) {
             ++timeCheckInterval;
@@ -372,7 +372,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
             boolean doUpdateAcceleration = cameraStaticTime > 2;
             /* If the camera is not moving, assume a deadline of 30 FPS. */
             rebuildChunks(view, !doUpdateAcceleration ? OcclusionHelpers.chunkUpdateDeadline
-                    : mc.entityRenderer.renderEndNanoTime + (1_000_000_000L / 30L), DEFAULT_RENDERER_UPDATE_ORDER_PROVIDER);
+                    : mc.entityRenderer.renderEndNanoTime + (1_000_000_000L / 30L));
         }
 
         theWorld.theProfiler.endStartSection("scan");
@@ -637,6 +637,10 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
             OcclusionHelpers.worker.dirty = true;
             OcclusionHelpers.worker.dirtyFrustumRenderers = 0;
         }
+    }
+
+    public void arch$setRendererUpdateOrderProvider(IRendererUpdateOrderProvider orderProvider) {
+        this.rendererUpdateOrderProvider = orderProvider;
     }
 
     private static double distanceSquared(double x1, double y1, double z1, double x2, double y2, double z2) {
