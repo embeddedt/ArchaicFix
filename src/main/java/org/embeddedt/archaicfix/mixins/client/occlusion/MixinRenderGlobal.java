@@ -282,12 +282,12 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         return getRenderer(X, Y, Z);
     }
 
-    private boolean rebuildChunks(EntityLivingBase view, int lim, long deadline) {
+    private boolean rebuildChunks(EntityLivingBase view, long deadline) {
         ArrayList<WorldRenderer> worldRenderersToUpdateList = this.worldRenderersToUpdateList;
         int lastUpdatedIndex = 0;
         boolean spareTime = true;
         deferNewRenderUpdates = true;
-        for (int c = 0, i = 0; c < lim; ++c) {
+        for (int c = 0, i = 0; c < worldRenderersToUpdateList.size(); ++c) {
             WorldRenderer worldrenderer;
             if(lastUpdatedIndex < worldRenderersToUpdateList.size()) {
                 worldrenderer = worldRenderersToUpdateList.get(lastUpdatedIndex++);
@@ -370,12 +370,11 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
             worldRenderersToUpdateList.sort(new BasicDistanceSorter(mc.renderViewEntity));
             resortUpdateList = false;
         }
-        int lim = worldRenderersToUpdate.size();
-        if (lim > 0) {
+        if (!worldRenderersToUpdate.isEmpty()) {
             ++frameCounter;
             boolean doUpdateAcceleration = cameraStaticTime > 2;
             /* If the camera is not moving, assume a deadline of 30 FPS. */
-            rebuildChunks(view, lim, !doUpdateAcceleration ? OcclusionHelpers.chunkUpdateDeadline
+            rebuildChunks(view, !doUpdateAcceleration ? OcclusionHelpers.chunkUpdateDeadline
                     : mc.entityRenderer.renderEndNanoTime + (1_000_000_000L / 30L));
         }
 
