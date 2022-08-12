@@ -63,7 +63,9 @@ public class ThreadedChunkUpdateHelper {
 
         @Override
         public void cleanup(List<WorldRenderer> worldRenderersToUpdateList) {
-            worldRenderersToUpdateList.removeAll(updatedRenderers);
+            for(WorldRenderer wr : updatedRenderers) {
+                worldRenderersToUpdateList.remove(wr);
+            }
             updatedRenderers.clear();
         }
     };
