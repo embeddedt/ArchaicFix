@@ -83,7 +83,7 @@ public class ThreadedChunkUpdateHelper {
     }
 
     private void updateWorkQueue(List<WorldRenderer> toUpdateList) {
-        final int updateQueueSize = 16;
+        final int updateQueueSize = 64; // TODO decide this dynamically
         taskQueue.clear();
         for(int i = 0; i < updateQueueSize && i < toUpdateList.size(); i++) {
             WorldRenderer wr = toUpdateList.get(i);
