@@ -86,8 +86,10 @@ public class ThreadedChunkUpdateHelper {
         taskQueue.clear();
         for(int i = 0; i < updateQueueSize && i < toUpdateList.size(); i++) {
             WorldRenderer wr = toUpdateList.get(i);
-            if(((IRendererUpdateResultHolder)wr).arch$getRendererUpdateTask().isEmpty()) {
+            UpdateTask task = ((IRendererUpdateResultHolder)wr).arch$getRendererUpdateTask();
+            if(task.isEmpty()) {
                 // No update in progress; add to task queue
+                task.chunkCache = getChunkCacheSnapshot(wr);
                 taskQueue.add(wr);
             }
         }
@@ -123,7 +125,8 @@ public class ThreadedChunkUpdateHelper {
     public void doChunkUpdate(WorldRenderer wr) {
         UpdateTask task = ((IRendererUpdateResultHolder)wr).arch$getRendererUpdateTask();
 
-        ChunkCache chunkcache = getChunkCacheSnapshot(wr);
+        ChunkCache chunkcache = task.chunkCache;
+
         if(!chunkcache.extendedLevelsInChunkCache()) {
             RenderBlocks renderblocks = new RenderBlocks(chunkcache);
 
@@ -186,12 +189,15 @@ public class ThreadedChunkUpdateHelper {
         public boolean started;
         public Result[] result = new Result[]{new Result(), new Result()};
 
+        public ChunkCache chunkCache;
+
         public boolean isEmpty() {
             return !started;
         }
 
         public void clear() {
             started = false;
+            chunkCache = null;
             for(Result r : result) {
                 r.clear();
             }
