@@ -11,4 +11,7 @@ public interface ICapturableTessellator {
      *  supplied state is not compatible. */
     public boolean arch$addTessellatorVertexState(TesselatorVertexState state);
 
+    /** Flushes the tessellator's state similarly to draw(), but without drawing anything. */
+    public void discard();
+
 }

@@ -98,7 +98,7 @@ public class ThreadedChunkUpdateHelper {
         UpdateTask.Result result = new UpdateTask.Result();
         //System.out.println("Updating renderer " + wr.posX + " " + wr.posY + " " + wr.posZ + "...");
 
-        /*ChunkCache chunkcache = getChunkCacheSnapshot(wr);
+        ChunkCache chunkcache = getChunkCacheSnapshot(wr);
         if(!chunkcache.extendedLevelsInChunkCache()) {
             RenderBlocks renderblocks = new RenderBlocks(chunkcache);
 
@@ -132,15 +132,10 @@ public class ThreadedChunkUpdateHelper {
 
             if(startedTessellator) {
                 result.renderedQuads = ((ICapturableTessellator)threadTessellator).arch$getUnsortedVertexState();
+                ((ICapturableTessellator)threadTessellator).discard();
             }
             result.renderedSomething = renderedSomething;
-        }*/
-
-        /*try {
-            Thread.sleep(60 * 60 * 1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }*/
+        }
 
         return result;
     }
