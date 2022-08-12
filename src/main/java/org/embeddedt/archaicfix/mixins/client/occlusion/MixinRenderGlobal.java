@@ -365,7 +365,8 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         }
         if (!worldRenderersToUpdate.isEmpty()) {
             ++frameCounter;
-            boolean doUpdateAcceleration = cameraStaticTime > 2 && !OcclusionHelpers.DEBUG_LAZY_CHUNK_UPDATES;
+            boolean doUpdateAcceleration = cameraStaticTime > 2 && !OcclusionHelpers.DEBUG_LAZY_CHUNK_UPDATES
+                    && !OcclusionHelpers.DEBUG_NO_UPDATE_ACCELERATION;
             /* If the camera is not moving, assume a deadline of 30 FPS. */
             rebuildChunks(view, !doUpdateAcceleration ? OcclusionHelpers.chunkUpdateDeadline
                     : mc.entityRenderer.renderEndNanoTime + (1_000_000_000L / 30L));
