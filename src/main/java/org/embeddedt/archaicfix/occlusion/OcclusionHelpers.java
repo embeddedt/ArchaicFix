@@ -22,6 +22,7 @@ public class OcclusionHelpers {
 
     public static final boolean DEBUG_ALWAYS_RUN_OCCLUSION = Boolean.parseBoolean(System.getProperty("archaicfix.debug.alwaysRunOcclusion", "false"));
     public static final boolean DEBUG_PRINT_QUEUE_ITERATIONS = Boolean.parseBoolean(System.getProperty("archaicfix.debug.printQueueIterations", "false"));
+    public static final boolean DEBUG_LAZY_CHUNK_UPDATES = Boolean.parseBoolean(System.getProperty("archaicfix.debug.lazyChunkUpdates", "false"));
 
     public static void init() {
         worker = new RenderWorker();

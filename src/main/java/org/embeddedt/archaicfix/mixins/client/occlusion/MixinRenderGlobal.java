@@ -293,7 +293,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
             
             ((IWorldRenderer)worldrenderer).arch$setInUpdateList(false);
 
-            if (!(worldrenderer.isInFrustum & worldrenderer.isVisible)) {
+            if (!(worldrenderer.isInFrustum & worldrenderer.isVisible) && !OcclusionHelpers.DEBUG_LAZY_CHUNK_UPDATES) {
                 continue;
             }
 
@@ -303,7 +303,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
             worldrenderer.isWaitingOnOcclusionQuery = worldrenderer.skipAllRenderPasses() || (mc.theWorld.getChunkFromBlockCoords(worldrenderer.posX, worldrenderer.posZ) instanceof EmptyChunk);
             // can't add fields, re-use
 
-            if (!worldrenderer.isWaitingOnOcclusionQuery && ++i > timeCheckInterval) {
+            if ((!worldrenderer.isWaitingOnOcclusionQuery || OcclusionHelpers.DEBUG_LAZY_CHUNK_UPDATES) && ++i > timeCheckInterval) {
                 long t = System.nanoTime();
                 if (t > deadline) {
                     if (i == c || frameCounter == frameTarget) {
@@ -318,7 +318,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         }
         rendererUpdateOrderProvider.cleanup(worldRenderersToUpdateList);
         deferNewRenderUpdates = false;
-        if (spareTime && frameCounter == frameTarget && timeCheckInterval < 5) {
+        if (spareTime && frameCounter == frameTarget && timeCheckInterval < 5 && !OcclusionHelpers.DEBUG_LAZY_CHUNK_UPDATES) {
             ++timeCheckInterval;
             frameTarget = (byte) (frameCounter + 50);
         }
@@ -369,7 +369,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         }
         if (!worldRenderersToUpdate.isEmpty()) {
             ++frameCounter;
-            boolean doUpdateAcceleration = cameraStaticTime > 2;
+            boolean doUpdateAcceleration = cameraStaticTime > 2 && !OcclusionHelpers.DEBUG_LAZY_CHUNK_UPDATES;
             /* If the camera is not moving, assume a deadline of 30 FPS. */
             rebuildChunks(view, !doUpdateAcceleration ? OcclusionHelpers.chunkUpdateDeadline
                     : mc.entityRenderer.renderEndNanoTime + (1_000_000_000L / 30L));
