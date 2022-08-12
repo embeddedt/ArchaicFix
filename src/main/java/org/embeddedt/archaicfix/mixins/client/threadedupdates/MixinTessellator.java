@@ -39,8 +39,7 @@ public abstract class MixinTessellator implements ICapturableTessellator {
         if(vertexCount < 1) {
             return null;
         }
-        // TODO
-        return ((Tessellator)(Object)this).getVertexState(0, 0, 0);
+        return new TesselatorVertexState(Arrays.copyOf(rawBuffer, rawBuffer.length), this.rawBufferIndex, this.vertexCount, this.hasTexture, this.hasBrightness, this.hasNormals, this.hasColor);
     }
 
     @Override
