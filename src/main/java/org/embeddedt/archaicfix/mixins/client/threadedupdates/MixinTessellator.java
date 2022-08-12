@@ -26,6 +26,14 @@ public abstract class MixinTessellator implements ICapturableTessellator {
 
     @Shadow private int rawBufferSize;
 
+    @Shadow private boolean hasTexture;
+
+    @Shadow private boolean hasBrightness;
+
+    @Shadow private boolean hasColor;
+
+    @Shadow private boolean hasNormals;
+
     @Override
     public TesselatorVertexState arch$getUnsortedVertexState() {
         if(vertexCount < 1) {
@@ -36,9 +44,20 @@ public abstract class MixinTessellator implements ICapturableTessellator {
     }
 
     @Override
-    public boolean arch$addTessellatorVertexState(TesselatorVertexState state) {
-        if(state == null) return true;
-        // TODO check if draw mode and flags are the same
+    public void arch$addTessellatorVertexState(TesselatorVertexState state) throws IllegalStateException {
+        if(state == null) return;
+        // TODO check if draw mode is the same
+
+        if (vertexCount == 0) {
+            hasTexture = state.getHasTexture();
+            hasBrightness = state.getHasBrightness();
+            hasColor = state.getHasColor();
+            hasNormals = state.getHasNormals();
+        } else {
+            if(hasTexture != state.getHasTexture() || hasBrightness != state.getHasBrightness() || hasColor != state.getHasColor() || hasNormals != state.getHasNormals()) {
+                throw new IllegalArgumentException("State mismatch");
+            }
+        }
 
         while(rawBufferSize < rawBufferIndex + state.getRawBuffer().length) {
             rawBufferSize *= 2;
@@ -50,8 +69,6 @@ public abstract class MixinTessellator implements ICapturableTessellator {
         System.arraycopy(state.getRawBuffer(), 0, rawBuffer, rawBufferIndex, state.getRawBuffer().length);
         rawBufferIndex += state.getRawBufferIndex();
         vertexCount += state.getVertexCount();
-
-        return true;
     }
 
     @Override
