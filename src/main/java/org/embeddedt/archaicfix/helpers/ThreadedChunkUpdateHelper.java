@@ -103,7 +103,9 @@ public class ThreadedChunkUpdateHelper {
             } catch(Exception e) {
                 LOGGER.error("Failed to update chunk " + worldRendererToString(wr));
                 e.printStackTrace();
-                ((IRendererUpdateResultHolder) wr).arch$getRendererUpdateTask().result.clear();
+                for(UpdateTask.Result r : ((IRendererUpdateResultHolder) wr).arch$getRendererUpdateTask().result) {
+                    r.clear();
+                }
             }
             finishedTasks.add(wr);
         }
@@ -125,44 +127,46 @@ public class ThreadedChunkUpdateHelper {
         if(!chunkcache.extendedLevelsInChunkCache()) {
             RenderBlocks renderblocks = new RenderBlocks(chunkcache);
 
-            int pass = 0;
-            boolean renderedSomething = false;
-            boolean startedTessellator = false;
+            for(int pass = 0; pass < 2; pass++) {
+                boolean renderedSomething = false;
+                boolean startedTessellator = false;
 
-            for (int y = wr.posY; y < wr.posY + 16; ++y) {
-                for (int z = wr.posZ; z < wr.posZ + 16; ++z) {
-                    for (int x = wr.posX; x < wr.posX + 16; ++x) {
-                        Block block = chunkcache.getBlock(x, y, z);
+                for (int y = wr.posY; y < wr.posY + 16; ++y) {
+                    for (int z = wr.posZ; z < wr.posZ + 16; ++z) {
+                        for (int x = wr.posX; x < wr.posX + 16; ++x) {
+                            Block block = chunkcache.getBlock(x, y, z);
 
-                        if (block.getMaterial() != Material.air) {
-                            if (!startedTessellator) {
-                                startedTessellator = true;
-                                threadTessellator.get().startDrawingQuads(); // TODO triangulator compat
-                                threadTessellator.get().setTranslation((double)(-wr.posX), (double)(-wr.posY), (double)(-wr.posZ));
-                            }
+                            if (block.getMaterial() != Material.air) {
+                                if (!startedTessellator) {
+                                    startedTessellator = true;
+                                    threadTessellator.get().startDrawingQuads(); // TODO triangulator compat
+                                    threadTessellator.get().setTranslation((double) (-wr.posX), (double) (-wr.posY), (double) (-wr.posZ));
+                                }
 
-                            int k3 = block.getRenderBlockPass();
+                                int k3 = block.getRenderBlockPass();
 
-                            if (!block.canRenderInPass(pass)) continue;
+                                if (!block.canRenderInPass(pass)) continue;
 
-                            if(canBlockBeRenderedOffThread(block, pass)) {
-                                renderedSomething |= renderblocks.renderBlockByRenderType(block, x, y, z);
+                                if (canBlockBeRenderedOffThread(block, pass)) {
+                                    renderedSomething |= renderblocks.renderBlockByRenderType(block, x, y, z);
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            if(startedTessellator) {
-                task.result.renderedQuads = ((ICapturableTessellator)threadTessellator.get()).arch$getUnsortedVertexState();
-                ((ICapturableTessellator)threadTessellator.get()).discard();
+                if (startedTessellator) {
+                    task.result[pass].renderedQuads = ((ICapturableTessellator) threadTessellator.get()).arch$getUnsortedVertexState();
+                    ((ICapturableTessellator) threadTessellator.get()).discard();
+                }
+                task.result[pass].renderedSomething = renderedSomething;
             }
-            task.result.renderedSomething = renderedSomething;
         }
     }
 
     public static boolean canBlockBeRenderedOffThread(Block block, int pass) {
-        return block.getRenderType() == 0;
+        return block.getRenderType() == 0 // standard block
+                || block.getRenderType() == 4; // liquid
     }
 
     private ChunkCache getChunkCacheSnapshot(WorldRenderer wr) {
@@ -180,7 +184,7 @@ public class ThreadedChunkUpdateHelper {
     // Not sure how thread-safe this class is...
     public static class UpdateTask {
         public boolean started;
-        public Result result = new Result();
+        public Result[] result = new Result[]{new Result(), new Result()};
 
         public boolean isEmpty() {
             return !started;
@@ -188,7 +192,9 @@ public class ThreadedChunkUpdateHelper {
 
         public void clear() {
             started = false;
-            result.clear();
+            for(Result r : result) {
+                r.clear();
+            }
         }
 
         public static class Result {

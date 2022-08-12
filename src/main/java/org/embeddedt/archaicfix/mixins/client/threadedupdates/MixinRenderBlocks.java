@@ -20,7 +20,7 @@ public class MixinRenderBlocks {
         boolean offThreadBlock = ThreadedChunkUpdateHelper.canBlockBeRenderedOffThread(block, ForgeHooksClient.getWorldRenderPass());
         if(Thread.currentThread() == ThreadedChunkUpdateHelper.MAIN_THREAD ? offThreadBlock : !offThreadBlock) {
             // Cancel rendering block if it's delegated to a different thread.
-            cir.setReturnValue(((IRendererUpdateResultHolder)ThreadedChunkUpdateHelper.lastWorldRenderer).arch$getRendererUpdateTask().result.renderedSomething);
+            cir.setReturnValue(((IRendererUpdateResultHolder)ThreadedChunkUpdateHelper.lastWorldRenderer).arch$getRendererUpdateTask().result[ForgeHooksClient.getWorldRenderPass()].renderedSomething);
         }
     }
 
