@@ -10,7 +10,7 @@ public class ArchaicConfig {
     @Config.RequiresMcRestart
     public static boolean enableOcclusionTweaks;
 
-    @Config.Comment("Enables multi-threaded chunk updating. WIP")
+    @Config.Comment("EXPERIMENTAL: Enables multi-threaded chunk updating. At the moment it only works if enableOcclusionTweaks is turned on.")
     @Config.DefaultBoolean(false)
     @Config.RequiresMcRestart
     public static boolean enableThreadedChunkUpdates;
