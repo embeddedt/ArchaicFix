@@ -1,5 +1,7 @@
 package org.embeddedt.archaicfix.helpers;
 
+import static org.embeddedt.archaicfix.ArchaicLogger.LOGGER;
+
 import lombok.SneakyThrows;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -96,7 +98,13 @@ public class ThreadedChunkUpdateHelper {
         while(true) {
             WorldRenderer wr = taskQueue.take();
             ((IRendererUpdateResultHolder)wr).arch$getRendererUpdateTask().started = true;
-            doChunkUpdate(wr);
+            try {
+                doChunkUpdate(wr);
+            } catch(Exception e) {
+                LOGGER.error("Failed to update chunk " + worldRendererToString(wr));
+                e.printStackTrace();
+                ((IRendererUpdateResultHolder) wr).arch$getRendererUpdateTask().result.clear();
+            }
             finishedTasks.add(wr);
         }
     }
