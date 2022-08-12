@@ -13,7 +13,6 @@ import org.embeddedt.archaicfix.occlusion.IRenderGlobal;
 import org.embeddedt.archaicfix.occlusion.IRendererUpdateOrderProvider;
 import org.embeddedt.archaicfix.threadedupdates.ICapturableTessellator;
 import org.embeddedt.archaicfix.threadedupdates.IRendererUpdateResultHolder;
-import scala.collection.script.Update;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +95,6 @@ public class ThreadedChunkUpdateHelper {
     // TODO if the chunk is modified during the update, schedule a re-update (maybe interrupt the update too).
     public UpdateTask.Result doChunkUpdate(WorldRenderer wr) {
         UpdateTask.Result result = new UpdateTask.Result();
-        //System.out.println("Updating renderer " + wr.posX + " " + wr.posY + " " + wr.posZ + "...");
 
         ChunkCache chunkcache = getChunkCacheSnapshot(wr);
         if(!chunkcache.extendedLevelsInChunkCache()) {
