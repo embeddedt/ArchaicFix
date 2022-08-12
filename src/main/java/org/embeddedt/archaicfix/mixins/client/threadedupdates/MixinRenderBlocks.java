@@ -5,6 +5,7 @@ import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraftforge.client.ForgeHooksClient;
 import org.embeddedt.archaicfix.helpers.ThreadedChunkUpdateHelper;
+import org.embeddedt.archaicfix.threadedupdates.IRendererUpdateResultHolder;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -19,13 +20,13 @@ public class MixinRenderBlocks {
         boolean offThreadBlock = ThreadedChunkUpdateHelper.canBlockBeRenderedOffThread(block, ForgeHooksClient.getWorldRenderPass());
         if(Thread.currentThread() == ThreadedChunkUpdateHelper.MAIN_THREAD ? offThreadBlock : !offThreadBlock) {
             // Cancel rendering block if it's delegated to a different thread.
-            cir.setReturnValue(ThreadedChunkUpdateHelper.lastUpdateResult.renderedSomething);
+            cir.setReturnValue(((IRendererUpdateResultHolder)ThreadedChunkUpdateHelper.lastWorldRenderer).arch$getRendererUpdateTask().result.renderedSomething);
         }
     }
 
     @Redirect(method = "*", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/Tessellator;instance:Lnet/minecraft/client/renderer/Tessellator;"))
     private Tessellator modifyTessellatorAccess() {
-        return Thread.currentThread() == ThreadedChunkUpdateHelper.MAIN_THREAD ? Tessellator.instance : ThreadedChunkUpdateHelper.instance.threadTessellator;
+        return Thread.currentThread() == ThreadedChunkUpdateHelper.MAIN_THREAD ? Tessellator.instance : ThreadedChunkUpdateHelper.instance.threadTessellator.get();
     }
 
 }

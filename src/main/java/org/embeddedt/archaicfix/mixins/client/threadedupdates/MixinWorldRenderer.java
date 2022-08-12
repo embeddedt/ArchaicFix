@@ -1,5 +1,6 @@
 package org.embeddedt.archaicfix.mixins.client.threadedupdates;
 
+import lombok.SneakyThrows;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.entity.EntityLivingBase;
@@ -14,27 +15,29 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(WorldRenderer.class)
 public class MixinWorldRenderer implements IRendererUpdateResultHolder {
 
-    private ThreadedChunkUpdateHelper.UpdateTask.Result arch$updateTaskResult;
+    private ThreadedChunkUpdateHelper.UpdateTask arch$updateTask;
 
-    @Inject(method = "updateRenderer", at = @At("HEAD"))
-    private void setLastUpdateResultSingleton(CallbackInfo ci) {
-        ThreadedChunkUpdateHelper.lastUpdateResult = ((IRendererUpdateResultHolder)(Object)this).arch$getRendererUpdateResult();
+    @Inject(method = "<init>*", at = @At("RETURN"))
+    private void init(CallbackInfo ci) {
+        arch$updateTask = new ThreadedChunkUpdateHelper.UpdateTask();
     }
 
+    @Inject(method = "updateRenderer", at = @At("HEAD"))
+    private void setLastWorldRendererSingleton(CallbackInfo ci) {
+        ThreadedChunkUpdateHelper.lastWorldRenderer = ((WorldRenderer)(Object)this);
+    }
+
+    @SneakyThrows
     @Inject(method = "postRenderBlocks", at = @At("HEAD"))
     private void loadTessellationResult(int pass, EntityLivingBase view, CallbackInfo ci) {
         if(pass == 0) {
-            ((ICapturableTessellator) Tessellator.instance).arch$addTessellatorVertexState(arch$updateTaskResult.renderedQuads);
+            ((ICapturableTessellator) Tessellator.instance).arch$addTessellatorVertexState(arch$updateTask.result.renderedQuads);
         }
     }
 
     @Override
-    public ThreadedChunkUpdateHelper.UpdateTask.Result arch$getRendererUpdateResult() {
-        return arch$updateTaskResult;
+    public ThreadedChunkUpdateHelper.UpdateTask arch$getRendererUpdateTask() {
+        return arch$updateTask;
     }
 
-    @Override
-    public void arch$setRendererUpdateResult(ThreadedChunkUpdateHelper.UpdateTask.Result result) {
-        arch$updateTaskResult = result;
-    }
 }

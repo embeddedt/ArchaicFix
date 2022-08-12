@@ -16,9 +16,7 @@ import org.embeddedt.archaicfix.threadedupdates.IRendererUpdateResultHolder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 public class ThreadedChunkUpdateHelper {
 
@@ -27,13 +25,14 @@ public class ThreadedChunkUpdateHelper {
     public static Thread MAIN_THREAD;
 
     /** Used within the scope of WorldRenderer#updateWorld (on the main thread). */
-    public static UpdateTask.Result lastUpdateResult;
+    public static WorldRenderer lastWorldRenderer;
 
-    // TODO use more threads
-    ExecutorService executor = Executors.newFixedThreadPool(1);
+    /** Tasks not yet started */
+    public BlockingQueue<WorldRenderer> taskQueue = new LinkedBlockingDeque<>();
+    /** Finished tasks ready for consumption */
+    public BlockingQueue<WorldRenderer> finishedTasks = new LinkedBlockingDeque<>();
 
-    private UpdateTask currentTask = new UpdateTask(); // only 1 task at a time for now
-    public Tessellator threadTessellator; // again, only 1 for now
+    public ThreadLocal<Tessellator> threadTessellator = ThreadLocal.withInitial(Tessellator::new);
 
     IRendererUpdateOrderProvider rendererUpdateOrderProvider = new IRendererUpdateOrderProvider() {
         private List<WorldRenderer> updatedRenderers = new ArrayList<>(); // the renderers updated during the batch
@@ -45,17 +44,13 @@ public class ThreadedChunkUpdateHelper {
 
         @Override
         public boolean hasNext(List<WorldRenderer> worldRenderersToUpdateList) {
-            return currentTask.future != null && currentTask.future.isDone();
+            return !finishedTasks.isEmpty();
         }
 
         @SneakyThrows
         @Override
         public WorldRenderer next(List<WorldRenderer> worldRenderersToUpdateList) {
-            WorldRenderer wr = currentTask.renderer;
-            ((IRendererUpdateResultHolder)wr).arch$setRendererUpdateResult(currentTask.future.get());
-            currentTask.renderer = null;
-            currentTask.future = null;
-
+            WorldRenderer wr = finishedTasks.take();
             updatedRenderers.add(wr);
 
             return wr;
@@ -65,6 +60,7 @@ public class ThreadedChunkUpdateHelper {
         public void cleanup(List<WorldRenderer> worldRenderersToUpdateList) {
             for(WorldRenderer wr : updatedRenderers) {
                 worldRenderersToUpdateList.remove(wr);
+                ((IRendererUpdateResultHolder)wr).arch$getRendererUpdateTask().clear();
             }
             updatedRenderers.clear();
         }
@@ -72,22 +68,41 @@ public class ThreadedChunkUpdateHelper {
 
     public void init() {
         ((IRenderGlobal) Minecraft.getMinecraft().renderGlobal).arch$setRendererUpdateOrderProvider(rendererUpdateOrderProvider);
-        threadTessellator = new Tessellator();
         MAIN_THREAD = Thread.currentThread();
+
+        for(int i = 0; i < 1; i++) {
+            new Thread(this::runThread, "Chunk Update Worker Thread #" + i).start();
+        }
     }
 
     private void preRendererUpdates(List<WorldRenderer> toUpdateList) {
-        if(!toUpdateList.isEmpty()) {
-            WorldRenderer wr = toUpdateList.get(0);
-            if(currentTask.future == null) {
-                submitUpdateTask(wr);
+        updateWorkQueue(toUpdateList);
+    }
+
+    private void updateWorkQueue(List<WorldRenderer> toUpdateList) {
+        final int updateQueueSize = 16;
+        taskQueue.clear();
+        for(int i = 0; i < updateQueueSize && i < toUpdateList.size(); i++) {
+            WorldRenderer wr = toUpdateList.get(i);
+            if(((IRendererUpdateResultHolder)wr).arch$getRendererUpdateTask().isEmpty()) {
+                // No update in progress; add to task queue
+                taskQueue.add(wr);
             }
         }
     }
 
-    private void submitUpdateTask(WorldRenderer wr) {
-        currentTask.future = executor.submit(() -> doChunkUpdate(wr));
-        currentTask.renderer = wr;
+    @SneakyThrows
+    private void runThread() {
+        while(true) {
+            WorldRenderer wr = taskQueue.take();
+            ((IRendererUpdateResultHolder)wr).arch$getRendererUpdateTask().started = true;
+            doChunkUpdate(wr);
+            finishedTasks.add(wr);
+        }
+    }
+
+    private static String worldRendererToString(WorldRenderer wr) {
+        return "(" + wr.posX + ", " + wr.posY + ", " + wr.posZ + ")";
     }
 
     /** Renders certain blocks (as defined in canBlockBeRenderedOffThread) on the thread, and saves the tessellation
@@ -95,8 +110,8 @@ public class ThreadedChunkUpdateHelper {
      *  fill them in.
      */
     // TODO if the chunk is modified during the update, schedule a re-update (maybe interrupt the update too).
-    public UpdateTask.Result doChunkUpdate(WorldRenderer wr) {
-        UpdateTask.Result result = new UpdateTask.Result();
+    public void doChunkUpdate(WorldRenderer wr) {
+        UpdateTask task = ((IRendererUpdateResultHolder)wr).arch$getRendererUpdateTask();
 
         ChunkCache chunkcache = getChunkCacheSnapshot(wr);
         if(!chunkcache.extendedLevelsInChunkCache()) {
@@ -114,8 +129,8 @@ public class ThreadedChunkUpdateHelper {
                         if (block.getMaterial() != Material.air) {
                             if (!startedTessellator) {
                                 startedTessellator = true;
-                                threadTessellator.startDrawingQuads(); // TODO triangulator compat
-                                threadTessellator.setTranslation((double)(-wr.posX), (double)(-wr.posY), (double)(-wr.posZ));
+                                threadTessellator.get().startDrawingQuads(); // TODO triangulator compat
+                                threadTessellator.get().setTranslation((double)(-wr.posX), (double)(-wr.posY), (double)(-wr.posZ));
                             }
 
                             int k3 = block.getRenderBlockPass();
@@ -131,13 +146,11 @@ public class ThreadedChunkUpdateHelper {
             }
 
             if(startedTessellator) {
-                result.renderedQuads = ((ICapturableTessellator)threadTessellator).arch$getUnsortedVertexState();
-                ((ICapturableTessellator)threadTessellator).discard();
+                task.result.renderedQuads = ((ICapturableTessellator)threadTessellator.get()).arch$getUnsortedVertexState();
+                ((ICapturableTessellator)threadTessellator.get()).discard();
             }
-            result.renderedSomething = renderedSomething;
+            task.result.renderedSomething = renderedSomething;
         }
-
-        return result;
     }
 
     public static boolean canBlockBeRenderedOffThread(Block block, int pass) {
@@ -156,13 +169,28 @@ public class ThreadedChunkUpdateHelper {
         // TODO: destroy state when chunks are reloaded or server is stopped
     }
 
+    // Not sure how thread-safe this class is...
     public static class UpdateTask {
-        Future<Result> future;
-        WorldRenderer renderer;
+        public boolean started;
+        public Result result = new Result();
+
+        public boolean isEmpty() {
+            return !started;
+        }
+
+        public void clear() {
+            started = false;
+            result.clear();
+        }
 
         public static class Result {
             public boolean renderedSomething;
             public TesselatorVertexState renderedQuads;
+
+            public void clear() {
+                renderedSomething = false;
+                renderedQuads = null;
+            }
         }
     }
 }
