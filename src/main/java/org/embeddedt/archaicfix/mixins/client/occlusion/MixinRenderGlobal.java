@@ -285,10 +285,13 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
     }
 
     private boolean rebuildChunks(EntityLivingBase view, long deadline) {
+        int updateLimit = deadline == 0 ? 5 : Integer.MAX_VALUE;
+        int updates = 0;
+
         boolean spareTime = true;
         deferNewRenderUpdates = true;
         rendererUpdateOrderProvider.prepare(worldRenderersToUpdateList);
-        for (int c = 0; rendererUpdateOrderProvider.hasNext(worldRenderersToUpdateList); ++c) {
+        for (int c = 0; updates < updateLimit && rendererUpdateOrderProvider.hasNext(worldRenderersToUpdateList); ++c) {
             WorldRenderer worldrenderer = rendererUpdateOrderProvider.next(worldRenderersToUpdateList);
             
             ((IWorldRenderer)worldrenderer).arch$setInUpdateList(false);
@@ -303,7 +306,8 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
             worldrenderer.isWaitingOnOcclusionQuery = worldrenderer.skipAllRenderPasses() || (mc.theWorld.getChunkFromBlockCoords(worldrenderer.posX, worldrenderer.posZ) instanceof EmptyChunk);
             // can't add fields, re-use
 
-            if(!worldrenderer.isWaitingOnOcclusionQuery || OcclusionHelpers.DEBUG_LAZY_CHUNK_UPDATES) {
+            updates++;
+
             if(!worldrenderer.isWaitingOnOcclusionQuery || deadline != 0 || OcclusionHelpers.DEBUG_LAZY_CHUNK_UPDATES) {
                 long t = System.nanoTime();
                 if (t > deadline) {
