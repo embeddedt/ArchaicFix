@@ -37,7 +37,8 @@ public class ThreadedChunkUpdateHelper {
     public ThreadLocal<Tessellator> threadTessellator = ThreadLocal.withInitial(Tessellator::new);
 
     IRendererUpdateOrderProvider rendererUpdateOrderProvider = new IRendererUpdateOrderProvider() {
-        private List<WorldRenderer> updatedRenderers = new ArrayList<>(); // the renderers updated during the batch
+        /** The renderers updated during the batch */
+        private List<WorldRenderer> updatedRenderers = new ArrayList<>();
 
         @Override
         public void prepare(List<WorldRenderer> worldRenderersToUpdateList) {
@@ -113,13 +114,9 @@ public class ThreadedChunkUpdateHelper {
         }
     }
 
-    private static String worldRendererToString(WorldRenderer wr) {
-        return "(" + wr.posX + ", " + wr.posY + ", " + wr.posZ + ")";
-    }
-
-    /** Renders certain blocks (as defined in canBlockBeRenderedOffThread) on the thread, and saves the tessellation
-     *  result. WorldRenderer#updateRenderer will skip over these blocks, and use the result produced by the thread to
-     *  fill them in.
+    /** Renders certain blocks (as defined in canBlockBeRenderedOffThread) on the worker thread, and saves the
+     *  tessellation result. WorldRenderer#updateRenderer will skip over these blocks, and use the result that was
+     *  produced by the worker thread to fill them in.
      */
     // TODO if the chunk is modified during the update, schedule a re-update (maybe interrupt the update too).
     public void doChunkUpdate(WorldRenderer wr) {
@@ -173,7 +170,7 @@ public class ThreadedChunkUpdateHelper {
     }
 
     private ChunkCache getChunkCacheSnapshot(WorldRenderer wr) {
-        // TODO This is not thread safe! Actually make a snapshot here.
+        // TODO This is not thread-safe! Actually make a snapshot here.
         byte pad = 1;
         ChunkCache chunkcache = new ChunkCache(wr.worldObj, wr.posX - pad, wr.posY - pad, wr.posZ - pad,
                 wr.posX + 16 + pad, wr.posY + 16 + pad, wr.posZ + 16 + pad, pad);
@@ -182,6 +179,10 @@ public class ThreadedChunkUpdateHelper {
 
     public void clear() {
         // TODO: destroy state when chunks are reloaded or server is stopped
+    }
+
+    private static String worldRendererToString(WorldRenderer wr) {
+        return "(" + wr.posX + ", " + wr.posY + ", " + wr.posZ + ")";
     }
 
     // Not sure how thread-safe this class is...
