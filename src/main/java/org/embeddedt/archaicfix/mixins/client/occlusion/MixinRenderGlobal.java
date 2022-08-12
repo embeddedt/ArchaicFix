@@ -78,7 +78,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
     private int cameraStaticTime;
 
     private short alphaSortProgress = 0;
-    private byte timeCheckInterval = 5, frameCounter, frameTarget;
+    private byte frameCounter, frameTarget;
 
     private int renderersNeedUpdate;
 
@@ -288,7 +288,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         boolean spareTime = true;
         deferNewRenderUpdates = true;
         rendererUpdateOrderProvider.prepare(worldRenderersToUpdateList);
-        for (int c = 0, i = 0; rendererUpdateOrderProvider.hasNext(worldRenderersToUpdateList); ++c) {
+        for (int c = 0; rendererUpdateOrderProvider.hasNext(worldRenderersToUpdateList); ++c) {
             WorldRenderer worldrenderer = rendererUpdateOrderProvider.next(worldRenderersToUpdateList);
             
             ((IWorldRenderer)worldrenderer).arch$setInUpdateList(false);
@@ -303,25 +303,17 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
             worldrenderer.isWaitingOnOcclusionQuery = worldrenderer.skipAllRenderPasses() || (mc.theWorld.getChunkFromBlockCoords(worldrenderer.posX, worldrenderer.posZ) instanceof EmptyChunk);
             // can't add fields, re-use
 
-            if ((!worldrenderer.isWaitingOnOcclusionQuery || OcclusionHelpers.DEBUG_LAZY_CHUNK_UPDATES) && ++i > timeCheckInterval) {
+            if(!worldrenderer.isWaitingOnOcclusionQuery || OcclusionHelpers.DEBUG_LAZY_CHUNK_UPDATES) {
+            if(!worldrenderer.isWaitingOnOcclusionQuery || deadline != 0 || OcclusionHelpers.DEBUG_LAZY_CHUNK_UPDATES) {
                 long t = System.nanoTime();
                 if (t > deadline) {
-                    if (i == c || frameCounter == frameTarget) {
-                        timeCheckInterval = (byte) Math.max(timeCheckInterval - 1, 0);
-                        frameTarget = (byte) (frameCounter + 50);
-                    }
                     spareTime = false;
                     break;
                 }
-                i = 0;
             }
         }
         rendererUpdateOrderProvider.cleanup(worldRenderersToUpdateList);
         deferNewRenderUpdates = false;
-        if (spareTime && frameCounter == frameTarget && timeCheckInterval < 5 && !OcclusionHelpers.DEBUG_LAZY_CHUNK_UPDATES) {
-            ++timeCheckInterval;
-            frameTarget = (byte) (frameCounter + 50);
-        }
         return spareTime;
     }
 
