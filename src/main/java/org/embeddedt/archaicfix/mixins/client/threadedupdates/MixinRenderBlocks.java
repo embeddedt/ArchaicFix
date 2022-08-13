@@ -4,7 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraftforge.client.ForgeHooksClient;
-import org.embeddedt.archaicfix.helpers.ThreadedChunkUpdateHelper;
+import org.embeddedt.archaicfix.threadedupdates.ThreadedChunkUpdateHelper;
 import org.embeddedt.archaicfix.threadedupdates.IRendererUpdateResultHolder;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

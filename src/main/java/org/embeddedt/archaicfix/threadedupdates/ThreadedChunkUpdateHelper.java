@@ -1,4 +1,4 @@
-package org.embeddedt.archaicfix.helpers;
+package org.embeddedt.archaicfix.threadedupdates;
 
 import static org.embeddedt.archaicfix.ArchaicLogger.LOGGER;
 
@@ -13,8 +13,6 @@ import net.minecraft.client.shader.TesselatorVertexState;
 import net.minecraft.world.ChunkCache;
 import org.embeddedt.archaicfix.occlusion.IRenderGlobal;
 import org.embeddedt.archaicfix.occlusion.IRendererUpdateOrderProvider;
-import org.embeddedt.archaicfix.threadedupdates.ICapturableTessellator;
-import org.embeddedt.archaicfix.threadedupdates.IRendererUpdateResultHolder;
 
 import java.util.ArrayList;
 import java.util.List;

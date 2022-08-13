@@ -4,7 +4,7 @@ import lombok.SneakyThrows;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.entity.EntityLivingBase;
-import org.embeddedt.archaicfix.helpers.ThreadedChunkUpdateHelper;
+import org.embeddedt.archaicfix.threadedupdates.ThreadedChunkUpdateHelper;
 import org.embeddedt.archaicfix.threadedupdates.ICapturableTessellator;
 import org.embeddedt.archaicfix.threadedupdates.IRendererUpdateResultHolder;
 import org.spongepowered.asm.mixin.Mixin;
