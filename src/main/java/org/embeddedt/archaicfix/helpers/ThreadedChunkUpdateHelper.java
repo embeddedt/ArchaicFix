@@ -109,6 +109,7 @@ public class ThreadedChunkUpdateHelper {
                 for(UpdateTask.Result r : ((IRendererUpdateResultHolder) wr).arch$getRendererUpdateTask().result) {
                     r.clear();
                 }
+                ((ICapturableTessellator)threadTessellator.get()).discard();
             }
             finishedTasks.add(wr);
         }
