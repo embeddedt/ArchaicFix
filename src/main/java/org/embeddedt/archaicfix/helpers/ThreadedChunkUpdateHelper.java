@@ -165,8 +165,7 @@ public class ThreadedChunkUpdateHelper {
     }
 
     public static boolean canBlockBeRenderedOffThread(Block block, int pass) {
-        return block.getRenderType() == 0 // standard block
-                || block.getRenderType() == 4; // liquid
+        return block.getRenderType() < 42 && block.getRenderType() != 22; // vanilla block
     }
 
     private ChunkCache getChunkCacheSnapshot(WorldRenderer wr) {
