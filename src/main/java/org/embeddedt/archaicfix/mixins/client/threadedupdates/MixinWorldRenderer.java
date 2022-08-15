@@ -17,11 +17,6 @@ public class MixinWorldRenderer implements IRendererUpdateResultHolder {
 
     private ThreadedChunkUpdateHelper.UpdateTask arch$updateTask;
 
-    @Inject(method = "<init>*", at = @At("RETURN"))
-    private void init(CallbackInfo ci) {
-        arch$updateTask = new ThreadedChunkUpdateHelper.UpdateTask();
-    }
-
     @Inject(method = "updateRenderer", at = @At("HEAD"))
     private void setLastWorldRendererSingleton(CallbackInfo ci) {
         ThreadedChunkUpdateHelper.lastWorldRenderer = ((WorldRenderer)(Object)this);
@@ -30,11 +25,14 @@ public class MixinWorldRenderer implements IRendererUpdateResultHolder {
     @SneakyThrows
     @Inject(method = "postRenderBlocks", at = @At("HEAD"))
     private void loadTessellationResult(int pass, EntityLivingBase view, CallbackInfo ci) {
-        ((ICapturableTessellator) Tessellator.instance).arch$addTessellatorVertexState(arch$updateTask.result[pass].renderedQuads);
+        ((ICapturableTessellator) Tessellator.instance).arch$addTessellatorVertexState(arch$getRendererUpdateTask().result[pass].renderedQuads);
     }
 
     @Override
     public ThreadedChunkUpdateHelper.UpdateTask arch$getRendererUpdateTask() {
+        if(arch$updateTask == null) {
+            arch$updateTask = new ThreadedChunkUpdateHelper.UpdateTask();
+        }
         return arch$updateTask;
     }
 
