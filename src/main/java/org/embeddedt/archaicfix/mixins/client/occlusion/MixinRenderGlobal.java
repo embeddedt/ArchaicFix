@@ -636,6 +636,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         }
     }
 
+    @Override
     public void arch$setRendererUpdateOrderProvider(IRendererUpdateOrderProvider orderProvider) {
         this.rendererUpdateOrderProvider = orderProvider;
     }
