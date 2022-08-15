@@ -85,6 +85,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
     private boolean resortUpdateList;
     
     private IRendererUpdateOrderProvider rendererUpdateOrderProvider;
+    private List<IRenderGlobalListener> eventListeners;
 
     /* Make sure other threads can see changes to this */
     private volatile boolean deferNewRenderUpdates;
@@ -182,6 +183,8 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
                             }
                         //}
                         addRendererToUpdateQueue(worldrenderer);
+                    } else {
+                        for(IRenderGlobalListener l : eventListeners) l.onDirtyRendererChanged(worldrenderer);
                     }
                 }
             }
@@ -228,6 +231,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         worldRenderersToUpdate = Collections.unmodifiableList(worldRenderersToUpdateList);
         clientThread = Thread.currentThread();
         rendererUpdateOrderProvider = new DefaultRendererUpdateOrderProvider();
+        eventListeners = new ArrayList<>();
     }
 
     @Redirect(method = "loadRenderers", at = @At(value = "INVOKE", target = "Ljava/util/List;clear()V", ordinal = 0))
@@ -639,6 +643,11 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
     @Override
     public void arch$setRendererUpdateOrderProvider(IRendererUpdateOrderProvider orderProvider) {
         this.rendererUpdateOrderProvider = orderProvider;
+    }
+
+    @Override
+    public void arch$addRenderGlobalListener(IRenderGlobalListener listener) {
+        this.eventListeners.add(listener);
     }
 
     private static double distanceSquared(double x1, double y1, double z1, double x2, double y2, double z2) {

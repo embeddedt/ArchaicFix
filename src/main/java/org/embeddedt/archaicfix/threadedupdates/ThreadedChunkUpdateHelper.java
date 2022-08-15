@@ -12,13 +12,14 @@ import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.shader.TesselatorVertexState;
 import net.minecraft.world.ChunkCache;
 import org.embeddedt.archaicfix.occlusion.IRenderGlobal;
+import org.embeddedt.archaicfix.occlusion.IRenderGlobalListener;
 import org.embeddedt.archaicfix.occlusion.IRendererUpdateOrderProvider;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
-public class ThreadedChunkUpdateHelper {
+public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
 
     public static ThreadedChunkUpdateHelper instance;
 
@@ -69,6 +70,7 @@ public class ThreadedChunkUpdateHelper {
 
     public void init() {
         ((IRenderGlobal) Minecraft.getMinecraft().renderGlobal).arch$setRendererUpdateOrderProvider(rendererUpdateOrderProvider);
+        ((IRenderGlobal) Minecraft.getMinecraft().renderGlobal).arch$addRenderGlobalListener(this);
         MAIN_THREAD = Thread.currentThread();
 
         for(int i = 0; i < 1; i++) {
@@ -92,6 +94,14 @@ public class ThreadedChunkUpdateHelper {
                 taskQueue.add(wr);
             }
         }
+    }
+
+    @Override
+    public void onDirtyRendererChanged(WorldRenderer wr) {
+        onWorldRendererDirty(wr);
+    }
+
+    public void onWorldRendererDirty(WorldRenderer wr) {
     }
 
     @SneakyThrows

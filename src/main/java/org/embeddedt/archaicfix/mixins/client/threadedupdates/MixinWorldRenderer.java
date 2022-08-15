@@ -38,4 +38,9 @@ public class MixinWorldRenderer implements IRendererUpdateResultHolder {
         return arch$updateTask;
     }
 
+    @Inject(method = "markDirty", at = @At("RETURN"))
+    private void notifyDirty(CallbackInfo ci) {
+        ThreadedChunkUpdateHelper.instance.onWorldRendererDirty((WorldRenderer)(Object)this);
+    }
+
 }
