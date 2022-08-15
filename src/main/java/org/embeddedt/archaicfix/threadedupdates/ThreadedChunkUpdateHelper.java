@@ -123,6 +123,8 @@ public class ThreadedChunkUpdateHelper {
 
         ChunkCache chunkcache = task.chunkCache;
 
+        Tessellator tess = threadTessellator.get();
+
         if(!chunkcache.extendedLevelsInChunkCache()) {
             RenderBlocks renderblocks = new RenderBlocks(chunkcache);
 
@@ -138,8 +140,8 @@ public class ThreadedChunkUpdateHelper {
                             if (block.getMaterial() != Material.air) {
                                 if (!startedTessellator) {
                                     startedTessellator = true;
-                                    threadTessellator.get().startDrawingQuads(); // TODO triangulator compat
-                                    threadTessellator.get().setTranslation((double) (-wr.posX), (double) (-wr.posY), (double) (-wr.posZ));
+                                    tess.startDrawingQuads(); // TODO triangulator compat
+                                    tess.setTranslation((double) (-wr.posX), (double) (-wr.posY), (double) (-wr.posZ));
                                 }
 
                                 int k3 = block.getRenderBlockPass();
@@ -155,8 +157,8 @@ public class ThreadedChunkUpdateHelper {
                 }
 
                 if (startedTessellator) {
-                    task.result[pass].renderedQuads = ((ICapturableTessellator) threadTessellator.get()).arch$getUnsortedVertexState();
-                    ((ICapturableTessellator) threadTessellator.get()).discard();
+                    task.result[pass].renderedQuads = ((ICapturableTessellator) tess).arch$getUnsortedVertexState();
+                    ((ICapturableTessellator) tess).discard();
                 }
                 task.result[pass].renderedSomething = renderedSomething;
             }
