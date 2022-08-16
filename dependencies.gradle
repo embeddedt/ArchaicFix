@@ -35,7 +35,7 @@ dependencies {
     }
     annotationProcessor("org.projectlombok:lombok:1.18.22")
 
-    String curseMaven = "https://cursemaven.falsepattern.com/" //Use https://cursemaven.com/ if this is down
+    String curseMaven = "https://cursemaven.com/" //Use https://cursemaven.com/ if this is down
     compileOnly(deobfMaven(curseMaven, "curse.maven:mekanism-268560:2475797"))
     compileOnly(deobfMaven(curseMaven, "curse.maven:extrautils-225561:2264383"))
     compileOnly(deobfMaven(curseMaven, "curse.maven:dynamiclights-227874:2337326"))
