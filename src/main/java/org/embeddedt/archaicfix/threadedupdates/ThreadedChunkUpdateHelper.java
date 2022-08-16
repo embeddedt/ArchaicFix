@@ -16,6 +16,7 @@ import org.embeddedt.archaicfix.occlusion.IRenderGlobalListener;
 import org.embeddedt.archaicfix.occlusion.IRendererUpdateOrderProvider;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -80,6 +81,7 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
 
     private void preRendererUpdates(List<WorldRenderer> toUpdateList) {
         updateWorkQueue(toUpdateList);
+        removeCancelledResults();
     }
 
     private void updateWorkQueue(List<WorldRenderer> toUpdateList) {
@@ -96,12 +98,26 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
         }
     }
 
+    private void removeCancelledResults() {
+        for(Iterator<WorldRenderer> it = finishedTasks.iterator(); it.hasNext(); ) {
+            WorldRenderer wr = it.next();
+            UpdateTask task = ((IRendererUpdateResultHolder)wr).arch$getRendererUpdateTask();
+            if(task.cancelled) {
+                // Discard results and allow re-schedule on worker thread.
+                task.clear();
+                it.remove();
+            }
+        }
+    }
+
     @Override
     public void onDirtyRendererChanged(WorldRenderer wr) {
         onWorldRendererDirty(wr);
     }
 
     public void onWorldRendererDirty(WorldRenderer wr) {
+        UpdateTask task = ((IRendererUpdateResultHolder)wr).arch$getRendererUpdateTask();
+        task.cancelled = true;
     }
 
     @SneakyThrows
@@ -127,7 +143,6 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
      *  tessellation result. WorldRenderer#updateRenderer will skip over these blocks, and use the result that was
      *  produced by the worker thread to fill them in.
      */
-    // TODO if the chunk is modified during the update, schedule a re-update (maybe interrupt the update too).
     public void doChunkUpdate(WorldRenderer wr) {
         UpdateTask task = ((IRendererUpdateResultHolder)wr).arch$getRendererUpdateTask();
 
@@ -142,9 +157,14 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
                 boolean renderedSomething = false;
                 boolean startedTessellator = false;
 
+                BlockLoop:
                 for (int y = wr.posY; y < wr.posY + 16; ++y) {
                     for (int z = wr.posZ; z < wr.posZ + 16; ++z) {
                         for (int x = wr.posX; x < wr.posX + 16; ++x) {
+                            if(task.cancelled) {
+                                break BlockLoop;
+                            }
+
                             Block block = chunkcache.getBlock(x, y, z);
 
                             if (block.getMaterial() != Material.air) {
@@ -198,6 +218,7 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
     // Not sure how thread-safe this class is...
     public static class UpdateTask {
         public boolean started;
+        public boolean cancelled;
         public Result[] result = new Result[]{new Result(), new Result()};
 
         public ChunkCache chunkCache;
@@ -212,6 +233,7 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
             for(Result r : result) {
                 r.clear();
             }
+            cancelled = false;
         }
 
         public static class Result {
