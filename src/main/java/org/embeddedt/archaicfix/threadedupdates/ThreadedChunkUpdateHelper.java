@@ -26,6 +26,8 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
 
     public static Thread MAIN_THREAD;
 
+    private static final boolean DEBUG_THREADED_UPDATE_FINE_LOG = Boolean.parseBoolean(System.getProperty("archaicfix.debug.enableThreadedUpdateFineLog"));
+
     /** Used within the scope of WorldRenderer#updateWorld (on the main thread). */
     public static WorldRenderer lastWorldRenderer;
 
@@ -55,6 +57,8 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
         public WorldRenderer next(List<WorldRenderer> worldRenderersToUpdateList) {
             WorldRenderer wr = finishedTasks.take();
             updatedRenderers.add(wr);
+
+            debugLog("Consuming renderer " + worldRendererToString(wr) + " " + worldRendererUpdateTaskToString(wr));
 
             return wr;
         }
@@ -92,6 +96,7 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
             UpdateTask task = ((IRendererUpdateResultHolder)wr).arch$getRendererUpdateTask();
             if(task.isEmpty()) {
                 // No update in progress; add to task queue
+                debugLog("Adding " + worldRendererToString(wr) + " to task queue");
                 task.chunkCache = getChunkCacheSnapshot(wr);
                 taskQueue.add(wr);
             }
@@ -117,6 +122,7 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
 
     public void onWorldRendererDirty(WorldRenderer wr) {
         UpdateTask task = ((IRendererUpdateResultHolder)wr).arch$getRendererUpdateTask();
+        debugLog("Renderer " + worldRendererToString(wr) + " is dirty, cancelling task");
         task.cancelled = true;
     }
 
@@ -144,6 +150,8 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
      *  produced by the worker thread to fill them in.
      */
     public void doChunkUpdate(WorldRenderer wr) {
+        debugLog("Starting update of renderer " + worldRendererToString(wr));
+
         UpdateTask task = ((IRendererUpdateResultHolder)wr).arch$getRendererUpdateTask();
 
         ChunkCache chunkcache = task.chunkCache;
@@ -162,6 +170,7 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
                     for (int z = wr.posZ; z < wr.posZ + 16; ++z) {
                         for (int x = wr.posX; x < wr.posX + 16; ++x) {
                             if(task.cancelled) {
+                                debugLog("Realized renderer " + worldRendererToString(wr) + " is dirty, aborting update");
                                 break BlockLoop;
                             }
 
@@ -193,6 +202,7 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
                 task.result[pass].renderedSomething = renderedSomething;
             }
         }
+        debugLog("Result of updating " + worldRendererToString(wr) + ": " + worldRendererUpdateTaskToString(wr));
     }
 
     public static boolean canBlockBeRenderedOffThread(Block block, int pass) {
@@ -212,7 +222,18 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
     }
 
     private static String worldRendererToString(WorldRenderer wr) {
-        return "(" + wr.posX + ", " + wr.posY + ", " + wr.posZ + ")";
+        return wr + "(" + wr.posX + ", " + wr.posY + ", " + wr.posZ + ")";
+    }
+
+    private static String worldRendererUpdateTaskToString(WorldRenderer wr) {
+        UpdateTask task = ((IRendererUpdateResultHolder)wr).arch$getRendererUpdateTask();
+        return task.result[0].renderedSomething + " (" + (task.result[0].renderedQuads == null ? "null" : task.result[0].renderedQuads.getVertexCount()) + ")/" + task.result[1].renderedSomething + " (" + (task.result[1].renderedQuads == null ? "null" : task.result[1].renderedQuads.getVertexCount()) + ")";
+    }
+
+    private static void debugLog(String msg) {
+        if(DEBUG_THREADED_UPDATE_FINE_LOG) {
+            LOGGER.trace(msg);
+        }
     }
 
     // Not sure how thread-safe this class is...
