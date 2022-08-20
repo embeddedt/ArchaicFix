@@ -2,6 +2,7 @@ package org.embeddedt.archaicfix.threadedupdates;
 
 import static org.embeddedt.archaicfix.ArchaicLogger.LOGGER;
 
+import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -42,6 +43,8 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
         /** The renderers updated during the batch */
         private List<WorldRenderer> updatedRenderers = new ArrayList<>();
 
+        private WorldRenderer nextRenderer;
+
         @Override
         public void prepare(List<WorldRenderer> worldRenderersToUpdateList) {
             preRendererUpdates(worldRenderersToUpdateList);
@@ -49,13 +52,25 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
 
         @Override
         public boolean hasNext(List<WorldRenderer> worldRenderersToUpdateList) {
-            return !finishedTasks.isEmpty();
+            WorldRenderer wr;
+            while((wr = finishedTasks.poll()) != null) {
+                UpdateTask task = ((IRendererUpdateResultHolder)wr).arch$getRendererUpdateTask();
+                if(task.cancelled) {
+                    task.clear();
+                } else {
+                    nextRenderer = wr;
+                    return true;
+                }
+            }
+            return false;
         }
 
         @SneakyThrows
         @Override
         public WorldRenderer next(List<WorldRenderer> worldRenderersToUpdateList) {
-            WorldRenderer wr = finishedTasks.take();
+            Preconditions.checkNotNull(nextRenderer);
+            WorldRenderer wr = nextRenderer;
+            nextRenderer = null;
             updatedRenderers.add(wr);
 
             debugLog("Consuming renderer " + worldRendererToString(wr) + " " + worldRendererUpdateTaskToString(wr));
@@ -70,6 +85,7 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
                 ((IRendererUpdateResultHolder)wr).arch$getRendererUpdateTask().clear();
             }
             updatedRenderers.clear();
+            nextRenderer = null;
         }
     };
 
