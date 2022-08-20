@@ -1,6 +1,5 @@
 package org.embeddedt.archaicfix.mixins.client.threadedupdates;
 
-import lombok.SneakyThrows;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.entity.EntityLivingBase;
@@ -22,7 +21,6 @@ public class MixinWorldRenderer implements IRendererUpdateResultHolder {
         ThreadedChunkUpdateHelper.lastWorldRenderer = ((WorldRenderer)(Object)this);
     }
 
-    @SneakyThrows
     @Inject(method = "postRenderBlocks", at = @At("HEAD"))
     private void loadTessellationResult(int pass, EntityLivingBase view, CallbackInfo ci) {
         ((ICapturableTessellator) Tessellator.instance).arch$addTessellatorVertexState(arch$getRendererUpdateTask().result[pass].renderedQuads);

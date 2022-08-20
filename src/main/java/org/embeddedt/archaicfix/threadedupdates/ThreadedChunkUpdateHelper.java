@@ -77,7 +77,6 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
             return false;
         }
 
-        @SneakyThrows
         @Override
         public WorldRenderer next(List<WorldRenderer> worldRenderersToUpdateList) {
             Preconditions.checkNotNull(nextRenderer);
@@ -269,8 +268,7 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
             LOGGER.trace(msg);
         }
     }
-
-    // Not sure how thread-safe this class is...
+    
     public static class UpdateTask {
         public boolean started;
         public boolean cancelled;
