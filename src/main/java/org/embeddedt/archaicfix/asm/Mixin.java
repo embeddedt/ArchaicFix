@@ -105,9 +105,9 @@ public enum Mixin implements IMixin {
     client_renderdistance_MixinRenderGlobal(Side.CLIENT, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.raiseMaxRenderDistance), "renderdistance.MixinRenderGlobal"),
     common_renderdistance_MixinPlayerManager(Side.COMMON, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.raiseMaxRenderDistance), "renderdistance.MixinPlayerManager"),
 
-    client_threadedupdates_MixinRenderBlocks(Side.CLIENT, m -> ArchaicConfig.enableThreadedChunkUpdates, "threadedupdates.MixinRenderBlocks"),
-    client_threadedupdates_MixinWorldRenderer(Side.CLIENT, m -> ArchaicConfig.enableThreadedChunkUpdates, "threadedupdates.MixinWorldRenderer"),
-    client_threadedupdates_MixinTessellator(Side.CLIENT, m -> ArchaicConfig.enableThreadedChunkUpdates, "threadedupdates.MixinTessellator"),
+    client_threadedupdates_MixinRenderBlocks(Side.CLIENT, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.enableThreadedChunkUpdates && ArchaicConfig.enableOcclusionTweaks), "threadedupdates.MixinRenderBlocks"),
+    client_threadedupdates_MixinWorldRenderer(Side.CLIENT, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.enableThreadedChunkUpdates && ArchaicConfig.enableOcclusionTweaks), "threadedupdates.MixinWorldRenderer"),
+    client_threadedupdates_MixinTessellator(Side.CLIENT, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.enableThreadedChunkUpdates && ArchaicConfig.enableOcclusionTweaks), "threadedupdates.MixinTessellator"),
 
     // MOD-FILTERED MIXINS
     common_lighting_fastcraft_MixinChunk(Side.COMMON, require(TargetedMod.FASTCRAFT), "lighting.fastcraft.MixinChunk"),
