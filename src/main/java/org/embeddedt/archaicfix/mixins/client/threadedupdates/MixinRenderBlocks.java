@@ -18,11 +18,12 @@ public class MixinRenderBlocks {
     @Inject(method = "renderBlockByRenderType", at = @At("HEAD"), cancellable = true)
     private void cancelRenderDelegatedToDifferentThread(Block block, int x, int y, int z, CallbackInfoReturnable<Boolean> cir) {
         int pass = ForgeHooksClient.getWorldRenderPass();
-        if(pass >= 0) {
+        ThreadedChunkUpdateHelper.UpdateTask task = ((IRendererUpdateResultHolder)ThreadedChunkUpdateHelper.lastWorldRenderer).arch$getRendererUpdateTask();
+        if(pass >= 0 && !task.immediate) {
             boolean offThreadBlock = ThreadedChunkUpdateHelper.canBlockBeRenderedOffThread(block, pass);
             if(Thread.currentThread() == ThreadedChunkUpdateHelper.MAIN_THREAD ? offThreadBlock : !offThreadBlock) {
                 // Cancel rendering block if it's delegated to a different thread.
-                cir.setReturnValue(((IRendererUpdateResultHolder)ThreadedChunkUpdateHelper.lastWorldRenderer).arch$getRendererUpdateTask().result[pass].renderedSomething);
+                cir.setReturnValue(task.result[pass].renderedSomething);
             }
         }
     }

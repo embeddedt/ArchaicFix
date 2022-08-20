@@ -16,9 +16,7 @@ import org.embeddedt.archaicfix.occlusion.IRenderGlobal;
 import org.embeddedt.archaicfix.occlusion.IRenderGlobalListener;
 import org.embeddedt.archaicfix.occlusion.IRendererUpdateOrderProvider;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.*;
 
 public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
@@ -37,6 +35,9 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
     /** Finished tasks ready for consumption */
     public BlockingQueue<WorldRenderer> finishedTasks = new LinkedBlockingDeque<>();
 
+    /** Tasks that should be completed immediately on the main thread */
+    public Queue<WorldRenderer> urgentTaskQueue = new ArrayDeque<>();
+
     public ThreadLocal<Tessellator> threadTessellator = ThreadLocal.withInitial(Tessellator::new);
 
     IRendererUpdateOrderProvider rendererUpdateOrderProvider = new IRendererUpdateOrderProvider() {
@@ -53,6 +54,17 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
         @Override
         public boolean hasNext(List<WorldRenderer> worldRenderersToUpdateList) {
             WorldRenderer wr;
+
+            if(!urgentTaskQueue.isEmpty()) {
+                nextRenderer = urgentTaskQueue.poll();
+                UpdateTask task = ((IRendererUpdateResultHolder)nextRenderer).arch$getRendererUpdateTask();
+                if(!task.isEmpty()) {
+                    task.cancelled = true;
+                }
+                task.immediate = true;
+                return true;
+            }
+
             while((wr = finishedTasks.poll()) != null) {
                 UpdateTask task = ((IRendererUpdateResultHolder)wr).arch$getRendererUpdateTask();
                 if(task.cancelled) {
@@ -85,6 +97,7 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
                 ((IRendererUpdateResultHolder)wr).arch$getRendererUpdateTask().clear();
             }
             updatedRenderers.clear();
+            urgentTaskQueue.clear();
             nextRenderer = null;
         }
     };
@@ -109,6 +122,11 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
         taskQueue.clear();
         for(int i = 0; i < updateQueueSize && i < toUpdateList.size(); i++) {
             WorldRenderer wr = toUpdateList.get(i);
+
+            if(wr.distanceToEntitySquared(Minecraft.getMinecraft().renderViewEntity) < 16 * 16) {
+                urgentTaskQueue.add(wr);
+            }
+
             UpdateTask task = ((IRendererUpdateResultHolder)wr).arch$getRendererUpdateTask();
             if(task.isEmpty()) {
                 // No update in progress; add to task queue
@@ -174,7 +192,7 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
 
         Tessellator tess = threadTessellator.get();
 
-        if(!chunkcache.extendedLevelsInChunkCache()) {
+        if(chunkcache != null && !chunkcache.extendedLevelsInChunkCache()) {
             RenderBlocks renderblocks = new RenderBlocks(chunkcache);
 
             for(int pass = 0; pass < 2; pass++) {
@@ -256,6 +274,7 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
     public static class UpdateTask {
         public boolean started;
         public boolean cancelled;
+        public boolean immediate;
         public Result[] result = new Result[]{new Result(), new Result()};
 
         public ChunkCache chunkCache;
@@ -271,6 +290,7 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
                 r.clear();
             }
             cancelled = false;
+            immediate = false;
         }
 
         public static class Result {
