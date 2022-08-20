@@ -5,7 +5,11 @@ import net.minecraft.client.shader.TesselatorVertexState;
 import org.embeddedt.archaicfix.threadedupdates.ICapturableTessellator;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 @Mixin(Tessellator.class)
@@ -74,5 +78,15 @@ public abstract class MixinTessellator implements ICapturableTessellator {
     public void discard() {
         isDrawing = false;
         reset();
+    }
+
+    /** @reason Allow using multiple tessellator instances concurrently by removing static field access in alternate
+     * instances. */
+    @Redirect(method = "reset", at = @At(value = "INVOKE", target = "Ljava/nio/ByteBuffer;clear()Ljava/nio/Buffer;"))
+    private Buffer removeStaticBufferAccessOutsideSingleton(ByteBuffer buffer) {
+        if(((Object)this) == Tessellator.instance) {
+            return buffer.clear();
+        }
+        return buffer;
     }
 }
