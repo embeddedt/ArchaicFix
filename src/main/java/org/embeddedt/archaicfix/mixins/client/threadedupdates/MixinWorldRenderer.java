@@ -23,7 +23,9 @@ public class MixinWorldRenderer implements IRendererUpdateResultHolder {
 
     @Inject(method = "postRenderBlocks", at = @At("HEAD"))
     private void loadTessellationResult(int pass, EntityLivingBase view, CallbackInfo ci) {
-        ((ICapturableTessellator) Tessellator.instance).arch$addTessellatorVertexState(arch$getRendererUpdateTask().result[pass].renderedQuads);
+        if(!arch$getRendererUpdateTask().cancelled) {
+            ((ICapturableTessellator) Tessellator.instance).arch$addTessellatorVertexState(arch$getRendererUpdateTask().result[pass].renderedQuads);
+        }
     }
 
     @Override

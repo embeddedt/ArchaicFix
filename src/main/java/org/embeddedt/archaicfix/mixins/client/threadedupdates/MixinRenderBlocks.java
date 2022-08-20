@@ -22,7 +22,7 @@ public class MixinRenderBlocks {
         ThreadedChunkUpdateHelper.UpdateTask task = mainThread
                 ? ((IRendererUpdateResultHolder)ThreadedChunkUpdateHelper.lastWorldRenderer).arch$getRendererUpdateTask()
                 : null;
-        if(pass >= 0 && !(task != null && task.immediate)) {
+        if(pass >= 0 && !(task != null && task.cancelled)) {
             boolean offThreadBlock = ThreadedChunkUpdateHelper.canBlockBeRenderedOffThread(block, pass);
             if(mainThread ? offThreadBlock : !offThreadBlock) {
                 // Cancel rendering block if it's delegated to a different thread.

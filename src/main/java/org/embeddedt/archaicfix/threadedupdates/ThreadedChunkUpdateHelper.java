@@ -58,10 +58,7 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
             if(!urgentTaskQueue.isEmpty()) {
                 nextRenderer = urgentTaskQueue.poll();
                 UpdateTask task = ((IRendererUpdateResultHolder)nextRenderer).arch$getRendererUpdateTask();
-                if(!task.isEmpty()) {
-                    task.cancelled = true;
-                }
-                task.immediate = true;
+                task.cancelled = true;
                 return true;
             }
 
@@ -274,7 +271,6 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
     public static class UpdateTask {
         public boolean started;
         public boolean cancelled;
-        public boolean immediate;
         public Result[] result = new Result[]{new Result(), new Result()};
 
         public ChunkCache chunkCache;
@@ -290,7 +286,6 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
                 r.clear();
             }
             cancelled = false;
-            immediate = false;
         }
 
         public static class Result {
