@@ -155,8 +155,10 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
 
     public void onWorldRendererDirty(WorldRenderer wr) {
         UpdateTask task = ((IRendererUpdateResultHolder)wr).arch$getRendererUpdateTask();
-        debugLog("Renderer " + worldRendererToString(wr) + " is dirty, cancelling task");
-        task.cancelled = true;
+        if(!task.isEmpty()) {
+            debugLog("Renderer " + worldRendererToString(wr) + " is dirty, cancelling task");
+            task.cancelled = true;
+        }
     }
 
     @SneakyThrows
