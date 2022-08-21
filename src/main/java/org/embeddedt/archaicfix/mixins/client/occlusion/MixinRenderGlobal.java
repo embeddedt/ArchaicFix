@@ -9,7 +9,6 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.util.RenderDistanceSorter;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.EmptyChunk;
@@ -79,11 +78,14 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
     private int cameraStaticTime;
 
     private short alphaSortProgress = 0;
-    private byte timeCheckInterval = 5, frameCounter, frameTarget;
+    private byte frameCounter, frameTarget;
 
     private int renderersNeedUpdate;
 
     private boolean resortUpdateList;
+    
+    private IRendererUpdateOrderProvider rendererUpdateOrderProvider;
+    private List<IRenderGlobalListener> eventListeners;
 
     /* Make sure other threads can see changes to this */
     private volatile boolean deferNewRenderUpdates;
@@ -181,6 +183,8 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
                             }
                         //}
                         addRendererToUpdateQueue(worldrenderer);
+                    } else {
+                        for(IRenderGlobalListener l : eventListeners) l.onDirtyRendererChanged(worldrenderer);
                     }
                 }
             }
@@ -226,6 +230,8 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         /* Make sure any vanilla code modifying the update queue crashes */
         worldRenderersToUpdate = Collections.unmodifiableList(worldRenderersToUpdateList);
         clientThread = Thread.currentThread();
+        rendererUpdateOrderProvider = new DefaultRendererUpdateOrderProvider();
+        eventListeners = new ArrayList<>();
     }
 
     @Redirect(method = "loadRenderers", at = @At(value = "INVOKE", target = "Ljava/util/List;clear()V", ordinal = 0))
@@ -282,21 +288,19 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         return getRenderer(X, Y, Z);
     }
 
-    private boolean rebuildChunks(EntityLivingBase view, int lim, long deadline) {
-        ArrayList<WorldRenderer> worldRenderersToUpdateList = this.worldRenderersToUpdateList;
-        int lastUpdatedIndex = 0;
+    private boolean rebuildChunks(EntityLivingBase view, long deadline) {
+        int updateLimit = deadline == 0 ? 5 : Integer.MAX_VALUE;
+        int updates = 0;
+
         boolean spareTime = true;
         deferNewRenderUpdates = true;
-        for (int c = 0, i = 0; c < lim; ++c) {
-            WorldRenderer worldrenderer;
-            if(lastUpdatedIndex < worldRenderersToUpdateList.size()) {
-                worldrenderer = worldRenderersToUpdateList.get(lastUpdatedIndex++);
-                ((IWorldRenderer)worldrenderer).arch$setInUpdateList(false);
-            } else {
-                break;
-            }
+        rendererUpdateOrderProvider.prepare(worldRenderersToUpdateList);
+        for (int c = 0; updates < updateLimit && rendererUpdateOrderProvider.hasNext(worldRenderersToUpdateList); ++c) {
+            WorldRenderer worldrenderer = rendererUpdateOrderProvider.next(worldRenderersToUpdateList);
+            
+            ((IWorldRenderer)worldrenderer).arch$setInUpdateList(false);
 
-            if (!(worldrenderer.isInFrustum & worldrenderer.isVisible)) {
+            if (!(worldrenderer.isInFrustum & worldrenderer.isVisible) && !OcclusionHelpers.DEBUG_LAZY_CHUNK_UPDATES) {
                 continue;
             }
 
@@ -306,25 +310,18 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
             worldrenderer.isWaitingOnOcclusionQuery = worldrenderer.skipAllRenderPasses() || (mc.theWorld.getChunkFromBlockCoords(worldrenderer.posX, worldrenderer.posZ) instanceof EmptyChunk);
             // can't add fields, re-use
 
-            if (!worldrenderer.isWaitingOnOcclusionQuery && ++i > timeCheckInterval) {
+            updates++;
+
+            if(!worldrenderer.isWaitingOnOcclusionQuery || deadline != 0 || OcclusionHelpers.DEBUG_LAZY_CHUNK_UPDATES) {
                 long t = System.nanoTime();
                 if (t > deadline) {
-                    if (i == c || frameCounter == frameTarget) {
-                        timeCheckInterval = (byte) Math.max(timeCheckInterval - 1, 0);
-                        frameTarget = (byte) (frameCounter + 50);
-                    }
                     spareTime = false;
                     break;
                 }
-                i = 0;
             }
         }
-        worldRenderersToUpdateList.subList(0, lastUpdatedIndex).clear();
+        rendererUpdateOrderProvider.cleanup(worldRenderersToUpdateList);
         deferNewRenderUpdates = false;
-        if (spareTime && frameCounter == frameTarget && timeCheckInterval < 5) {
-            ++timeCheckInterval;
-            frameTarget = (byte) (frameCounter + 50);
-        }
         return spareTime;
     }
 
@@ -370,12 +367,12 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
             worldRenderersToUpdateList.sort(new BasicDistanceSorter(mc.renderViewEntity));
             resortUpdateList = false;
         }
-        int lim = worldRenderersToUpdate.size();
-        if (lim > 0) {
+        if (!worldRenderersToUpdate.isEmpty()) {
             ++frameCounter;
-            boolean doUpdateAcceleration = cameraStaticTime > 2;
+            boolean doUpdateAcceleration = cameraStaticTime > 2 && !OcclusionHelpers.DEBUG_LAZY_CHUNK_UPDATES
+                    && !OcclusionHelpers.DEBUG_NO_UPDATE_ACCELERATION;
             /* If the camera is not moving, assume a deadline of 30 FPS. */
-            rebuildChunks(view, lim, !doUpdateAcceleration ? OcclusionHelpers.chunkUpdateDeadline
+            rebuildChunks(view, !doUpdateAcceleration ? OcclusionHelpers.chunkUpdateDeadline
                     : mc.entityRenderer.renderEndNanoTime + (1_000_000_000L / 30L));
         }
 
@@ -641,6 +638,16 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
             OcclusionHelpers.worker.dirty = true;
             OcclusionHelpers.worker.dirtyFrustumRenderers = 0;
         }
+    }
+
+    @Override
+    public void arch$setRendererUpdateOrderProvider(IRendererUpdateOrderProvider orderProvider) {
+        this.rendererUpdateOrderProvider = orderProvider;
+    }
+
+    @Override
+    public void arch$addRenderGlobalListener(IRenderGlobalListener listener) {
+        this.eventListeners.add(listener);
     }
 
     private static double distanceSquared(double x1, double y1, double z1, double x2, double y2, double z2) {

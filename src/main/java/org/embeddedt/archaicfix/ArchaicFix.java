@@ -26,6 +26,7 @@ import org.embeddedt.archaicfix.config.ArchaicConfig;
 import org.embeddedt.archaicfix.ducks.IAcceleratedRecipe;
 import org.embeddedt.archaicfix.helpers.FastutilHelper;
 import org.embeddedt.archaicfix.occlusion.OcclusionHelpers;
+import org.embeddedt.archaicfix.threadedupdates.ThreadedChunkUpdateHelper;
 import org.embeddedt.archaicfix.proxy.CommonProxy;
 import org.embeddedt.archaicfix.recipe.IFasterCraftingManager;
 import thaumcraft.api.ThaumcraftApi;
@@ -77,6 +78,14 @@ public class ArchaicFix
         NEI_INSTALLED = Loader.isModLoaded("NotEnoughItems");
         //SoundSystemConfig.setNumberNormalChannels(1073741824);
         //SoundSystemConfig.setNumberStreamingChannels(1073741823);
+    }
+
+    @EventHandler
+    public void init(FMLInitializationEvent event) {
+        if(ArchaicConfig.enableThreadedChunkUpdates) {
+            ThreadedChunkUpdateHelper.instance = new ThreadedChunkUpdateHelper();
+            ThreadedChunkUpdateHelper.instance.init();
+        }
     }
 
     @EventHandler

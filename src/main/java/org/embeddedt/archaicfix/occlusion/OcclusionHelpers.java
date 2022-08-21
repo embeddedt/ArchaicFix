@@ -22,6 +22,10 @@ public class OcclusionHelpers {
 
     public static final boolean DEBUG_ALWAYS_RUN_OCCLUSION = Boolean.parseBoolean(System.getProperty("archaicfix.debug.alwaysRunOcclusion", "false"));
     public static final boolean DEBUG_PRINT_QUEUE_ITERATIONS = Boolean.parseBoolean(System.getProperty("archaicfix.debug.printQueueIterations", "false"));
+    /** Update up to 1 chunk per frame when the framerate is uncapped, vanilla-style. */
+    public static final boolean DEBUG_LAZY_CHUNK_UPDATES = Boolean.parseBoolean(System.getProperty("archaicfix.debug.lazyChunkUpdates", "false"));
+    /** Disable speeding up chunk updates when the camera is static. */
+    public static final boolean DEBUG_NO_UPDATE_ACCELERATION = Boolean.parseBoolean(System.getProperty("archaicfix.debug.noUpdateAcceleration", "false"));
 
     public static void init() {
         worker = new RenderWorker();
