@@ -15,6 +15,10 @@ public class ArchaicConfig {
     @Config.RequiresMcRestart
     public static boolean enableThreadedChunkUpdates;
 
+    @Config.Comment("Changes the enableThreadedChunkUpdates option to never wait for chunk updates. Improves framerate when blocks are placed or destroyed, at the cost of introducing visual delay. This is analogous to 1.18's 'Chunk Builder' option, false meaning 'Fully Blocking', and true meaning 'Threaded'.")
+    @Config.DefaultBoolean(false)
+    public static boolean disableBlockingChunkUpdates;
+
     @Config.DefaultBoolean(true)
     public static boolean hideDownloadingTerrainScreen;
 
