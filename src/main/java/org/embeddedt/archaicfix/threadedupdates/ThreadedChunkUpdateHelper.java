@@ -34,7 +34,7 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
     /** Tasks not yet started */
     public BlockingQueue<WorldRenderer> taskQueue = new LinkedBlockingDeque<>();
     /** Finished tasks ready for consumption */
-    public BlockingQueue<WorldRenderer> finishedTasks = new LinkedBlockingDeque<>();
+    public BlockingDeque<WorldRenderer> finishedTasks = new LinkedBlockingDeque<>();
 
     /** Tasks that should be completed immediately on the main thread */
     public Queue<WorldRenderer> urgentTaskQueue = new ArrayDeque<>();
@@ -119,12 +119,16 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
         taskQueue.clear();
         for(int i = 0; i < updateQueueSize && i < toUpdateList.size(); i++) {
             WorldRenderer wr = toUpdateList.get(i);
+            UpdateTask task = ((IRendererUpdateResultHolder)wr).arch$getRendererUpdateTask();
 
-            if(!ArchaicConfig.disableBlockingChunkUpdates && wr.distanceToEntitySquared(Minecraft.getMinecraft().renderViewEntity) < 16 * 16) {
-                urgentTaskQueue.add(wr);
+            if(wr.distanceToEntitySquared(Minecraft.getMinecraft().renderViewEntity) < 16 * 16) {
+                if(!ArchaicConfig.disableBlockingChunkUpdates){
+                    urgentTaskQueue.add(wr);
+                } else {
+                    task.important = true;
+                }
             }
 
-            UpdateTask task = ((IRendererUpdateResultHolder)wr).arch$getRendererUpdateTask();
             if(task.isEmpty()) {
                 // No update in progress; add to task queue
                 debugLog("Adding " + worldRendererToString(wr) + " to task queue");
@@ -163,18 +167,24 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
     private void runThread() {
         while(true) {
             WorldRenderer wr = taskQueue.take();
-            ((IRendererUpdateResultHolder)wr).arch$getRendererUpdateTask().started = true;
+            UpdateTask task = ((IRendererUpdateResultHolder)wr).arch$getRendererUpdateTask();
+            task.started = true;
             try {
                 doChunkUpdate(wr);
             } catch(Exception e) {
                 LOGGER.error("Failed to update chunk " + worldRendererToString(wr));
                 e.printStackTrace();
-                for(UpdateTask.Result r : ((IRendererUpdateResultHolder) wr).arch$getRendererUpdateTask().result) {
+                for(UpdateTask.Result r : task.result) {
                     r.clear();
                 }
                 ((ICapturableTessellator)threadTessellator.get()).discard();
             }
-            finishedTasks.add(wr);
+            if(!task.important) {
+                finishedTasks.add(wr);
+            } else {
+                finishedTasks.addFirst(wr);
+            }
+
         }
     }
 
@@ -272,6 +282,7 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
     public static class UpdateTask {
         public boolean started;
         public boolean cancelled;
+        public boolean important;
         public Result[] result = new Result[]{new Result(), new Result()};
 
         public ChunkCache chunkCache;
@@ -287,6 +298,7 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
                 r.clear();
             }
             cancelled = false;
+            important = false;
         }
 
         public static class Result {
