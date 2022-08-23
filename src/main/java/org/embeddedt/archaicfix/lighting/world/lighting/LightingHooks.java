@@ -350,12 +350,11 @@ public class LightingHooks {
                         for (int x = 0; x < 16; x++) {
                             Block block = storage.getBlockByExtId(x, y, z);
                             if(block != Blocks.air) {
+                                pos.setPos(xBase + x, yBase + y, zBase + z);
                                 int light = LightingEngineHelpers.getLightValueForState(block, world, pos.getX(), pos.getY(), pos.getZ());
 
                                 if (light > 0) {
-                                    pos.setPos(xBase + x, yBase + y, zBase + z);
-
-                                    world.updateLightByType(EnumSkyBlock.Block, xBase + x, yBase + y, zBase + z);
+                                    world.updateLightByType(EnumSkyBlock.Block, pos.getX(), pos.getY(), pos.getZ());
                                 }
                             }
                         }
