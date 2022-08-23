@@ -51,6 +51,7 @@ public enum Mixin implements IMixin {
     common_core_MixinNetworkManager(Side.COMMON, m -> ArchaicConfig.fixLoginRaceCondition, "core.MixinNetworkManager"),
     common_core_MixinEmbeddedChannel(Side.COMMON, m -> ArchaicConfig.fixLoginRaceCondition, "core.MixinEmbeddedChannel"),
     common_core_MixinNetHandlerPlayServer(Side.COMMON, always(), "core.MixinNetHandlerPlayServer"),
+    common_core_MixinObjectIntIdentityMap(Side.COMMON, m -> ArchaicConfig.optimizeObjectIntIdentityMap, "core.MixinObjectIntIdentityMap"),
     common_gt6_MixinAdvancedCraftingXToY(Side.COMMON, require(TargetedMod.GREGTECH6), "gt6.MixinAdvancedCraftingXToY"),
     common_gt6_MixinGT6_Main(Side.COMMON, require(TargetedMod.GREGTECH6), "gt6.MixinGT6_Main"),
     common_gt6_MixinCR(Side.COMMON, require(TargetedMod.GREGTECH6), "gt6.MixinCR"),

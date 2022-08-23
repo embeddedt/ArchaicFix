@@ -151,4 +151,8 @@ public class ArchaicConfig {
     @Config.Comment("Fix MC-1406.")
     @Config.DefaultBoolean(true)
     public static boolean fixPlacementFlicker;
+
+    @Config.Comment("Optimize vanilla's ID-to-object map.")
+    @Config.DefaultBoolean(true)
+    public static boolean optimizeObjectIntIdentityMap;
 }
