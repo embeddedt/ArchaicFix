@@ -18,7 +18,7 @@ repositories {
     }
     maven {
         name = "MavenPattern"
-        url = "https://mvn.falsepattern.com/releases"
+        url = "https://maven.falsepattern.com"
     }
     maven {
         name "mvnmrtjp"
