@@ -65,7 +65,7 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
 
             while((wr = finishedTasks.poll()) != null) {
                 UpdateTask task = ((IRendererUpdateResultHolder)wr).arch$getRendererUpdateTask();
-                if(task.cancelled) {
+                if(task.cancelled || !wr.needsUpdate) {
                     task.clear();
                 } else {
                     nextRenderer = wr;
