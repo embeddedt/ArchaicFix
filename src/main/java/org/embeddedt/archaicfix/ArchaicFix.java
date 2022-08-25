@@ -82,7 +82,7 @@ public class ArchaicFix
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        if(ArchaicConfig.enableThreadedChunkUpdates) {
+        if(ArchaicConfig.enableThreadedChunkUpdates && ArchaicConfig.enableOcclusionTweaks) {
             ThreadedChunkUpdateHelper.instance = new ThreadedChunkUpdateHelper();
             ThreadedChunkUpdateHelper.instance.init();
         }
