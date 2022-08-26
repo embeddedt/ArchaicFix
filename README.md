@@ -4,6 +4,11 @@ This mod implements a number of bugfixes, tweaks, and optimizations for Minecraf
 
 The latest development version can be downloaded here: https://nightly.link/embeddedt/ArchaicFix/workflows/gradle/main/Package.zip
 
+## Dependencies
+
+* [MixinBooter Legacy](https://github.com/tox1cozZ/mixin-booter-legacy) or [SpongeMixins](https://github.com/TimeConqueror/SpongeMixins/releases/tag/1.2.0)
+* [FalsePatternLib](https://github.com/FalsePattern/FalsePatternLib)
+
 ## Credits
 
 * Forge, for making this possible.
@@ -13,11 +18,6 @@ The latest development version can be downloaded here: https://nightly.link/embe
 * LoliASM/Rongmario
 * MemoryLeakFix, for the Mixin cache clearing code. This is backported with credit since the mod is unlikely to be ported to 1.7.10.
 * Countless other individuals on the Mojang bug tracker who took the time to document the reasons for bugs in the game.
-
-## Requirements
-
-* SpongeMixins
-* FalsePatternLib
 
 ## Compatibility notes
 
