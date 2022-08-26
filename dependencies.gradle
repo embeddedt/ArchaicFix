@@ -28,8 +28,8 @@ dependencies {
     compileOnly('com.github.GTNewHorizons:Botania:1.9.5-GTNH:dev') {
         transitive = false
     }
-    compile("com.falsepattern:falsepatternlib-mc1.7.10:0.9.2:dev")
-    compileOnly("com.falsepattern:triangulator-mc1.7.10:1.6.2:dev")
+    compile("com.falsepattern:falsepatternlib-mc1.7.10:0.10.5:dev")
+    compileOnly("com.falsepattern:triangulator-mc1.7.10:1.7.5:dev")
     compileOnly("org.projectlombok:lombok:1.18.22") {
         transitive = false
     }

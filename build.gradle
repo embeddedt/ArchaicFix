@@ -1,4 +1,4 @@
-//version: 1656003793falsepattern29
+//version: 1656003793falsepattern34
 /*
 DO NOT CHANGE THIS FILE!
 
@@ -24,7 +24,7 @@ buildscript {
         mavenLocal()
         maven {
             name = "forge"
-            url = "https://maven.minecraftforge.net"
+            url = "https://mvn.falsepattern.com/forge"
         }
         maven {
             name = "sonatype"
@@ -36,11 +36,11 @@ buildscript {
         }
         maven {
             name = "jitpack"
-            url = "https://jitpack.falsepattern.com/"
+            url = "https://mvn.falsepattern.com/jitpack/"
         }
         maven {
             name = "mavenpattern"
-            url = "https://maven.falsepattern.com/"
+            url = "https://mvn.falsepattern.com/releases/"
         }
     }
     dependencies {
@@ -120,6 +120,7 @@ propertyDefaultIfUnset("mavenArtifactId", "")
 propertyDefaultIfUnset("hasMixinDeps", false)
 propertyDefaultIfUnset("mixinPreinitConfig", "")
 propertyDefaultIfUnset("remapStubs", false)
+propertyDefaultIfUnset("useObsoleteSpongeMixins", false)
 
 propertyDefaultIfUnset("remoteMappings", "https://raw.githubusercontent.com/MinecraftForge/FML/1.7.10/conf/")
 propertyDefaultIfUnset("mappingsChannel", "stable")
@@ -271,51 +272,67 @@ repositories {
         url = "https://gregtech.overminddl1.com/"
     }
     if(usesMixins.toBoolean() || hasMixinDeps.toBoolean()) {
-        maven {
-            name = "sponge"
-            url = "https://sponge.falsepattern.com/"
+        if (useObsoleteSpongeMixins.toBoolean()) {
+            maven {
+                name = "sponge"
+                url = "https://mvn.falsepattern.com/sponge"
+            }
         }
         maven {
-            url = "https://jitpack.falsepattern.com/"
+            url = "https://mvn.falsepattern.com/jitpack"
         }
     }
 }
 
 dependencies {
     if(usesMixins.toBoolean()) {
-        annotationProcessor("org.ow2.asm:asm-debug-all:5.0.3")
-        annotationProcessor("com.google.guava:guava:24.1.1-jre")
-        annotationProcessor("com.google.code.gson:gson:2.8.6")
-        annotationProcessor("org.spongepowered:mixin:0.8-20200110.181151-15")
-        // using 0.8 to workaround a issue in 0.7 which fails mixin application
-        compile("org.spongepowered:mixin:0.7.11-20180703.121122-1") {
-            // Mixin includes a lot of dependencies that are too up-to-date
-            exclude module: "launchwrapper"
-            exclude module: "guava"
-            exclude module: "gson"
-            exclude module: "commons-io"
-            exclude module: "log4j-core"
+        if (useObsoleteSpongeMixins.toBoolean()) {
+            annotationProcessor("org.ow2.asm:asm-debug-all:5.0.3")
+            annotationProcessor("com.google.guava:guava:24.1.1-jre")
+            annotationProcessor("com.google.code.gson:gson:2.8.6")
+            annotationProcessor("org.spongepowered:mixin:0.8-20200110.181151-15")
+            // using 0.8 to workaround a issue in 0.7 which fails mixin application
+            compile("org.spongepowered:mixin:0.7.11-20180703.121122-1") {
+                // Mixin includes a lot of dependencies that are too up-to-date
+                exclude module: "launchwrapper"
+                exclude module: "guava"
+                exclude module: "gson"
+                exclude module: "commons-io"
+                exclude module: "log4j-core"
+            }
+            compile("com.github.GTNewHorizons:SpongeMixins:1.3.3:dev")
+        } else {
+            compile("com.github.tox1cozZ:mixin-booter-legacy:1.1.2")
+            annotationProcessor("com.github.tox1cozZ:mixin-booter-legacy:1.1.2:processor")
         }
-        compile("com.github.GTNewHorizons:SpongeMixins:1.3.3:dev")
     }
     if(hasMixinDeps.toBoolean()) {
-        runtime("org.spongepowered:mixin:0.7.11-20180703.121122-1") {
-            // Mixin includes a lot of dependencies that are too up-to-date
-            exclude module: "launchwrapper"
-            exclude module: "guava"
-            exclude module: "gson"
-            exclude module: "commons-io"
-            exclude module: "log4j-core"
+        if (useObsoleteSpongeMixins.toBoolean()) {
+            runtime("org.spongepowered:mixin:0.7.11-20180703.121122-1") {
+                // Mixin includes a lot of dependencies that are too up-to-date
+                exclude module: "launchwrapper"
+                exclude module: "guava"
+                exclude module: "gson"
+                exclude module: "commons-io"
+                exclude module: "log4j-core"
+            }
+            runtime("com.github.GTNewHorizons:SpongeMixins:1.3.3:dev")
+        } else {
+            runtime("com.github.tox1cozZ:mixin-booter-legacy:1.1.2")
         }
-        runtime("com.github.GTNewHorizons:SpongeMixins:1.3.3:dev")
     }
 }
 
 apply from: 'dependencies.gradle'
 
+def mixinDir = new File(project.buildDir, 'mixins')
+if (!mixinDir.exists()) {
+    mixinDir.mkdirs()
+}
 def mixingConfigRefMap = "mixins." + modId + ".refmap.json"
-def refMap = "${tasks.compileJava.temporaryDir}" + File.separator + mixingConfigRefMap
-def mixinSrg = "${tasks.reobf.temporaryDir}" + File.separator + "mixins.srg"
+def srgFile = new File(project.buildDir, 'srgs/mcp-srg.srg')
+def mixinSrg = new File(mixinDir, "${mixingConfigRefMap}.srg")
+def mixinRefMap = new File(mixinDir, mixingConfigRefMap)
 
 task generateAssets {
     if(usesMixins.toBoolean()) {
@@ -383,18 +400,14 @@ reobf {
     }
 }
 
-afterEvaluate {
-    if(usesMixins.toBoolean()) {
-        tasks.compileJava {
-            options.compilerArgs += [
-                    "-AreobfSrgFile=${tasks.reobf.srg}",
-                    "-AoutSrgFile=${mixinSrg}",
-                    "-AoutRefMapFile=${refMap}",
-                    // Elan: from what I understand they are just some linter configs so you get some warning on how to properly code
-                    "-XDenableSunApiLintControl",
-                    "-XDignore.symbol.file"
-            ]
-        }
+if(usesMixins.toBoolean()) {
+    tasks.compileJava {
+        options.compilerArgs += [
+                '-Xlint:-processing',
+                "-AreobfSrgFile=${srgFile}",
+                "-AoutSrgFile=${mixinSrg}",
+                "-AoutRefMapFile=${mixinRefMap}"
+        ]
     }
 }
 
@@ -476,7 +489,7 @@ processResources {
     }
 
     if(usesMixins.toBoolean()) {
-        from refMap
+        from mixinRefMap
     }
 
     // copy everything else that's not the mcmod.info
@@ -586,6 +599,14 @@ task apiJar(type: Jar) {
     getArchiveClassifier().set('api')
 }
 
+task copySrgs(type: Copy, dependsOn: 'genSrgs') {
+    from plugins.getPlugin('forge').delayedFile('{SRG_DIR}')
+    include '**/*.srg'
+    into layout.buildDirectory.file('srgs')
+}
+
+compileJava.dependsOn(copySrgs)
+
 artifacts {
     archives sourcesJar
     archives devJar
@@ -694,7 +715,7 @@ task updateBuildScript {
     }
 }
 
-if (!skipBuildScriptUpdateCheck.toBoolean() && isNewBuildScriptVersionAvailable(projectDir.toString())) {
+if (!project.getGradle().startParameter.isOffline() && !skipBuildScriptUpdateCheck.toBoolean() && isNewBuildScriptVersionAvailable(projectDir.toString())) {
     if (autoUpdateBuildScript.toBoolean()) {
         performBuildScriptUpdate(projectDir.toString())
     } else {
