@@ -14,7 +14,7 @@ public class MixinGuiBeaconButton {
     /**
      * Make transparent beacon buttons look right (e.g. with Modernity).
      */
-    @Inject(method = "drawButton", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/inventory/GuiBeacon$Button;drawTexturedModalRect(IIIIII)V", ordinal = 1))
+    @Inject(method = "func_146112_a", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/inventory/GuiBeacon$Button;func_73729_b(IIIIII)V", ordinal = 1), require = 0)
     private void enableTransparency(Minecraft p_146112_1_, int p_146112_2_, int p_146112_3_, CallbackInfo ci) {
         GL11.glEnable(GL11.GL_BLEND);
         OpenGlHelper.glBlendFunc(770, 771, 1, 0);
