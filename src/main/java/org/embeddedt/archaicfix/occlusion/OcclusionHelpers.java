@@ -8,10 +8,8 @@ import net.minecraft.client.renderer.culling.Frustrum;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import org.embeddedt.archaicfix.occlusion.util.IntStack;
-import org.embeddedt.archaicfix.occlusion.util.RecyclingList;
 
 import java.util.*;
 
@@ -57,13 +55,21 @@ public class OcclusionHelpers {
 
     public static void updateRendererNeighbors(RenderGlobal rg, WorldRenderer[] worldRenderers, int renderChunksWide, int renderChunksDeep, int renderChunksTall) {
         if(worldRenderers == null) return;
-        for(WorldRenderer rend : worldRenderers) {
+        for(int i = 0; i < worldRenderers.length; i++) {
+            WorldRenderer rend = worldRenderers[i];
+            RenderWorker.CullInfo ci = ((IWorldRenderer) rend).arch$getCullInfo();
+            ci.wrIdx = i;
+            Chunk o = rend.worldObj.getChunkFromBlockCoords(rend.posX, rend.posZ);
+            VisGraph oSides = isChunkEmpty(o) ? OcclusionHelpers.RenderWorker.DUMMY : ((ICulledChunk)o).getVisibility()[rend.posY >> 4];
+            ci.visGraph = oSides;
+            ci.vis = oSides.getVisibilityArray();
             for(EnumFacing dir : EnumFacing.values()) {
-                ((IWorldRenderer)rend).arch$setNeighbor(dir, ((IRenderGlobal)rg).getRenderer(
+                WorldRenderer neighbor = ((IRenderGlobal)rg).getRenderer(
                         rend.posX + dir.getFrontOffsetX() * 16,
                         rend.posY + dir.getFrontOffsetY() * 16,
                         rend.posZ + dir.getFrontOffsetZ() * 16
-                ));
+                );
+                ci.setNeighbor(dir, neighbor == null ? null : ((IWorldRenderer)neighbor).arch$getCullInfo());
             }
         }
     }
@@ -72,9 +78,9 @@ public class OcclusionHelpers {
 
         public RenderWorker() {
 
-			/*for (int i = 0; i < fStack.length; ++i) {
-				fStack[i] = new Frustrum();
-			}//*/
+            /*for (int i = 0; i < fStack.length; ++i) {
+                fStack[i] = new Frustrum();
+            }//*/
         }
 
         public void setWorld(RenderGlobal rg, WorldClient world) {
@@ -88,24 +94,23 @@ public class OcclusionHelpers {
             DUMMY.computeVisibility();
         }
 
-        private static RecyclingList<CullInfo> cullInfoBuf = new RecyclingList<>(() -> new CullInfo());
-
         public volatile boolean dirty = false;
         public int dirtyFrustumRenderers;
         private int frame = 0;
-        private ArrayDeque<CullInfo> queue = new ArrayDeque<CullInfo>();
+        private List<CullInfo> queue = new ArrayList<>();
         @SuppressWarnings("unused")
         private Frustrum fStack = new Frustrum();
         private WorldClient theWorld;
-        private ChunkCache chunkCache = new ChunkCache();
         private RenderGlobal render;
+
+        /** We cache the values of WorldRenderer#isInFrustum here to avoid the overhead of accessing the field. */
+        private boolean[] isWRInFrustum;
 
         private final Minecraft mc = Minecraft.getMinecraft();
 
         public void run(boolean immediate) {
             frame++;
             queue.clear();
-            cullInfoBuf.reset();
             int queueIterations = 0;
 
             if (render == null) {
@@ -115,6 +120,7 @@ public class OcclusionHelpers {
             if (theWorld == null || view == null) {
                 return;
             }
+            long t0 = DEBUG_PRINT_QUEUE_ITERATIONS ? System.nanoTime() : 0;
 
             Frustrum frustum = getFrustum();
 
@@ -122,38 +128,53 @@ public class OcclusionHelpers {
 
             prepareRenderers();
 
-            RenderPosition back = RenderPosition.getBackFacingFromVector(view);
-
             seedQueue(frustum);
 
+            long t1 = DEBUG_PRINT_QUEUE_ITERATIONS ? System.nanoTime() : 0;
+
             theWorld.theProfiler.endStartSection("process_queue");
-            while(!queue.isEmpty()) {
+            for(int i = 0; i < queue.size(); i++) {
                 queueIterations++;
-                CullInfo info = queue.pollFirst();
+                CullInfo ci = queue.get(i);
 
-                markRenderer(info, view);
-
-                for (RenderPosition stepPos : CullInfo.ALLOWED_STEPS[info.facings & 0b111111]) {
-                    if(canStep(info, stepPos)) {
-                        maybeEnqueueNeighbor(info, stepPos, queue, frustum);
+                for (RenderPosition stepPos : CullInfo.ALLOWED_STEPS[ci.facings & 0b111111]) {
+                    if(canStep(ci, stepPos)) {
+                        maybeEnqueueNeighbor(ci, stepPos, queue, frustum);
                     }
                 }
             }
             theWorld.theProfiler.endStartSection("cleanup");
-            queue.clear();
 
-            if(DEBUG_PRINT_QUEUE_ITERATIONS && queueIterations != 0){
-                System.out.println("queue iterations: " + queueIterations);
+            long t2 = DEBUG_PRINT_QUEUE_ITERATIONS ? System.nanoTime() : 0;
+
+            for(CullInfo ci : queue) {
+                markRenderer(ci, view);
             }
+
+            if(DEBUG_PRINT_QUEUE_ITERATIONS){
+                if(queueIterations != 0) {
+                    System.out.println("queue iterations: " + queueIterations);
+                }
+                long t3 = System.nanoTime();
+                System.out.println(((t1-t0) / 1000000.0) + " ms prepare + " + (t2-t1) / 1000000.0 + " ms queue + " + (t3-t2) / 1000000.0 + " ms mark");
+            }
+
             dirty = false;
+            queue.clear();
             theWorld.theProfiler.endSection();
         }
 
         private void prepareRenderers() {
             WorldRenderer[] renderers = render.sortedWorldRenderers;
 
+            if(isWRInFrustum == null || isWRInFrustum.length != render.worldRenderers.length) {
+                isWRInFrustum = new boolean[render.worldRenderers.length];
+            }
+
             for (int i = 0; i < render.worldRenderers.length; ++i) {
-                render.worldRenderers[i].isVisible = false;
+                WorldRenderer wr = render.worldRenderers[i];
+                wr.isVisible = false;
+                isWRInFrustum[i] = wr.isInFrustum;
             }
             render.renderersLoaded = 0;
         }
@@ -176,29 +197,26 @@ public class OcclusionHelpers {
             int viewZ = MathHelper.floor_double(view.posZ);
 
             theWorld.theProfiler.endStartSection("gather_chunks");
-            chunkCache.gatherChunks(theWorld, viewX >> 4, viewZ >> 4, renderDistanceChunks);
 
             IRenderGlobal extendedRender = (IRenderGlobal)render;
 
             theWorld.theProfiler.endStartSection("seed_queue");
 
             WorldRenderer center = extendedRender.getRenderer(viewX, viewY, viewZ);
-            isInFrustum(center, frustum); // make sure frustum status gets updated for the starting renderer
             if (center != null) {
-                Chunk chunk = chunkCache.getChunk(center);
-                VisGraph sides = isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk)chunk).getVisibility()[center.posY >> 4];
-                CullInfo info = cullInfoBuf.next().init(center, sides, RenderPosition.NONE, renderDistanceChunks * -1 - 3);
-                markRenderer(info, view);
-                queue.add(info);
+                CullInfo ci = ((IWorldRenderer)center).arch$getCullInfo();
+                isInFrustum(ci, frustum); // make sure frustum status gets updated for the starting renderer
+                ci.init(RenderPosition.NONE, (byte)0);
+                queue.add(ci);
             } else {
                 int level = viewY > 5 ? 250 : 5;
                 center = extendedRender.getRenderer(viewX, level, viewZ);
                 if (center != null) {
                     RenderPosition pos = viewY < 5 ? RenderPosition.UP : RenderPosition.DOWN;
                     {
-                        Chunk chunk = chunkCache.getChunk(center);
-                        CullInfo info = cullInfoBuf.next().init(center, isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk) chunk).getVisibility()[center.posY >> 4], RenderPosition.NONE, -2);
-                        queue.add(info);
+                        CullInfo ci = ((IWorldRenderer)center).arch$getCullInfo();
+                        ci.init(RenderPosition.NONE, (byte)0);
+                        queue.add(ci);
                     }
                     boolean allNull = false;
                     theWorld.theProfiler.startSection("gather_world");
@@ -209,13 +227,13 @@ public class OcclusionHelpers {
                                 int xm = (k & 1) == 0 ? -1 : 1;
                                 int zm = (k & 2) == 0 ? -1 : 1;
                                 center = extendedRender.getRenderer(viewX + i * 16 * xm, level, viewZ + j * 16 * zm);
-                                if (!isInFrustum(center, frustum)) {
+                                CullInfo ci = ((IWorldRenderer)center).arch$getCullInfo();
+                                if (!isInFrustum(ci, frustum)) {
                                     continue;
                                 }
                                 allNull = false;
-                                Chunk chunk = chunkCache.getChunk(center);
-                                CullInfo info = cullInfoBuf.next().init(center, isChunkEmpty(chunk) ? DUMMY : ((ICulledChunk) chunk).getVisibility()[center.posY >> 4], RenderPosition.NONE, -2);
-                                queue.add(info);
+                                ci.init(RenderPosition.NONE, (byte)0);
+                                queue.add(ci);
                             }
                             ++i;
                             --j;
@@ -229,33 +247,26 @@ public class OcclusionHelpers {
         private boolean canStep(CullInfo info, RenderPosition stepPos) {
             boolean allVis = mc.playerController.currentGameType.getID() == 3;
 
-            if (!allVis && !SetVisibility.isVisible(info.vis.getVisibility(), info.dir.getOpposite().facing, stepPos.facing)) {
+            if (!allVis && !SetVisibility.isVisible(info.vis[0], info.dir.getOpposite().facing, stepPos.facing)) {
                 return false;
             }
 
             return true;
         }
-        
-        private void maybeEnqueueNeighbor(CullInfo info, RenderPosition stepPos, Queue queue, Frustrum frustum) {
-            WorldRenderer t = ((IWorldRenderer)info.rend).arch$getNeighbor(stepPos.facing);
-            IWorldRenderer extendedT = (IWorldRenderer) t;
 
-            if (t == null || !extendedT.arch$setLastCullUpdateFrame(frame) || !isInFrustum(t, frustum))
+        private void maybeEnqueueNeighbor(CullInfo info, RenderPosition stepPos, Collection<CullInfo> queue, Frustrum frustum) {
+            CullInfo neighbor = info.getNeighbor(stepPos.facing);
+
+            if (neighbor == null || !neighbor.setLastCullUpdateFrame(frame) || !isInFrustum(neighbor, frustum))
                 return;
 
-            int cost = 0;
+            neighbor.init(stepPos, info.facings);
 
-            Chunk o = chunkCache.getChunk(t);
-            VisGraph oSides = isChunkEmpty(o) ? DUMMY : ((ICulledChunk)o).getVisibility()[t.posY >> 4];
-            CullInfo data = cullInfoBuf.next().init(t, oSides, stepPos, info.cost + cost);
-
-            data.facings |= info.facings;
-
-            queue.add(data);
+            queue.add(neighbor);
         }
 
         private void markRenderer(CullInfo info, EntityLivingBase view) {
-            WorldRenderer rend = info.rend;
+            WorldRenderer rend = render.worldRenderers[info.wrIdx];
             if (!rend.isVisible) {
                 rend.isVisible = true;
                 if (!rend.isWaitingOnOcclusionQuery) {
@@ -263,7 +274,7 @@ public class OcclusionHelpers {
                     render.sortedWorldRenderers[render.renderersLoaded++] = rend;
                 }
             }
-            if (rend.needsUpdate || !rend.isInitialized || info.vis.isRenderDirty()) {
+            if (rend.needsUpdate || !rend.isInitialized || info.visGraph.isRenderDirty()) {
                 rend.needsUpdate = true;
                 if (!rend.isInitialized || (rend.needsUpdate && rend.distanceToEntitySquared(view) <= 1128.0F)) {
                     ((IRenderGlobal)render).pushWorkerRenderer(rend);
@@ -271,23 +282,18 @@ public class OcclusionHelpers {
             }
         }
 
-        private static boolean isInFrustum(WorldRenderer r, Frustrum frustum){
-            if(r != null) {
-                if(r.isInFrustum) {
-                    /** Defer checking if visible renderers are still in the frustum */
-                    ((IWorldRenderer)r).arch$setIsFrustumCheckPending(true);
-                } else {
-                    r.updateInFrustum(frustum);
-                }
+        private boolean isInFrustum(CullInfo ci, Frustrum frustum){
+            if(isWRInFrustum[ci.wrIdx]) {
+                ci.isFrustumCheckPending = true;
+            } else {
+                WorldRenderer wr = Minecraft.getMinecraft().renderGlobal.worldRenderers[ci.wrIdx];
+                wr.updateInFrustum(frustum);
+                isWRInFrustum[ci.wrIdx] = wr.isInFrustum;
             }
-            return r != null && r.isInFrustum;
+            return isWRInFrustum[ci.wrIdx];
         }
 
-        private static boolean isChunkEmpty(Chunk chunk) {
-            return chunk == null || chunk.isEmpty();
-        }
-
-        private static class CullInfo {
+        public static class CullInfo {
 
             public static final RenderPosition[][] ALLOWED_STEPS;
 
@@ -305,20 +311,20 @@ public class OcclusionHelpers {
 
                             //                    SNEWUD
                             mask |= new byte[]{ 0b000100,
-                                                0b000000,
-                                                0b001000
+                                    0b000000,
+                                    0b001000
                             }[xStep + 1];
 
                             //                    SNEWUD
                             mask |= new byte[]{ 0b000001,
-                                                0b000000,
-                                                0b000010
+                                    0b000000,
+                                    0b000010
                             }[yStep + 1];
 
                             //                    SNEWUD
                             mask |= new byte[]{ 0b010000,
-                                                0b000000,
-                                                0b100000
+                                    0b000000,
+                                    0b100000
                             }[zStep + 1];
 
                             byte finalMask = mask;
@@ -333,63 +339,53 @@ public class OcclusionHelpers {
                 return allowedSteps;
             }
 
-            int cost;
-            WorldRenderer rend;
-            VisGraph vis;
+            /** The index of the world renderer in RenderGlobal#worldRenderers. Not stored as a reference because I
+             * found that having it slows things down significantly.
+             */
+            public int wrIdx;
+            public CullInfo[] neighbors;
+            /** A direct reference to the visibility graph's visibility mask, used to avoid the significant overhead of
+             * accessing VisGraph's fields.
+              */
+            public long[] vis;
+            public VisGraph visGraph;
             /** The direction we stepped in to reach this subchunk. */
-            RenderPosition dir;
+            public RenderPosition dir;
             /** All the directions we have stepped in to reach this subchunk. */
-            byte facings;
+            public byte facings;
+            public int lastCullUpdateFrame;
+            public boolean isFrustumCheckPending;
 
             public CullInfo() {
-
+                this.neighbors = new CullInfo[EnumFacing.values().length];
+                this.visGraph = DUMMY;
+                this.vis = visGraph.getVisibilityArray();
             }
 
-            public CullInfo init(WorldRenderer rend, VisGraph vis, RenderPosition dir, int cost) {
-                this.cost = cost;
-                this.rend = rend;
-                this.vis = vis;
+            public CullInfo init(RenderPosition dir, byte facings) {
                 this.dir = dir;
-                this.facings = 0;
-                this.facings |= (1 << this.dir.ordinal());
+
+                this.facings = facings;
+                this.facings |= (1 << dir.ordinal());
 
                 return this;
             }
 
-        }
-
-        private static class ChunkCache {
-
-            private World theWorld;
-            private Chunk[] chunkCache = null;
-            private int cornerX, cornerZ, size;
-
-            public void gatherChunks(World theWorld, int centerChunkX, int centerChunkZ, int renderDistanceChunks) {
-                this.size = renderDistanceChunks * 2 + 1;
-                this.cornerX = centerChunkX - renderDistanceChunks - 1;
-                this.cornerZ = centerChunkZ - renderDistanceChunks - 1;
-                this.theWorld = theWorld;
-
-                int length = (size + 1) * (size + 1);
-                Chunk[] chunks = chunkCache == null || chunkCache.length != length ? chunkCache = new Chunk[length] : chunkCache;
-
-                for (int x = 0; x <= size; ++x) {
-                    int columnStart = x * size;
-                    for (int z = 0; z <= size; ++z) {
-                        Chunk chunk = theWorld.getChunkFromChunkCoords(x + cornerX, z + cornerZ);
-                        chunks[columnStart + z] = chunk;
-                    }
-                }
+            public CullInfo getNeighbor(EnumFacing dir) {
+                return neighbors[dir.ordinal()];
             }
 
-            public Chunk getChunk(WorldRenderer rend) {
-                int x = (rend.posX >> 4) - cornerX, z = (rend.posZ >> 4) - cornerZ;
-                if (x < 0 | z < 0 | x > size | z > size) {
-                    return null;
-                }
-                return chunkCache[x * size + z];
+            public void setNeighbor(EnumFacing dir, CullInfo neighbor) {
+                neighbors[dir.ordinal()] = neighbor;
             }
 
+            /** Sets the number of the last frame when this renderer was visited by the occlusion culling algorithm.
+             *  Returns true if the value was changed as a result. */
+            public boolean setLastCullUpdateFrame(int lastCullUpdateFrame) {
+                if(this.lastCullUpdateFrame == lastCullUpdateFrame) return false;
+                this.lastCullUpdateFrame = lastCullUpdateFrame;
+                return true;
+            }
         }
     }
 
@@ -471,48 +467,15 @@ public class OcclusionHelpers {
         private final int _x, _y, _z;
 
         private static final RenderPosition[] VALUES = values();
-
-        public static RenderPosition getBackFacingFromVector(EntityLivingBase e) {
-
-            float x, y, z;
-            {
-                float f = e.rotationPitch;
-                float f1 = e.rotationYaw;
-
-                if (Minecraft.getMinecraft().gameSettings.thirdPersonView == 2)
-                {
-                    f += 180.0F;
-                }
-
-                float f2 = MathHelper.cos(-f1 * 0.017453292F - (float) Math.PI);
-                float f3 = MathHelper.sin(-f1 * 0.017453292F - (float) Math.PI);
-                float f4 = -MathHelper.cos(-f * 0.017453292F);
-                float f5 = MathHelper.sin(-f * 0.017453292F);
-                x = f3 * f4;
-                y = f5;
-                z = f2 * f4;
-            }
-            RenderPosition ret = NORTH;
-            float max = Float.MIN_VALUE;
-            int i = VALUES.length;
-
-            for (int j = 0; j < i; ++j) {
-                RenderPosition face = VALUES[j];
-                float cur = x * -face._x + y * -face._y + z * -face._z;
-
-                if (cur > max) {
-                    max = cur;
-                    ret = face;
-                }
-            }
-
-            return ret;
-        }
     }
 
     private static int positiveMod(int val, int div) {
         int rem = val % div;
         if(rem < 0) rem += div;
         return rem;
+    }
+
+    private static boolean isChunkEmpty(Chunk chunk) {
+        return chunk == null || chunk.isEmpty();
     }
 }

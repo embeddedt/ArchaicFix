@@ -39,16 +39,14 @@ public class MixinWorldRenderer implements IWorldRenderer {
 
     @Shadow private TesselatorVertexState vertexState;
 
-    private int arch$lastCullUpdateFrame;
-
     private boolean arch$isInUpdateList;
     private boolean arch$isFrustumCheckPending;
 
-    private WorldRenderer[] arch$neighbors;
+    private OcclusionHelpers.RenderWorker.CullInfo arch$cullInfo;
 
     @Inject(method = "<init>*", at = @At("RETURN"))
     private void init(CallbackInfo ci) {
-        this.arch$neighbors = new WorldRenderer[EnumFacing.values().length];
+        this.arch$cullInfo = new OcclusionHelpers.RenderWorker.CullInfo();
     }
 
     @Inject(method = "markDirty", at = @At("TAIL"))
@@ -72,13 +70,6 @@ public class MixinWorldRenderer implements IWorldRenderer {
     }
 
     @Override
-    public boolean arch$setLastCullUpdateFrame(int lastCullUpdateFrame) {
-        if(arch$lastCullUpdateFrame == lastCullUpdateFrame) return false;
-        arch$lastCullUpdateFrame = lastCullUpdateFrame;
-        return true;
-    }
-
-    @Override
     public boolean arch$isInUpdateList() {
         return arch$isInUpdateList;
     }
@@ -99,12 +90,7 @@ public class MixinWorldRenderer implements IWorldRenderer {
     }
 
     @Override
-    public WorldRenderer arch$getNeighbor(EnumFacing dir) {
-        return arch$neighbors[dir.ordinal()];
-    }
-
-    @Override
-    public void arch$setNeighbor(EnumFacing dir, WorldRenderer neighbor) {
-        arch$neighbors[dir.ordinal()] = neighbor;
+    public OcclusionHelpers.RenderWorker.CullInfo arch$getCullInfo() {
+        return arch$cullInfo;
     }
 }

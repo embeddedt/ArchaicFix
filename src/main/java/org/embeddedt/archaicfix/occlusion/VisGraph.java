@@ -39,7 +39,9 @@ public class VisGraph {
 	private final BitSet visibleBlocks = new BitSet(4096);
 	private short transparentBlocks = 4096;
 	private boolean dirty = true, computedVis = true;
-	private long visibility = ALL_VIS;
+
+	/** Accessing this class's fields is slow, so we let the visibility value be referenced directly. */
+	private long[] visibility = new long[]{ALL_VIS};
 
 	private static int getIndex(int x, int y, int z) {
 
@@ -72,6 +74,10 @@ public class VisGraph {
 	}
 
 	public long getVisibility() {
+		return visibility[0];
+	}
+
+	public long[] getVisibilityArray() {
 		return visibility;
 	}
 
@@ -102,7 +108,7 @@ public class VisGraph {
 			}
 		}
 
-		visibility = setvisibility;
+		visibility[0] = setvisibility;
 		computedVis = true;
 	}
 
