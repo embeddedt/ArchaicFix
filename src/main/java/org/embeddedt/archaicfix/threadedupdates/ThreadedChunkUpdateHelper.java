@@ -230,9 +230,7 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
 
                                 if (!block.canRenderInPass(pass)) continue;
 
-                                if (canBlockBeRenderedOffThread(block, pass)) {
-                                    renderedSomething |= renderblocks.renderBlockByRenderType(block, x, y, z);
-                                }
+                                renderedSomething |= renderblocks.renderBlockByRenderType(block, x, y, z);
                             }
                         }
                     }
@@ -248,8 +246,8 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
         debugLog("Result of updating " + worldRendererToString(wr) + ": " + worldRendererUpdateTaskToString(wr));
     }
 
-    public static boolean canBlockBeRenderedOffThread(Block block, int pass) {
-        return block.getRenderType() < 42 && block.getRenderType() != 22; // vanilla block
+    public static boolean canBlockBeRenderedOffThread(Block block, int pass, int renderType) {
+        return renderType < 42 && renderType != 22; // vanilla block
     }
 
     private ChunkCache getChunkCacheSnapshot(WorldRenderer wr) {

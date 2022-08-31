@@ -11,23 +11,25 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(RenderBlocks.class)
 public class MixinRenderBlocks {
 
-    @Inject(method = "renderBlockByRenderType", at = @At("HEAD"), cancellable = true)
-    private void cancelRenderDelegatedToDifferentThread(Block block, int x, int y, int z, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "renderBlockByRenderType", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;setBlockBoundsBasedOnState(Lnet/minecraft/world/IBlockAccess;III)V"), cancellable = true, locals = LocalCapture.CAPTURE_FAILHARD)
+    private void cancelRenderDelegatedToDifferentThread(Block block, int x, int y, int z, CallbackInfoReturnable<Boolean> cir, int renderType) {
         int pass = ForgeHooksClient.getWorldRenderPass();
         boolean mainThread = Thread.currentThread() == ThreadedChunkUpdateHelper.MAIN_THREAD;
+
         ThreadedChunkUpdateHelper.UpdateTask task = mainThread
                 ? ((IRendererUpdateResultHolder)ThreadedChunkUpdateHelper.lastWorldRenderer).arch$getRendererUpdateTask()
                 : null;
-        if(pass >= 0 && !(task != null && task.cancelled)) {
-            boolean offThreadBlock = ThreadedChunkUpdateHelper.canBlockBeRenderedOffThread(block, pass);
-            if(mainThread ? offThreadBlock : !offThreadBlock) {
-                // Cancel rendering block if it's delegated to a different thread.
-                cir.setReturnValue(mainThread ? task.result[pass].renderedSomething : false);
-            }
+
+        boolean offThreadBlock = ThreadedChunkUpdateHelper.canBlockBeRenderedOffThread(block, pass, renderType)
+                && !(task != null && task.cancelled);
+        if ((mainThread ? pass >= 0 : true) && (mainThread ? offThreadBlock : !offThreadBlock)) {
+            // Cancel rendering block if it's delegated to a different thread.
+            cir.setReturnValue(mainThread ? task.result[pass].renderedSomething : false);
         }
     }
 
