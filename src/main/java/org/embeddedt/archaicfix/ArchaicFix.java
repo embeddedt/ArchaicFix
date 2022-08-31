@@ -25,6 +25,7 @@ import net.minecraftforge.common.MinecraftForge;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
 import org.embeddedt.archaicfix.ducks.IAcceleratedRecipe;
 import org.embeddedt.archaicfix.helpers.FastutilHelper;
+import org.embeddedt.archaicfix.occlusion.IRenderGlobal;
 import org.embeddedt.archaicfix.occlusion.OcclusionHelpers;
 import org.embeddedt.archaicfix.threadedupdates.ThreadedChunkUpdateHelper;
 import org.embeddedt.archaicfix.proxy.CommonProxy;
@@ -82,9 +83,12 @@ public class ArchaicFix
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        if(ArchaicConfig.enableThreadedChunkUpdates && ArchaicConfig.enableOcclusionTweaks) {
-            ThreadedChunkUpdateHelper.instance = new ThreadedChunkUpdateHelper();
-            ThreadedChunkUpdateHelper.instance.init();
+        if(event.getSide() == Side.CLIENT) {
+            if(ArchaicConfig.enableThreadedChunkUpdates
+                    && Minecraft.getMinecraft().renderGlobal instanceof IRenderGlobal) {
+                ThreadedChunkUpdateHelper.instance = new ThreadedChunkUpdateHelper();
+                ThreadedChunkUpdateHelper.instance.init();
+            }
         }
     }
 
