@@ -51,16 +51,10 @@ public abstract class MixinTessellator implements ICapturableTessellator {
         if(state == null) return;
         // TODO check if draw mode is the same
 
-        if (vertexCount == 0) {
-            hasTexture = state.getHasTexture();
-            hasBrightness = state.getHasBrightness();
-            hasColor = state.getHasColor();
-            hasNormals = state.getHasNormals();
-        } else {
-            if(hasTexture != state.getHasTexture() || hasBrightness != state.getHasBrightness() || hasColor != state.getHasColor() || hasNormals != state.getHasNormals()) {
-                throw new IllegalArgumentException("State mismatch");
-            }
-        }
+        hasTexture |= state.getHasTexture();
+        hasBrightness |= state.getHasBrightness();
+        hasColor |= state.getHasColor();
+        hasNormals |= state.getHasNormals();
 
         while(rawBufferSize < rawBufferIndex + state.getRawBuffer().length) {
             rawBufferSize *= 2;
