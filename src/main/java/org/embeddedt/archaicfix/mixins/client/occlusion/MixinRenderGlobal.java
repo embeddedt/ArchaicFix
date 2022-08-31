@@ -621,13 +621,15 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
     @Overwrite
     public void clipRenderersByFrustum(ICamera p_72729_1_, float p_72729_2_) {
         for (int i = 0; i < this.worldRenderers.length; ++i) {
-            WorldRenderer wr = this.worldRenderers[i];
-            IWorldRenderer iwr = (IWorldRenderer)wr;
-            if (wr.isInFrustum && (i + this.frustumCheckOffset & 15) == 0 && iwr.arch$isFrustumCheckPending()) {
-                wr.updateInFrustum(p_72729_1_);
-                iwr.arch$setIsFrustumCheckPending(false);
-                if(!wr.isInFrustum) {
-                    OcclusionHelpers.worker.dirtyFrustumRenderers++;
+            if((i + this.frustumCheckOffset & 15) == 0) {
+                WorldRenderer wr = this.worldRenderers[i];
+                IWorldRenderer iwr = (IWorldRenderer) wr;
+                if (wr.isInFrustum && iwr.arch$getCullInfo().isFrustumCheckPending) {
+                    wr.updateInFrustum(p_72729_1_);
+                    iwr.arch$setIsFrustumCheckPending(false);
+                    if (!wr.isInFrustum) {
+                        OcclusionHelpers.worker.dirtyFrustumRenderers++;
+                    }
                 }
             }
         }
