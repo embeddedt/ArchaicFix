@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraftforge.client.ForgeHooksClient;
 import org.embeddedt.archaicfix.threadedupdates.ThreadedChunkUpdateHelper;
 import org.embeddedt.archaicfix.threadedupdates.IRendererUpdateResultHolder;
+import org.embeddedt.archaicfix.threadedupdates.api.ThreadedChunkUpdates;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -35,7 +36,7 @@ public class MixinRenderBlocks {
 
     @Redirect(method = "*", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/Tessellator;instance:Lnet/minecraft/client/renderer/Tessellator;"))
     private Tessellator modifyTessellatorAccess() {
-        return Thread.currentThread() == ThreadedChunkUpdateHelper.MAIN_THREAD ? Tessellator.instance : ThreadedChunkUpdateHelper.instance.threadTessellator.get();
+        return ThreadedChunkUpdates.getThreadTessellator();
     }
 
 }
