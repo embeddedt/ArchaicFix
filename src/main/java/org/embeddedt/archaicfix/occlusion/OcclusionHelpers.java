@@ -12,6 +12,7 @@ import net.minecraft.world.chunk.Chunk;
 import org.embeddedt.archaicfix.occlusion.util.IntStack;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 public class OcclusionHelpers {
     public static RenderWorker worker;
@@ -89,7 +90,7 @@ public class OcclusionHelpers {
             theWorld = world;
         }
 
-        private static VisGraph DUMMY = new VisGraph();
+        private static final VisGraph DUMMY = new VisGraph();
         static {
             DUMMY.computeVisibility();
         }
@@ -97,7 +98,7 @@ public class OcclusionHelpers {
         public volatile boolean dirty = false;
         public int dirtyFrustumRenderers;
         private int frame = 0;
-        private List<CullInfo> queue = new ArrayList<>();
+        private final List<CullInfo> queue = new ArrayList<>();
         @SuppressWarnings("unused")
         private Frustrum fStack = new Frustrum();
         private WorldClient theWorld;
@@ -165,8 +166,6 @@ public class OcclusionHelpers {
         }
 
         private void prepareRenderers() {
-            WorldRenderer[] renderers = render.sortedWorldRenderers;
-
             if(isWRInFrustum == null || isWRInFrustum.length != render.worldRenderers.length) {
                 isWRInFrustum = new boolean[render.worldRenderers.length];
             }
@@ -189,7 +188,6 @@ public class OcclusionHelpers {
         }
 
         private void seedQueue(Frustrum frustum) {
-            int renderDistanceChunks = render.renderDistanceChunks;
             EntityLivingBase view = mc.renderViewEntity;
 
             int viewX = MathHelper.floor_double(view.posX);
@@ -330,8 +328,7 @@ public class OcclusionHelpers {
 
                             byte finalMask = mask;
                             allowedSteps[mask] =
-                                    Arrays.asList(RenderPosition.DOWN, RenderPosition.UP, RenderPosition.NORTH, RenderPosition.SOUTH, RenderPosition.WEST, RenderPosition.EAST)
-                                            .stream()
+                                    Stream.of(RenderPosition.DOWN, RenderPosition.UP, RenderPosition.NORTH, RenderPosition.SOUTH, RenderPosition.WEST, RenderPosition.EAST)
                                             .filter(p -> (1 << (p.getOpposite().ordinal()) & finalMask) == 0)
                                             .toArray(RenderPosition[]::new);
                         }
@@ -466,14 +463,6 @@ public class OcclusionHelpers {
         }
 
         private final int _x, _y, _z;
-
-        private static final RenderPosition[] VALUES = values();
-    }
-
-    private static int positiveMod(int val, int div) {
-        int rem = val % div;
-        if(rem < 0) rem += div;
-        return rem;
     }
 
     private static boolean isChunkEmpty(Chunk chunk) {
