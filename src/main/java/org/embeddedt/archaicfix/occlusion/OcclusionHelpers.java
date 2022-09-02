@@ -227,13 +227,14 @@ public class OcclusionHelpers {
                                 int xm = (k & 1) == 0 ? -1 : 1;
                                 int zm = (k & 2) == 0 ? -1 : 1;
                                 center = extendedRender.getRenderer(viewX + i * 16 * xm, level, viewZ + j * 16 * zm);
-                                CullInfo ci = ((IWorldRenderer)center).arch$getCullInfo();
-                                if (!isInFrustum(ci, frustum)) {
-                                    continue;
+                                if(center != null) {
+                                    CullInfo ci = ((IWorldRenderer)center).arch$getCullInfo();
+                                    if (isInFrustum(ci, frustum)) {
+                                        allNull = false;
+                                        ci.init(RenderPosition.NONE, (byte)0);
+                                        queue.add(ci);
+                                    }
                                 }
-                                allNull = false;
-                                ci.init(RenderPosition.NONE, (byte)0);
-                                queue.add(ci);
                             }
                             ++i;
                             --j;
