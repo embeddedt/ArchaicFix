@@ -109,6 +109,7 @@ public enum Mixin implements IMixin {
     client_threadedupdates_MixinRenderBlocks(Side.CLIENT, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.enableThreadedChunkUpdates && ArchaicConfig.enableOcclusionTweaks), "threadedupdates.MixinRenderBlocks"),
     client_threadedupdates_MixinWorldRenderer(Side.CLIENT, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.enableThreadedChunkUpdates && ArchaicConfig.enableOcclusionTweaks), "threadedupdates.MixinWorldRenderer"),
     client_threadedupdates_MixinTessellator(Side.CLIENT, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.enableThreadedChunkUpdates && ArchaicConfig.enableOcclusionTweaks), "threadedupdates.MixinTessellator"),
+    client_threadedupdates_MixinTessellator_Debug(Side.CLIENT, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.enableThreadedChunkUpdates && ArchaicConfig.enableOcclusionTweaks && Boolean.parseBoolean(System.getProperty("archaicfix.debug.verifyTessellatorAccessThread"))), "threadedupdates.MixinTessellator_Debug"),
 
     // MOD-FILTERED MIXINS
     common_lighting_fastcraft_MixinChunk(Side.COMMON, require(TargetedMod.FASTCRAFT), "lighting.fastcraft.MixinChunk"),
