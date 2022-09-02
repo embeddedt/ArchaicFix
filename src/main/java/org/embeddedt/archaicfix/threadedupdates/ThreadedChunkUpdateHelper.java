@@ -223,7 +223,7 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
                                 if (!startedTessellator) {
                                     startedTessellator = true;
                                     tess.startDrawingQuads(); // TODO triangulator compat
-                                    tess.setTranslation((double) (-wr.posX), (double) (-wr.posY), (double) (-wr.posZ));
+                                    tess.setTranslation(-wr.posX, -wr.posY, -wr.posZ);
                                 }
 
                                 int k3 = block.getRenderBlockPass();

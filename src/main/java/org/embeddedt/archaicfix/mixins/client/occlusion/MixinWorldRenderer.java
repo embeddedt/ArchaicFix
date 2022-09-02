@@ -80,16 +80,6 @@ public class MixinWorldRenderer implements IWorldRenderer {
     }
 
     @Override
-    public boolean arch$isFrustumCheckPending() {
-        return arch$isFrustumCheckPending;
-    }
-
-    @Override
-    public void arch$setIsFrustumCheckPending(boolean b) {
-        arch$isFrustumCheckPending = b;
-    }
-
-    @Override
     public OcclusionHelpers.RenderWorker.CullInfo arch$getCullInfo() {
         return arch$cullInfo;
     }

@@ -626,7 +626,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
                 IWorldRenderer iwr = (IWorldRenderer) wr;
                 if (wr.isInFrustum && iwr.arch$getCullInfo().isFrustumCheckPending) {
                     wr.updateInFrustum(p_72729_1_);
-                    iwr.arch$setIsFrustumCheckPending(false);
+                    iwr.arch$getCullInfo().isFrustumCheckPending = false;
                     if (!wr.isInFrustum) {
                         OcclusionHelpers.worker.dirtyFrustumRenderers++;
                     }
