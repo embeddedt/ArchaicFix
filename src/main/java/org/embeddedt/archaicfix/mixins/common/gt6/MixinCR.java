@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(CR.class)
 public class MixinCR {
-    @Redirect(method = "remove([Lnet/minecraft/item/ItemStack;)Lnet/minecraft/item/ItemStack;", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/crafting/IRecipe;matches(Lnet/minecraft/inventory/InventoryCrafting;Lnet/minecraft/world/World;)Z"), remap = false)
+    @Redirect(method = "remove([Lnet/minecraft/item/ItemStack;)Lnet/minecraft/item/ItemStack;", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/crafting/IRecipe;matches(Lnet/minecraft/inventory/InventoryCrafting;Lnet/minecraft/world/World;)Z", remap = true), remap = false)
     private static boolean fasterMatchCheck(IRecipe recipe, InventoryCrafting crafting, World world, ItemStack[] inputStacks) {
         if(recipe instanceof IAcceleratedRecipe) {
             IAcceleratedRecipe accel = (IAcceleratedRecipe)recipe;
