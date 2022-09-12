@@ -155,4 +155,8 @@ public class ArchaicConfig {
     @Config.Comment("Optimize vanilla's ID-to-object map.")
     @Config.DefaultBoolean(true)
     public static boolean optimizeObjectIntIdentityMap;
+
+    @Config.Comment("Fix the client leaking memory by holding on to skins and player instances that aren't needed.")
+    @Config.DefaultBoolean(true)
+    public static boolean fixSkinMemoryLeak;
 }

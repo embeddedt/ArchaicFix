@@ -80,7 +80,7 @@ public enum Mixin implements IMixin {
     client_core_MixinGuiButton(Side.CLIENT, always(), "core.MixinGuiButton"),
     client_core_MixinGuiContainerCreative(Side.CLIENT, always(), "core.MixinGuiContainerCreative"),
     client_core_MixinIntegratedServer(Side.CLIENT, always(), "core.MixinIntegratedServer"),
-    client_core_MixinSkinManager(Side.CLIENT, always(), "core.MixinSkinManager"),
+    client_core_MixinSkinManager(Side.CLIENT, m -> ArchaicConfig.fixSkinMemoryLeak, "core.MixinSkinManager"),
     client_core_MixinChunkProviderClient(Side.CLIENT, always(), "core.MixinChunkProviderClient"),
     client_core_MixinWorldRenderer(Side.CLIENT, always(), "core.MixinWorldRenderer"),
     client_core_MixinMinecraft(Side.CLIENT, always(), "core.MixinMinecraft"),
