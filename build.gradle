@@ -1,4 +1,4 @@
-//version: 1656003793falsepattern36
+//version: 1656003793falsepattern49
 /*
 DO NOT CHANGE THIS FILE!
 
@@ -9,6 +9,10 @@ Please check https://github.com/FalsePattern/ExampleMod1.7.10/blob/main/build.gr
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import com.matthewprenger.cursegradle.CurseArtifact
+import com.matthewprenger.cursegradle.CurseRelation
+import com.modrinth.minotaur.dependencies.ModDependency
+import com.modrinth.minotaur.dependencies.VersionDependency
 import org.gradle.internal.logging.text.StyledTextOutput.Style
 import org.gradle.internal.logging.text.StyledTextOutputFactory
 
@@ -63,6 +67,8 @@ plugins {
     id 'com.palantir.git-version'        version '0.13.0'
     id 'de.undercouch.download'          version '5.0.1'
     id 'com.github.gmazzo.buildconfig'   version '3.0.3'        apply false
+    id 'com.modrinth.minotaur'           version '2.+'          apply false
+    id 'com.matthewprenger.cursegradle'  version '1.4.0'        apply false
 }
 apply plugin: 'com.falsepattern.jtweaker'
 
@@ -118,9 +124,15 @@ propertyDefaultIfUnset("repositoryName", "")
 propertyDefaultIfUnset("mavenGroupId", "")
 propertyDefaultIfUnset("mavenArtifactId", "")
 propertyDefaultIfUnset("hasMixinDeps", false)
-propertyDefaultIfUnset("mixinPreinitConfig", "")
+propertyDefaultIfUnset("mixinConfigs", "")
+propertyDefaultIfUnset("mixinPluginPreInit", "")
 propertyDefaultIfUnset("remapStubs", false)
-propertyDefaultIfUnset("useObsoleteSpongeMixins", false)
+
+propertyDefaultIfUnset("modrinthProjectId", "")
+propertyDefaultIfUnset("modrinthDependencies", "")
+propertyDefaultIfUnset("curseForgeProjectId", "")
+propertyDefaultIfUnset("curseForgeRelations", "")
+propertyDefaultIfUnset("changelog", "No changelog URL was provided.")
 
 propertyDefaultIfUnset("remoteMappings", "https://raw.githubusercontent.com/MinecraftForge/FML/1.7.10/conf/")
 propertyDefaultIfUnset("mappingsChannel", "stable")
@@ -154,8 +166,8 @@ if(accessTransformersFile) {
 }
 
 if(usesMixins.toBoolean()) {
-    if(mixinsPackage.isEmpty() || mixinPlugin.isEmpty()) {
-        throw new GradleException("\"mixinPlugin\" requires \"mixinsPackage\" and \"mixinPlugin\" to be set!")
+    if(mixinsPackage.isEmpty()) {
+        throw new GradleException("\"usesMixins\" requires \"mixinsPackage\" to be set!")
     }
 
     targetPackageJava = javaSourceDir + modGroup.toString().replaceAll("\\.", "/") + "/" + mixinsPackage.toString().replaceAll("\\.", "/")
@@ -165,12 +177,14 @@ if(usesMixins.toBoolean()) {
         throw new GradleException("Could not resolve \"mixinsPackage\"! Could not find " + targetPackageJava + " or " + targetPackageScala  + " or " + targetPackageKotlin)
     }
 
-    String targetFileJava = javaSourceDir + modGroup.toString().replaceAll("\\.", "/") + "/" + mixinPlugin.toString().replaceAll("\\.", "/") + ".java"
-    String targetFileScala = scalaSourceDir + modGroup.toString().replaceAll("\\.", "/") + "/" + mixinPlugin.toString().replaceAll("\\.", "/") + ".scala"
-    String targetFileScalaJava = scalaSourceDir + modGroup.toString().replaceAll("\\.", "/") + "/" + mixinPlugin.toString().replaceAll("\\.", "/") + ".java"
-    String targetFileKotlin = kotlinSourceDir + modGroup.toString().replaceAll("\\.", "/") + "/" + mixinPlugin.toString().replaceAll("\\.", "/") + ".kt"
-    if(!(getFile(targetFileJava).exists() || getFile(targetFileScala).exists() || getFile(targetFileScalaJava).exists() || getFile(targetFileKotlin).exists())) {
-        throw new GradleException("Could not resolve \"mixinPlugin\"! Could not find " + targetFileJava + " or " + targetFileScala + " or " + targetFileScalaJava + " or " + targetFileKotlin)
+    if (!mixinPlugin.isEmpty()) {
+        String targetFileJava = javaSourceDir + modGroup.toString().replaceAll("\\.", "/") + "/" + mixinPlugin.toString().replaceAll("\\.", "/") + ".java"
+        String targetFileScala = scalaSourceDir + modGroup.toString().replaceAll("\\.", "/") + "/" + mixinPlugin.toString().replaceAll("\\.", "/") + ".scala"
+        String targetFileScalaJava = scalaSourceDir + modGroup.toString().replaceAll("\\.", "/") + "/" + mixinPlugin.toString().replaceAll("\\.", "/") + ".java"
+        String targetFileKotlin = kotlinSourceDir + modGroup.toString().replaceAll("\\.", "/") + "/" + mixinPlugin.toString().replaceAll("\\.", "/") + ".kt"
+        if (!(getFile(targetFileJava).exists() || getFile(targetFileScala).exists() || getFile(targetFileScalaJava).exists() || getFile(targetFileKotlin).exists())) {
+            throw new GradleException("Could not resolve \"mixinPlugin\"! Could not find " + targetFileJava + " or " + targetFileScala + " or " + targetFileScalaJava + " or " + targetFileKotlin)
+        }
     }
 }
 
@@ -272,54 +286,31 @@ repositories {
         url = "https://gregtech.overminddl1.com/"
     }
     if(usesMixins.toBoolean() || hasMixinDeps.toBoolean()) {
-        if (useObsoleteSpongeMixins.toBoolean()) {
-            maven {
-                name = "sponge"
-                url = "https://mvn.falsepattern.com/sponge"
-            }
+        maven {
+            name = "sponge"
+            url = "https://mvn.falsepattern.com/releases"
         }
         maven {
-            url = "https://mvn.falsepattern.com/jitpack"
+            name = "sponge2"
+            url = "https://mvn.falsepattern.com/sponge"
         }
     }
 }
 
 dependencies {
     if(usesMixins.toBoolean()) {
-        if (useObsoleteSpongeMixins.toBoolean()) {
-            annotationProcessor("org.ow2.asm:asm-debug-all:5.0.3")
-            annotationProcessor("com.google.guava:guava:24.1.1-jre")
-            annotationProcessor("com.google.code.gson:gson:2.8.6")
-            annotationProcessor("org.spongepowered:mixin:0.8-20200110.181151-15")
-            // using 0.8 to workaround a issue in 0.7 which fails mixin application
-            compile("org.spongepowered:mixin:0.7.11-20180703.121122-1") {
-                // Mixin includes a lot of dependencies that are too up-to-date
-                exclude module: "launchwrapper"
-                exclude module: "guava"
-                exclude module: "gson"
-                exclude module: "commons-io"
-                exclude module: "log4j-core"
-            }
-            compile("com.github.GTNewHorizons:SpongeMixins:1.3.3:dev")
-        } else {
-            compile("com.github.tox1cozZ:mixin-booter-legacy:1.1.2")
-            annotationProcessor("com.github.tox1cozZ:mixin-booter-legacy:1.1.2:processor")
-        }
-    }
-    if(hasMixinDeps.toBoolean()) {
-        if (useObsoleteSpongeMixins.toBoolean()) {
-            runtime("org.spongepowered:mixin:0.7.11-20180703.121122-1") {
-                // Mixin includes a lot of dependencies that are too up-to-date
-                exclude module: "launchwrapper"
-                exclude module: "guava"
-                exclude module: "gson"
-                exclude module: "commons-io"
-                exclude module: "log4j-core"
-            }
-            runtime("com.github.GTNewHorizons:SpongeMixins:1.3.3:dev")
-        } else {
-            runtime("com.github.tox1cozZ:mixin-booter-legacy:1.1.2")
-        }
+        annotationProcessor("org.ow2.asm:asm-debug-all:5.0.3")
+        annotationProcessor("com.google.guava:guava:24.1.1-jre")
+        annotationProcessor("com.google.code.gson:gson:2.8.6")
+        annotationProcessor("com.llamalad7:MixinExtras:0.0.12-gasstation")
+        annotationProcessor("org.spongepowered:mixin:0.8.5-gasstation_2")
+        compile("org.spongepowered:mixin:0.8.5-gasstation_2")
+        compile("com.llamalad7:MixinExtras:0.0.12-gasstation")
+        compile("com.falsepattern:00gasstation-mc1.7.10:0.3.2:dev")
+    } else if(hasMixinDeps.toBoolean()) {
+        runtime("org.spongepowered:mixin:0.8.5-gasstation_2")
+        runtime("com.llamalad7:MixinExtras:0.0.12-gasstation")
+        runtime("com.falsepattern:00gasstation-mc1.7.10:0.3.2:dev")
     }
 }
 
@@ -335,14 +326,14 @@ def mixinSrg = new File(mixinDir, "${mixingConfigRefMap}.srg")
 def mixinRefMap = new File(mixinDir, mixingConfigRefMap)
 
 task generateAssets {
-    if(usesMixins.toBoolean()) {
+    if(usesMixins.toBoolean() && !mixinPlugin.isEmpty()) {
         getFile("/src/main/resources/mixins." + modId + ".json").text = """{
   "required": true,
-  "minVersion": "0.7.11",
+  "minVersion": "0.8.3",
   "package": "${modGroup}.${mixinsPackage}",
   "plugin": "${modGroup}.${mixinPlugin}",
   "refmap": "${mixingConfigRefMap}",
-  "target": "@env(DEFAULT)",
+  "target": "@env(${mixinPluginPreInit.toBoolean() ? "PREINIT": "DEFAULT"})",
   "compatibilityLevel": "JAVA_8"
 }
 
@@ -513,9 +504,16 @@ def getManifestAttributes() {
     }
 
     if(usesMixins.toBoolean()) {
+        String[] configs = [];
+        if (!mixinPlugin.isEmpty()) {
+            configs += ["mixins.${modId}.json"];
+        }
+        if (!mixinConfigs.isEmpty()) {
+            configs += [mixinConfigs];
+        }
         manifestAttributes += [
                 "TweakClass" : "org.spongepowered.asm.launch.MixinTweaker",
-                "MixinConfigs" : "mixins." + modId + ".json" + (mixinPreinitConfig ? "," + mixinPreinitConfig : ""),
+                "MixinConfigs" : String.join(",", configs),
                 "ForceLoadAsMod" : !containsMixinsAndOrCoreModOnly.toBoolean()
         ]
     }
@@ -702,6 +700,100 @@ publishing {
             }
         }
     }
+}
+
+
+if (curseForgeProjectId != "") {
+    apply plugin: 'com.matthewprenger.cursegradle'
+    curseforge {
+        apiKey = System.getenv("CURSEFORGE_TOKEN") ?: ""
+        project {
+            id = curseForgeProjectId
+            changelogType = "text"
+            changelog = project.changelog.replace("{version}", modVersion)
+            releaseType = modVersion.contains("-a") ? "alpha" : modVersion.contains("-b") ? "beta" : "release"
+            addGameVersion project.minecraft.version
+            addGameVersion "Forge"
+            mainArtifact(jar) {
+                displayName = "$modName version: $modVersion"
+            }
+        }
+        options {
+            javaIntegration = false
+            forgeGradleIntegration = false
+        }
+    }
+    if (curseForgeRelations.size() != 0) {
+        String[] deps = curseForgeRelations.split(";")
+        deps.each { dep ->
+            if (dep.size() == 0) {
+                return
+            }
+            String[] parts = dep.split(":")
+            String type = parts[0]
+            String name = parts[1]
+            addCurseForgeRelation(type, name)
+        }
+    }
+    tasks.curseforge.dependsOn(build)
+    tasks.publish.dependsOn(tasks.curseforge)
+}
+
+if (modrinthProjectId != "") {
+    apply plugin: 'com.modrinth.minotaur'
+    modrinth {
+        token = System.getenv("MODRINTH_TOKEN")
+        projectId = modrinthProjectId
+        versionNumber = modVersion
+        versionType = modVersion.contains("-a") ? "alpha" : modVersion.contains("-b") ? "beta" : "release"
+        changelog = project.changelog.replace("{version}", modVersion)
+        uploadFile = jar
+        gameVersions = [project.minecraft.version]
+        loaders = ["forge"]
+    }
+    if (modrinthDependencies.size() != 0) {
+        String[] deps = modrinthDependencies.split(";")
+        deps.each { dep ->
+            if (dep.size() == 0) {
+                return
+            }
+            String[] parts = dep.split(":")
+            String[] qual = parts[0].split("-")
+            String scope = qual[0]
+            String type = qual[1]
+            String name = parts[1]
+            addModrinthDep(scope, type, name)
+        }
+    }
+    tasks.modrinth.dependsOn(build)
+    tasks.publish.dependsOn(tasks.modrinth)
+}
+
+def addModrinthDep(scope, type, name) {
+    com.modrinth.minotaur.dependencies.Dependency dep;
+    if (!(scope in ["required", "optional", "incompatible", "embedded"])) {
+        throw new Exception("Invalid modrinth dependency scope: " + scope)
+    }
+    switch (type) {
+        case "project":
+            dep = new ModDependency(name, scope)
+            break
+        case "version":
+            dep = new VersionDependency(name, scope)
+            break
+        default:
+            throw new Exception("Invalid modrinth dependency type: " + type)
+    }
+    project.modrinth.dependencies.add(dep)
+}
+
+def addCurseForgeRelation(type, name) {
+    if (!(type in ["requiredDependency", "embeddedLibrary", "optionalDependency", "tool", "incompatible"])) {
+        throw new Exception("Invalid CurseForge relation type: " + type)
+    }
+    CurseArtifact artifact = project.curseforge.curseProjects[0].mainArtifact
+    CurseRelation rel = (artifact.curseRelations ?: (artifact.curseRelations = new CurseRelation()))
+    rel."$type"(name)
 }
 
 // Updating
@@ -996,6 +1088,9 @@ def checkPropertyExists(String propertyName) {
 
 def propertyDefaultIfUnset(String propertyName, defaultValue) {
     if (!project.hasProperty(propertyName)) {
+        System.err.println("Your gradle.properties is missing the $propertyName entry. It has been automatically set to \"$defaultValue\" as fallback. You can find all properties and their description here: https://github.com/FalsePattern/ExampleMod1.7.10/blob/main/gradle.properties")
+    }
+    if (!project.hasProperty(propertyName) || project.property(propertyName) == "") {
         project.ext.setProperty(propertyName, defaultValue)
     }
 }
