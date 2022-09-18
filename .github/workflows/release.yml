@@ -31,6 +31,11 @@ jobs:
 
       - name: Build the mod
         run: ./gradlew build
+        
+      - name: Publish to CurseForge
+        run: ./gradlew publish
+        env:
+          CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
 
       - name: Release under current tag
         uses: "marvinpinto/action-automatic-releases@latest"
