@@ -1,4 +1,4 @@
-//version: 1656003793falsepattern50
+//version: 1656003793falsepattern51
 /*
 DO NOT CHANGE THIS FILE!
 
@@ -126,6 +126,7 @@ propertyDefaultIfUnset("mavenArtifactId", "")
 propertyDefaultIfUnset("hasMixinDeps", false)
 propertyDefaultIfUnset("mixinConfigs", "")
 propertyDefaultIfUnset("mixinPluginPreInit", "")
+propertyDefaultIfUnset("mixinPluginMinimumVersion", "0.8.5")
 propertyDefaultIfUnset("remapStubs", false)
 
 propertyDefaultIfUnset("modrinthProjectId", "")
@@ -306,11 +307,11 @@ dependencies {
         annotationProcessor("org.spongepowered:mixin:0.8.5-gasstation_3")
         compile("org.spongepowered:mixin:0.8.5-gasstation_3")
         compile("com.llamalad7:MixinExtras:0.0.12-gasstation")
-        compile("com.falsepattern:00gasstation-mc1.7.10:0.3.2:dev")
+        compile("com.falsepattern:00gasstation-mc1.7.10:0.3.4:dev")
     } else if(hasMixinDeps.toBoolean()) {
         runtime("org.spongepowered:mixin:0.8.5-gasstation_3")
         runtime("com.llamalad7:MixinExtras:0.0.12-gasstation")
-        runtime("com.falsepattern:00gasstation-mc1.7.10:0.3.2:dev")
+        runtime("com.falsepattern:00gasstation-mc1.7.10:0.3.4:dev")
     }
 }
 
@@ -329,7 +330,7 @@ task generateAssets {
     if(usesMixins.toBoolean() && !mixinPlugin.isEmpty()) {
         getFile("/src/main/resources/mixins." + modId + ".json").text = """{
   "required": true,
-  "minVersion": "0.8.3",
+  "minVersion": "${mixinPluginMinimumVersion}",
   "package": "${modGroup}.${mixinsPackage}",
   "plugin": "${modGroup}.${mixinPlugin}",
   "refmap": "${mixingConfigRefMap}",
