@@ -52,7 +52,7 @@ public class ClientProxy extends CommonProxy {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onRenderOverlay(RenderGameOverlayEvent.Text event) {
         Minecraft minecraft = Minecraft.getMinecraft();
-        if(!minecraft.gameSettings.showDebugInfo)
+        if(!minecraft.gameSettings.showDebugInfo || event.left.size() < 1)
             return;
         NetHandlerPlayClient cl = minecraft.getNetHandler();
         if(cl != null) {
