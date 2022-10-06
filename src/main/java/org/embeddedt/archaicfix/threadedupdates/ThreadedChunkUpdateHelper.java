@@ -28,7 +28,7 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
 
     private static final boolean DEBUG_THREADED_UPDATE_FINE_LOG = Boolean.parseBoolean(System.getProperty("archaicfix.debug.enableThreadedUpdateFineLog"));
 
-    /** Used within the scope of WorldRenderer#updateWorld (on the main thread). */
+    /** Used within the scope of WorldRenderer#updateRenderer (on the main thread). */
     public static WorldRenderer lastWorldRenderer;
 
     /** Tasks not yet started */
@@ -222,7 +222,7 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
                             if (block.getMaterial() != Material.air) {
                                 if (!startedTessellator) {
                                     startedTessellator = true;
-                                    tess.startDrawingQuads(); // TODO triangulator compat
+                                    tess.startDrawingQuads();
                                     tess.setTranslation(-wr.posX, -wr.posY, -wr.posZ);
                                 }
 
