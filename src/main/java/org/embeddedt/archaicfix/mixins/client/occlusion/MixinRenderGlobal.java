@@ -333,17 +333,13 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         }
         theWorld.theProfiler.endStartSection("rebuild");
 
-        EntityLivingBase viewEntity = mc.renderViewEntity;
-        float tick = OcclusionHelpers.partialTickTime;
-        double viewX = viewEntity.lastTickPosX + (viewEntity.posX - viewEntity.lastTickPosX) * tick;
-        double viewY = viewEntity.lastTickPosY + (viewEntity.posY - viewEntity.lastTickPosY) * tick;
-        double viewZ = viewEntity.lastTickPosZ + (viewEntity.posZ - viewEntity.lastTickPosZ) * tick;
+        CameraInfo cam = CameraInfo.getInstance();
 
-        boolean cameraMoved = viewX != prevRenderX || viewY != prevRenderY || viewZ != prevRenderZ;
+        boolean cameraMoved = cam.getEyeX() != prevRenderX || cam.getEyeY() != prevRenderY || cam.getEyeZ() != prevRenderZ;
 
-        prevRenderX = viewX;
-        prevRenderY = viewY;
-        prevRenderZ = viewZ;
+        prevRenderX = cam.getEyeX();
+        prevRenderY = cam.getEyeY();
+        prevRenderZ = cam.getEyeZ();
 
         boolean cameraRotated =
                 PreviousActiveRenderInfo.objectX != ActiveRenderInfo.objectX ||
@@ -451,6 +447,9 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
      */
     @Overwrite
     public int sortAndRender(EntityLivingBase view, int pass, double tick) {
+        CameraInfo cam = CameraInfo.getInstance();
+        cam.update(view, tick);
+
         theWorld.theProfiler.startSection("sortchunks");
 
         if (this.mc.gameSettings.renderDistanceChunks != this.renderDistanceChunks && !(this.mc.currentScreen instanceof GuiVideoSettings))
@@ -474,21 +473,21 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         }
 
         theWorld.theProfiler.startSection("reposition_chunks");
-        if (prevChunkSortX != view.chunkCoordX || prevChunkSortY != view.chunkCoordY || prevChunkSortZ != view.chunkCoordZ) {
-            prevChunkSortX = view.chunkCoordX;
-            prevChunkSortY = view.chunkCoordY;
-            prevChunkSortZ = view.chunkCoordZ;
-            markRenderersForNewPosition(MathHelper.floor_double(view.posX), MathHelper.floor_double(view.posY), MathHelper.floor_double(view.posZ));
+        if (prevChunkSortX != cam.getChunkCoordX() || prevChunkSortY != cam.getChunkCoordY() || prevChunkSortZ != cam.getChunkCoordZ()) {
+            prevChunkSortX = cam.getChunkCoordX();
+            prevChunkSortY = cam.getChunkCoordY();
+            prevChunkSortZ = cam.getChunkCoordZ();
+            markRenderersForNewPosition(MathHelper.floor_double(cam.getX()), MathHelper.floor_double(cam.getY()), MathHelper.floor_double(cam.getZ()));
             resortUpdateList = true;
         }
         theWorld.theProfiler.endSection();
 
         if(pass == 1){
             theWorld.theProfiler.startSection("alpha_sort");
-            if(distanceSquared(view.posX, view.posY, view.posZ, prevRenderSortX, prevRenderSortY, prevRenderSortZ) > 1) {
-                prevRenderSortX = view.posX;
-                prevRenderSortY = view.posY;
-                prevRenderSortZ = view.posZ;
+            if(distanceSquared(cam.getX(), cam.getY(), cam.getZ(), prevRenderSortX, prevRenderSortY, prevRenderSortZ) > 1) {
+                prevRenderSortX = cam.getX();
+                prevRenderSortY = cam.getY();
+                prevRenderSortZ = cam.getZ();
 
                 alphaSortProgress = 0;
             }
@@ -519,11 +518,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
     @Overwrite
     @SuppressWarnings("unchecked")
     protected int renderSortedRenderers(int start, int end, int pass, double tick) {
-
-        EntityLivingBase entitylivingbase = mc.renderViewEntity;
-        double xOff = entitylivingbase.lastTickPosX + (entitylivingbase.posX - entitylivingbase.lastTickPosX) * tick;
-        double yOff = entitylivingbase.lastTickPosY + (entitylivingbase.posY - entitylivingbase.lastTickPosY) * tick;
-        double zOff = entitylivingbase.lastTickPosZ + (entitylivingbase.posZ - entitylivingbase.lastTickPosZ) * tick;
+        CameraInfo cam = CameraInfo.getInstance();
 
         RenderList[] allRenderLists = this.allRenderLists;
         for (int i = 0; i < allRenderLists.length; ++i) {
@@ -591,7 +586,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
                         }
                     }
                     renderListIndex = allRenderListsLength++;
-                    allRenderLists[renderListIndex].setupRenderList(rend.posXMinus, rend.posYMinus, rend.posZMinus, xOff, yOff, zOff);
+                    allRenderLists[renderListIndex].setupRenderList(rend.posXMinus, rend.posYMinus, rend.posZMinus, cam.getEyeX(), cam.getEyeY(), cam.getEyeZ());
                 }
 
                 allRenderLists[renderListIndex].addGLRenderList(rend.getGLCallListForPass(pass));
@@ -602,8 +597,8 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         mc.theWorld.theProfiler.endStartSection("call_lists");
 
         {
-            int xSort = MathHelper.floor_double(xOff);
-            int zSort = MathHelper.floor_double(zOff);
+            int xSort = MathHelper.floor_double(cam.getX());
+            int zSort = MathHelper.floor_double(cam.getZ());
             xSort -= xSort & 1023;
             zSort -= zSort & 1023;
             Arrays.sort(allRenderLists, new RenderDistanceSorter(xSort, zSort));

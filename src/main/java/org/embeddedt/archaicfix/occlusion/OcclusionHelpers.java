@@ -188,11 +188,11 @@ public class OcclusionHelpers {
         }
 
         private void seedQueue(Frustrum frustum) {
-            EntityLivingBase view = mc.renderViewEntity;
+            CameraInfo cam = CameraInfo.getInstance();
 
-            int viewX = MathHelper.floor_double(view.posX);
-            int viewY = MathHelper.floor_double(view.posY + view.getEyeHeight());
-            int viewZ = MathHelper.floor_double(view.posZ);
+            int viewX = MathHelper.floor_double(cam.getX());
+            int viewY = MathHelper.floor_double(cam.getY());
+            int viewZ = MathHelper.floor_double(cam.getZ());
 
             theWorld.theProfiler.endStartSection("gather_chunks");
 
