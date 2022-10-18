@@ -341,13 +341,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         prevRenderY = cam.getEyeY();
         prevRenderZ = cam.getEyeZ();
 
-        boolean cameraRotated =
-                PreviousActiveRenderInfo.objectX != ActiveRenderInfo.objectX ||
-                PreviousActiveRenderInfo.objectY != ActiveRenderInfo.objectY ||
-                PreviousActiveRenderInfo.objectZ != ActiveRenderInfo.objectZ ||
-                PreviousActiveRenderInfo.rotationX != ActiveRenderInfo.rotationX ||
-                PreviousActiveRenderInfo.rotationYZ != ActiveRenderInfo.rotationYZ ||
-                PreviousActiveRenderInfo.rotationZ != ActiveRenderInfo.rotationZ;
+        boolean cameraRotated = PreviousActiveRenderInfo.changed();
 
         if(!cameraRotated && !cameraMoved) {
             cameraStaticTime++;
@@ -377,12 +371,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
         int pitch = MathHelper.floor_float(view.rotationPitch + 45) >> 4;
         if (OcclusionHelpers.worker.dirty || cameraRotated || OcclusionHelpers.DEBUG_ALWAYS_RUN_OCCLUSION) {
             OcclusionHelpers.worker.run(true);
-            PreviousActiveRenderInfo.objectX = ActiveRenderInfo.objectX;
-            PreviousActiveRenderInfo.objectY = ActiveRenderInfo.objectY;
-            PreviousActiveRenderInfo.objectZ = ActiveRenderInfo.objectZ;
-            PreviousActiveRenderInfo.rotationX = ActiveRenderInfo.rotationX;
-            PreviousActiveRenderInfo.rotationYZ = ActiveRenderInfo.rotationYZ;
-            PreviousActiveRenderInfo.rotationZ = ActiveRenderInfo.rotationZ;
+            PreviousActiveRenderInfo.update();
         }
         theWorld.theProfiler.endSection();
         cir.setReturnValue(true);
