@@ -1,6 +1,7 @@
 package org.embeddedt.archaicfix;
 
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
+import org.embeddedt.archaicfix.asm.transformer.VampirismTransformer;
 import org.embeddedt.archaicfix.helpers.FastutilHelper;
 
 import java.util.Map;
@@ -10,11 +11,13 @@ import java.util.Map;
 public class ArchaicCore implements IFMLLoadingPlugin {
     static {
         FastutilHelper.load();
+
+        VampirismTransformer.init();
     }
     @Override
     public String[] getASMTransformerClass() {
         return new String[] {
-                //"org.embeddedt.archaicfix.asm.ArchaicTransformer"
+            "org.embeddedt.archaicfix.asm.ArchaicTransformer"
         };
     }
 
