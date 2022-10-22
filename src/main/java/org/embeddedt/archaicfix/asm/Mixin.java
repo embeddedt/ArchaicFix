@@ -85,7 +85,6 @@ public enum Mixin implements IMixin {
     client_core_MixinWorldRenderer(Side.CLIENT, always(), "core.MixinWorldRenderer"),
     client_core_MixinMinecraft(Side.CLIENT, always(), "core.MixinMinecraft"),
     client_core_MixinNetHandlerPlayClient(Side.CLIENT, always(), "core.MixinNetHandlerPlayClient"),
-    client_core_MixinRenderSorter(Side.CLIENT, always(), "core.MixinRenderSorter"),
     client_core_MixinGuiCreateWorld(Side.CLIENT, always(), "core.MixinGuiCreateWorld"),
     client_core_MixinFMLClientHandler(Side.CLIENT, always(), "core.MixinFMLClientHandler"),
     client_core_MixinNetHandlerLoginClient(Side.CLIENT, m -> ArchaicConfig.fixLoginRaceCondition, "core.MixinNetHandlerLoginClient"),

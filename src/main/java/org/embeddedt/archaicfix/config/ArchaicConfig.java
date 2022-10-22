@@ -28,10 +28,6 @@ public class ArchaicConfig {
     @Config.DefaultBoolean(true)
     public static boolean hideDownloadingTerrainScreen;
 
-    @Config.Comment("Improve the sorting of chunk updates, provides a slight improvement to how fast the world renders out to its border. Has no effect if enableOcclusionTweaks is on.")
-    @Config.DefaultBoolean(true)
-    public static boolean improveRenderSortingOrder;
-
     @Config.Comment("Prevents buttons from showing a yellow text color when hovered, as was done in 1.14+.")
     @Config.DefaultBoolean(false)
     public static boolean enableNewButtonAppearance;

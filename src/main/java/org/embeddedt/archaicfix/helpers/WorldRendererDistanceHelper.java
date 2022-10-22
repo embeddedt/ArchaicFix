@@ -14,12 +14,6 @@ public class WorldRendererDistanceHelper {
      * @return an adjusted squared distance of this renderer from the entity
      */
     public static double betterDistanceSquared(Entity e, WorldRenderer instance) {
-        if(ArchaicConfig.improveRenderSortingOrder) {
-            double xDiff = e.posX - instance.posXPlus;
-            double yDiff = e.posY - instance.posYPlus;
-            double zDiff = e.posZ - instance.posZPlus;
-            return (Math.pow(xDiff, 2) + Math.pow(yDiff * Minecraft.getMinecraft().gameSettings.renderDistanceChunks / 2, 2) + Math.pow(zDiff, 2));
-        } else
-            return instance.distanceToEntitySquared(e);
+        return instance.distanceToEntitySquared(e);
     }
 }
