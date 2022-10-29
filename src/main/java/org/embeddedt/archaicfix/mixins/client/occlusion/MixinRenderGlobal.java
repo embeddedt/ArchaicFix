@@ -392,7 +392,8 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
     @Inject(method = "loadRenderers", at = @At("TAIL"))
     private void resetOcclusionWorker(CallbackInfo ci) {
         OcclusionHelpers.updateRendererNeighbors((RenderGlobal)(Object)this, worldRenderers, renderChunksWide, renderChunksDeep, renderChunksTall);
-        OcclusionHelpers.worker.dirty = true;
+        if(OcclusionHelpers.worker != null)
+            OcclusionHelpers.worker.dirty = true;
     }
 
     @Override
