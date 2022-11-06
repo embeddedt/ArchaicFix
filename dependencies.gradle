@@ -37,4 +37,5 @@ dependencies {
     compileOnly(deobfMaven(curseMaven, "curse.maven:mekanism-268560:2475797"))
     compileOnly(deobfMaven(curseMaven, "curse.maven:extrautils-225561:2264383"))
     compileOnly(deobfMaven(curseMaven, "curse.maven:dynamiclights-227874:2337326"))
+    compileOnly(deobfMaven(curseMaven, "curse.maven:divinerpg-363543:2918948"))
 }

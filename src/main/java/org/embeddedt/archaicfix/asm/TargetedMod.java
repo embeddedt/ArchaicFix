@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.function.Predicate;
 
+import static com.falsepattern.lib.mixin.ITargetedMod.PredicateHelpers.contains;
 import static com.falsepattern.lib.mixin.ITargetedMod.PredicateHelpers.startsWith;
 
 @RequiredArgsConstructor
@@ -25,7 +26,8 @@ public enum TargetedMod implements ITargetedMod {
     MEKANISM("Mekanism", false, startsWith("mekanism")),
     BOTANIA("Botania", false, startsWith("botania+").or(startsWith("botania-")).or(startsWith("botania "))),
     COFHCORE("CoFHCore", false, startsWith("cofhcore")),
-    EXTRAUTILS("ExtraUtilities", false, startsWith("extrautilities"))
+    EXTRAUTILS("ExtraUtilities", false, startsWith("extrautilities")),
+    DIVINERPG("DivineRPG", false, contains("divinerpg"))
     ;
 
     @Getter
