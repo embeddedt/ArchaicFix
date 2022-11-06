@@ -88,6 +88,8 @@ public enum Mixin implements IMixin {
     client_core_MixinGuiCreateWorld(Side.CLIENT, always(), "core.MixinGuiCreateWorld"),
     client_core_MixinFMLClientHandler(Side.CLIENT, always(), "core.MixinFMLClientHandler"),
     client_core_MixinNetHandlerLoginClient(Side.CLIENT, m -> ArchaicConfig.fixLoginRaceCondition, "core.MixinNetHandlerLoginClient"),
+    client_core_MixinSplashProgress(Side.CLIENT, always(), "core.MixinSplashProgress"),
+    client_core_AccessorSplashProgress(Side.CLIENT, always(), "core.AccessorSplashProgress"),
     client_gt6_MixinGT_API_Proxy_Client(Side.CLIENT, require(TargetedMod.GREGTECH6), "gt6.MixinGT_API_Proxy_Client"),
     client_lighting_MixinMinecraft(Side.CLIENT, always(), "lighting.MixinMinecraft"),
     client_lighting_MixinWorld(Side.CLIENT, always(), "lighting.MixinWorld"),
