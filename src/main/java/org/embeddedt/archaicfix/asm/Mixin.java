@@ -15,6 +15,7 @@ import static com.falsepattern.lib.mixin.IMixin.PredicateHelpers.*;
 public enum Mixin implements IMixin {
     // COMMON MIXINS
     common_chickenchunks_MixinPlayerChunkViewerManager(Side.COMMON, require(TargetedMod.CHICKENCHUNKS), "chickenchunks.MixinPlayerChunkViewerManager"),
+    common_core_AccessorEntityLiving(Side.COMMON, always(), "core.AccessorEntityLiving"),
     common_core_MixinEntityPlayerMP(Side.COMMON, always(), "core.MixinEntityPlayerMP"),
     common_core_MixinWorldServer(Side.COMMON, always(), "core.MixinWorldServer"),
     common_core_MixinMapGenStructure(Side.COMMON, always(), "core.MixinMapGenStructure"),

@@ -2,10 +2,12 @@ package org.embeddedt.archaicfix.mixins.common.core;
 
 import com.google.common.collect.ImmutableSet;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import it.unimi.dsi.fastutil.longs.LongCollection;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -98,13 +100,13 @@ public abstract class MixinWorld implements IArchaicWorld {
     private void skipUpdateIfOptimizing(Entity entity, boolean force, CallbackInfo ci, int chunkX, int chunkZ, boolean isInForcedChunk) {
         if(!ArchaicConfig.optimizeEntityTicking)
             return;
+        if (isRemote || isInForcedChunk || !(entity instanceof EntityLivingBase) || entity instanceof EntityPlayer || !entity.addedToChunk) {
+            return;
+        }
         if(entityOptimizationIgnoreSet == null)
             entityOptimizationIgnoreSet = ImmutableSet.copyOf(ArchaicConfig.optimizeEntityTickingIgnoreList);
         if(entityOptimizationIgnoreSet.contains(EntityList.getEntityString(entity)))
             return;
-        if (isInForcedChunk || !(entity instanceof EntityLivingBase) || entity instanceof EntityPlayer) {
-            return;
-        }
         double finalDist = Double.MAX_VALUE;
         for(EntityPlayer player : (List<EntityPlayer>)entity.worldObj.playerEntities) {
             finalDist = Math.min(finalDist, player.getDistanceSq(entity.posX, entity.posY, entity.posZ));
@@ -112,6 +114,10 @@ public abstract class MixinWorld implements IArchaicWorld {
                 break;
         }
         if(((EntityLivingBase)entity).deathTime <= 0 && finalDist > ArchaicConfig.optimizeEntityTickingDistance) {
+            if(entity instanceof EntityLiving && ((AccessorEntityLiving)entity).invokeCanDespawn()) {
+                /* Despawn even if outside the ticking range */
+                ((AccessorEntityLiving)entity).invokeDespawnEntity();
+            }
             ci.cancel();
         }
     }

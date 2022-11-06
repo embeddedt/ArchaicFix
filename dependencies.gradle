@@ -1,7 +1,7 @@
 // Add your dependencies here
 
 dependencies {
-    compileOnly("it.unimi.dsi:fastutil:8.5.8")
+    compile("it.unimi.dsi:fastutil:8.5.8")
     // Provides deobf support like in FG2
     compileOnly('com.github.GTNewHorizons:CodeChickenLib:1.1.5.3:dev')
     compileOnly('com.github.GTNewHorizons:CodeChickenCore:1.1.3:dev')
@@ -38,4 +38,5 @@ dependencies {
     compileOnly(deobfMaven(curseMaven, "curse.maven:extrautils-225561:2264383"))
     compileOnly(deobfMaven(curseMaven, "curse.maven:dynamiclights-227874:2337326"))
     compileOnly(deobfMaven(curseMaven, "curse.maven:divinerpg-363543:2918948"))
+    runtimeOnly(deobfMaven(curseMaven, "curse.maven:xaerosminimap-263420:3876755"))
 }
