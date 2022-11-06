@@ -1,7 +1,7 @@
 [
 {
   "modid": "archaicfix",
-  "name": "Archaic Fix",
+  "name": "ArchaicFix",
   "description": "Swiss army knife of bugfixes for 1.7.",
   "version": "${modVersion}",
   "mcversion": "${minecraftVersion}",
