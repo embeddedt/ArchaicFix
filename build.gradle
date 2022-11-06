@@ -1,4 +1,4 @@
-//version: 1656003793falsepattern51
+//version: 1656003793falsepattern54
 /*
 DO NOT CHANGE THIS FILE!
 
@@ -48,7 +48,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.github.GTNewHorizons:ForgeGradle:1.2.7'
+        classpath 'com.github.GTNewHorizons:ForgeGradle:1.2.11'
         classpath 'com.falsepattern:jtweaker:0.2.1'
     }
 }
@@ -133,7 +133,7 @@ propertyDefaultIfUnset("modrinthProjectId", "")
 propertyDefaultIfUnset("modrinthDependencies", "")
 propertyDefaultIfUnset("curseForgeProjectId", "")
 propertyDefaultIfUnset("curseForgeRelations", "")
-propertyDefaultIfUnset("changelog", "No changelog URL was provided.")
+propertyDefaultIfUnset("changelog", "")
 
 propertyDefaultIfUnset("remoteMappings", "https://raw.githubusercontent.com/MinecraftForge/FML/1.7.10/conf/")
 propertyDefaultIfUnset("mappingsChannel", "stable")
@@ -303,15 +303,15 @@ dependencies {
         annotationProcessor("org.ow2.asm:asm-debug-all:5.0.3")
         annotationProcessor("com.google.guava:guava:24.1.1-jre")
         annotationProcessor("com.google.code.gson:gson:2.8.6")
-        annotationProcessor("com.llamalad7:MixinExtras:0.0.12-gasstation")
-        annotationProcessor("org.spongepowered:mixin:0.8.5-gasstation_3")
-        compile("org.spongepowered:mixin:0.8.5-gasstation_3")
-        compile("com.llamalad7:MixinExtras:0.0.12-gasstation")
-        compile("com.falsepattern:00gasstation-mc1.7.10:0.3.4:dev")
+        annotationProcessor("com.llamalad7:MixinExtras:0.1.0-gasstation")
+        annotationProcessor("org.spongepowered:mixin:0.8.5-gasstation_5")
+        compile("org.spongepowered:mixin:0.8.5-gasstation_5")
+        compile("com.llamalad7:MixinExtras:0.1.0-gasstation")
+        compile("com.falsepattern:00gasstation-mc1.7.10:0.4.0:dev")
     } else if(hasMixinDeps.toBoolean()) {
-        runtime("org.spongepowered:mixin:0.8.5-gasstation_3")
-        runtime("com.llamalad7:MixinExtras:0.0.12-gasstation")
-        runtime("com.falsepattern:00gasstation-mc1.7.10:0.3.4:dev")
+        runtime("com.llamalad7:MixinExtras:0.1.0-gasstation")
+        runtime("org.spongepowered:mixin:0.8.5-gasstation_5")
+        runtime("com.falsepattern:00gasstation-mc1.7.10:0.4.0:dev")
     }
 }
 
@@ -703,15 +703,24 @@ publishing {
     }
 }
 
+if (project.changelog == "") {
+    File changelogFile = new File(System.getenv("CHANGELOG_FILE") ?: "CHANGELOG.md")
+    if (changelogFile.exists()) {
+        project.changelog = changelogFile.getText("UTF-8")
+    } else {
+        project.changelog = "No changelog was provided."
+    }
+}
+project.changelog = project.changelog.replace("{version}", modVersion)
 
-if (curseForgeProjectId != "") {
+if (curseForgeProjectId != "" && System.getenv("CURSEFORGE_TOKEN") != null) {
     apply plugin: 'com.matthewprenger.cursegradle'
     curseforge {
-        apiKey = System.getenv("CURSEFORGE_TOKEN") ?: ""
+        apiKey = System.getenv("CURSEFORGE_TOKEN")
         project {
             id = curseForgeProjectId
-            changelogType = "text"
-            changelog = project.changelog.replace("{version}", modVersion)
+            changelogType = "markdown"
+            changelog = project.changelog
             releaseType = modVersion.contains("-a") ? "alpha" : modVersion.contains("-b") ? "beta" : "release"
             addGameVersion project.minecraft.version
             addGameVersion "Forge"
@@ -736,18 +745,22 @@ if (curseForgeProjectId != "") {
             addCurseForgeRelation(type, name)
         }
     }
+
+    if (usesMixins.toBoolean()) {
+        addCurseForgeRelation("requiredDependency", "gasstation")
+    }
     tasks.curseforge.dependsOn(build)
     tasks.publish.dependsOn(tasks.curseforge)
 }
 
-if (modrinthProjectId != "") {
+if (modrinthProjectId != "" && System.getenv("MODRINTH_TOKEN") != null) {
     apply plugin: 'com.modrinth.minotaur'
     modrinth {
         token = System.getenv("MODRINTH_TOKEN")
         projectId = modrinthProjectId
         versionNumber = modVersion
         versionType = modVersion.contains("-a") ? "alpha" : modVersion.contains("-b") ? "beta" : "release"
-        changelog = project.changelog.replace("{version}", modVersion)
+        changelog = project.changelog
         uploadFile = jar
         gameVersions = [project.minecraft.version]
         loaders = ["forge"]
@@ -765,6 +778,9 @@ if (modrinthProjectId != "") {
             String name = parts[1]
             addModrinthDep(scope, type, name)
         }
+    }
+    if (usesMixins.toBoolean()) {
+        addModrinthDep("required", "project", "cdeAhgfp")
     }
     tasks.modrinth.dependsOn(build)
     tasks.publish.dependsOn(tasks.modrinth)
@@ -1098,4 +1114,8 @@ def propertyDefaultIfUnset(String propertyName, defaultValue) {
 
 def getFile(String relativePath) {
     return new File(projectDir, relativePath)
+}
+
+if(file("addon_final.gradle").exists()) {
+    apply from: "addon_final.gradle"
 }
