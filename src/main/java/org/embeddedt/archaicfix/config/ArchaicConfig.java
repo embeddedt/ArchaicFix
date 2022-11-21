@@ -165,4 +165,8 @@ public class ArchaicConfig {
     @Config.Comment("Show memory usage during game load.")
     @Config.DefaultBoolean(true)
     public static boolean showSplashMemoryBar;
+
+    @Config.Comment("Tweak F3 screen to be closer to modern versions.")
+    @Config.DefaultBoolean(true)
+    public static boolean modernizeF3Screen;
 }

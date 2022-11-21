@@ -1,16 +1,22 @@
 package org.embeddedt.archaicfix.proxy;
 
+import com.google.common.base.Objects;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.server.integrated.IntegratedServer;
+import net.minecraft.util.Direction;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.sound.SoundLoadEvent;
@@ -21,6 +27,8 @@ import org.embeddedt.archaicfix.config.ArchaicConfig;
 import org.embeddedt.archaicfix.helpers.SoundDeviceThread;
 import org.embeddedt.archaicfix.occlusion.OcclusionHelpers;
 import zone.rong.loliasm.api.LoliStringPool;
+
+import java.util.Locale;
 
 public class ClientProxy extends CommonProxy {
     SoundDeviceThread soundThread = null;
@@ -51,25 +59,87 @@ public class ClientProxy extends CommonProxy {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onRenderOverlay(RenderGameOverlayEvent.Text event) {
-        Minecraft minecraft = Minecraft.getMinecraft();
-        if(!minecraft.gameSettings.showDebugInfo || event.left.size() < 1)
+        Minecraft mc = Minecraft.getMinecraft();
+        if(event.isCanceled() || !mc.gameSettings.showDebugInfo || event.left.size() < 1)
             return;
-        NetHandlerPlayClient cl = minecraft.getNetHandler();
+        NetHandlerPlayClient cl = mc.getNetHandler();
         if(cl != null) {
-            IntegratedServer srv = minecraft.getIntegratedServer();
+            IntegratedServer srv = mc.getIntegratedServer();
 
             if (srv != null) {
                 String s = String.format("Integrated server @ %.0f ms ticks", lastIntegratedTickTime);
                 event.left.add(1, s);
             }
         }
-        if(ArchaicConfig.showBlockDebugInfo && minecraft.objectMouseOver != null && minecraft.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+        if(ArchaicConfig.showBlockDebugInfo && mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
             if(event.right.get(event.right.size()-1).length() > 0)
                 event.right.add("");
-            Block block = minecraft.theWorld.getBlock(minecraft.objectMouseOver.blockX, minecraft.objectMouseOver.blockY, minecraft.objectMouseOver.blockZ);
-            int meta = minecraft.theWorld.getBlockMetadata(minecraft.objectMouseOver.blockX, minecraft.objectMouseOver.blockY, minecraft.objectMouseOver.blockZ);
+            Block block = mc.theWorld.getBlock(mc.objectMouseOver.blockX, mc.objectMouseOver.blockY, mc.objectMouseOver.blockZ);
+            int meta = mc.theWorld.getBlockMetadata(mc.objectMouseOver.blockX, mc.objectMouseOver.blockY, mc.objectMouseOver.blockZ);
             event.right.add(Block.blockRegistry.getNameForObject(block));
             event.right.add("meta: " + meta);
+        }
+        if(ArchaicConfig.modernizeF3Screen) {
+            boolean hasReplacedXYZ = false;
+            for(int i = 0; i < event.left.size() - 4; i++) {
+                /* These checks should not be inefficient as most of the time the first one will already fail */
+                if(!hasReplacedXYZ && Objects.firstNonNull(event.left.get(i), "").startsWith("x:")
+                        && Objects.firstNonNull(event.left.get(i + 1), "").startsWith("y:")
+                        && Objects.firstNonNull(event.left.get(i + 2), "").startsWith("z:")
+                        && Objects.firstNonNull(event.left.get(i + 3), "").startsWith("f:")) {
+                    hasReplacedXYZ = true;
+                    int heading = MathHelper.floor_double((double)(mc.thePlayer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
+                    String heading_str;
+                    switch(heading) {
+                        case 0:
+                            heading_str = "Towards positive Z";
+                            break;
+                        case 1:
+                            heading_str = "Towards negative X";
+                            break;
+                        case 2:
+                            heading_str = "Towards negative Z";
+                            break;
+                        case 3:
+                            heading_str = "Towards positive X";
+                            break;
+                        default:
+                            throw new RuntimeException();
+                    }
+                    event.left.set(i, String.format("XYZ: %.3f / %.5f / %.3f", mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ));
+                    int blockX = MathHelper.floor_double(mc.thePlayer.posX);
+                    int blockY = MathHelper.floor_double(mc.thePlayer.posY);
+                    int blockZ = MathHelper.floor_double(mc.thePlayer.posZ);
+                    event.left.set(i + 1, String.format("Block: %d %d %d [%d %d %d]", blockX, blockY, blockZ, blockX & 15, blockY & 15, blockZ & 15));
+                    event.left.set(i + 2, String.format("Chunk: %d %d %d", blockX >> 4, blockY & 15, blockZ >> 4));
+                    event.left.set(i + 3, String.format("Facing: %s (%s) (%.1f / %.1f)", Direction.directions[heading].toLowerCase(Locale.ROOT), heading_str, MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw), MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationPitch)));
+                }
+            }
+            event.setCanceled(true);
+            /* render ourselves */
+            FontRenderer fontrenderer = mc.fontRenderer;
+            int fontColor = 0xe0e0e0;
+            int rectColor = 0x90505050;
+            for (int x = 0; x < event.left.size(); x++)
+            {
+                String msg = event.left.get(x);
+                if (msg == null) continue;
+                int strX = 2;
+                int strY = 2 + x * fontrenderer.FONT_HEIGHT;
+                Gui.drawRect(1, strY - 1, strX + fontrenderer.getStringWidth(msg) + 1, strY + fontrenderer.FONT_HEIGHT - 1, rectColor);
+                fontrenderer.drawString(msg, strX, strY, fontColor);
+            }
+            int width = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight).getScaledWidth();
+            for (int x = 0; x < event.right.size(); x++)
+            {
+                String msg = event.right.get(x);
+                if (msg == null) continue;
+                int w = fontrenderer.getStringWidth(msg);
+                int strX = width - w - 2;
+                int strY = 2 + x * fontrenderer.FONT_HEIGHT;
+                Gui.drawRect(strX - 1, strY - 1, strX + w + 1, strY + fontrenderer.FONT_HEIGHT - 1, rectColor);
+                fontrenderer.drawString(msg, strX, strY, fontColor);
+            }
         }
     }
 
