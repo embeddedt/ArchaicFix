@@ -38,7 +38,7 @@ public enum Mixin implements IMixin {
     common_core_MixinWorld(Side.COMMON, always(), "core.MixinWorld"),
     common_core_MixinEntityTrackerEntry(Side.COMMON, always(), "core.MixinEntityTrackerEntry"),
     common_core_MixinEntityXPOrb(Side.COMMON, always(), "core.MixinEntityXPOrb"),
-    common_core_MixinEntityItem(Side.COMMON, m -> ArchaicConfig.itemLagReduction, "core.MixinEntityItem"),
+    common_core_MixinEntityItem(Side.COMMON, avoid(TargetedMod.SHIPSMOD).and(m -> ArchaicConfig.itemLagReduction), "core.MixinEntityItem"),
     common_core_MixinEntity(Side.COMMON, always(), "core.MixinEntity"),
     common_core_MixinForgeChunkManager(Side.COMMON, always(), "core.MixinForgeChunkManager"),
     common_core_MixinChunk(Side.COMMON, always(), "core.MixinChunk"),

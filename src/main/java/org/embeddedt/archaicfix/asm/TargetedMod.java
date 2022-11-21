@@ -27,7 +27,8 @@ public enum TargetedMod implements ITargetedMod {
     BOTANIA("Botania", false, startsWith("botania+").or(startsWith("botania-")).or(startsWith("botania "))),
     COFHCORE("CoFHCore", false, startsWith("cofhcore")),
     EXTRAUTILS("ExtraUtilities", false, startsWith("extrautilities")),
-    DIVINERPG("DivineRPG", false, contains("divinerpg"))
+    DIVINERPG("DivineRPG", false, contains("divinerpg")),
+    SHIPSMOD("ShipsMod", false, startsWith("shipsmod"))
     ;
 
     @Getter
