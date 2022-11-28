@@ -24,6 +24,7 @@ import net.minecraftforge.client.event.sound.SoundSetupEvent;
 import net.minecraftforge.common.MinecraftForge;
 import org.embeddedt.archaicfix.ArchaicLogger;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
+import org.embeddedt.archaicfix.helpers.BuiltInResourcePack;
 import org.embeddedt.archaicfix.helpers.SoundDeviceThread;
 import org.embeddedt.archaicfix.occlusion.OcclusionHelpers;
 import zone.rong.loliasm.api.LoliStringPool;
@@ -42,6 +43,9 @@ public class ClientProxy extends CommonProxy {
         MinecraftForge.EVENT_BUS.register(new LoliStringPool.EventHandler());
         MinecraftForge.EVENT_BUS.register(this);
         FMLCommonHandler.instance().bus().register(this);
+        if(ArchaicConfig.modernizeTextures) {
+            BuiltInResourcePack.register("vanilla_overrides");
+        }
     }
 
     float lastIntegratedTickTime;
