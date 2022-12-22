@@ -38,10 +38,12 @@ public class FixHelper {
     @SubscribeEvent
     public void onOreRegister(OreDictionary.OreRegisterEvent event) {
         for(IAcceleratedRecipe recipe : recipesHoldingPotentialItems) {
-           recipe.invalidatePotentialItems();
+            if(recipe != null)
+                recipe.invalidatePotentialItems();
         }
         recipesHoldingPotentialItems.clear();
-        ((IFasterCraftingManager)CraftingManager.getInstance()).clearRecipeCache();
+        if(CraftingManager.getInstance() != null)
+            ((IFasterCraftingManager)CraftingManager.getInstance()).clearRecipeCache();
         OreDictIterator.clearCache(event.Name);
     }
 
