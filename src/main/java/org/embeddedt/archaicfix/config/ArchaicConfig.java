@@ -173,4 +173,8 @@ public class ArchaicConfig {
     @Config.Comment("Replace tall grass texture with modern version.")
     @Config.DefaultBoolean(false)
     public static boolean modernizeTextures;
+
+    @Config.Comment("Remove JourneyMap debug feature.")
+    @Config.DefaultBoolean(true)
+    public static boolean removeJourneymapDebug;
 }

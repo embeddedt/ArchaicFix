@@ -28,7 +28,8 @@ public enum TargetedMod implements ITargetedMod {
     COFHCORE("CoFHCore", false, startsWith("cofhcore")),
     EXTRAUTILS("ExtraUtilities", false, startsWith("extrautilities")),
     DIVINERPG("DivineRPG", false, contains("divinerpg")),
-    SHIPSMOD("ShipsMod", false, startsWith("shipsmod"))
+    SHIPSMOD("ShipsMod", false, startsWith("shipsmod")),
+    JOURNEYMAP("JourneyMap", false, startsWith("journeymap"))
     ;
 
     @Getter

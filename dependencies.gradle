@@ -38,5 +38,6 @@ dependencies {
     compileOnly(deobfMaven(curseMaven, "curse.maven:extrautils-225561:2264383"))
     compileOnly(deobfMaven(curseMaven, "curse.maven:dynamiclights-227874:2337326"))
     compileOnly(deobfMaven(curseMaven, "curse.maven:divinerpg-363543:2918948"))
+    compileOnly(deobfMaven(curseMaven, "curse.maven:journeymap-32274:2367915"))
     runtimeOnly(deobfMaven(curseMaven, "curse.maven:xaerosminimap-263420:3876755"))
 }
