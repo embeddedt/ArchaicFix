@@ -175,6 +175,6 @@ public class ArchaicConfig {
     public static boolean modernizeTextures;
 
     @Config.Comment("Remove JourneyMap debug feature.")
-    @Config.DefaultBoolean(true)
+    @Config.DefaultBoolean(false)
     public static boolean removeJourneymapDebug;
 }
