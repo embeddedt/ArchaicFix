@@ -28,7 +28,8 @@ public enum TargetedMod implements ITargetedMod {
     COFHCORE("CoFHCore", false, startsWith("cofhcore")),
     EXTRAUTILS("ExtraUtilities", false, startsWith("extrautilities")),
     DIVINERPG("DivineRPG", false, contains("divinerpg")),
-    SHIPSMOD("ShipsMod", false, startsWith("shipsmod"))
+    SHIPSMOD("ShipsMod", false, startsWith("shipsmod")),
+    AM2("ArsMagica2", false, startsWith("1.7.10_AM2-" /* upstream */).or(startsWith("AM2-" /* Lost Era */)))
     ;
 
     @Getter
