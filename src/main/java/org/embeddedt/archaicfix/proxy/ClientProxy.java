@@ -110,9 +110,9 @@ public class ClientProxy extends CommonProxy {
                         default:
                             throw new RuntimeException();
                     }
-                    event.left.set(i, String.format("XYZ: %.3f / %.5f / %.3f", mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ));
+                    event.left.set(i, String.format("XYZ: %.3f / %.5f / %.3f", mc.thePlayer.posX, mc.thePlayer.boundingBox.minY, mc.thePlayer.posZ));
                     int blockX = MathHelper.floor_double(mc.thePlayer.posX);
-                    int blockY = MathHelper.floor_double(mc.thePlayer.posY);
+                    int blockY = MathHelper.floor_double(mc.thePlayer.boundingBox.minY);
                     int blockZ = MathHelper.floor_double(mc.thePlayer.posZ);
                     event.left.set(i + 1, String.format("Block: %d %d %d [%d %d %d]", blockX, blockY, blockZ, blockX & 15, blockY & 15, blockZ & 15));
                     event.left.set(i + 2, String.format("Chunk: %d %d %d", blockX >> 4, blockY & 15, blockZ >> 4));
