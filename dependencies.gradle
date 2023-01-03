@@ -40,4 +40,5 @@ dependencies {
     compileOnly(deobfMaven(curseMaven, "curse.maven:divinerpg-363543:2918948"))
     compileOnly(deobfMaven(curseMaven, "curse.maven:journeymap-32274:2367915"))
     runtimeOnly(deobfMaven(curseMaven, "curse.maven:xaerosminimap-263420:3876755"))
+    compileOnly(deobfMaven(curseMaven, "curse.maven:ars-magica-2-67313:2280862"))
 }

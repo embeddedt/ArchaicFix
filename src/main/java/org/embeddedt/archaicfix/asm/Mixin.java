@@ -130,7 +130,9 @@ public enum Mixin implements IMixin {
     common_extrautils_MixinItemDivisionSigil(Side.COMMON, require(TargetedMod.EXTRAUTILS), "extrautils.MixinItemDivisionSigil"),
     common_extrautils_MixinTileEntityTrashCan(Side.COMMON, require(TargetedMod.EXTRAUTILS), "extrautils.MixinTileEntityTrashCan"),
 
-    client_journeymap_MixinTileDrawStep(Side.CLIENT, require(TargetedMod.JOURNEYMAP).and(m -> ArchaicConfig.removeJourneymapDebug), "journeymap.MixinTileDrawStep")
+    client_journeymap_MixinTileDrawStep(Side.CLIENT, require(TargetedMod.JOURNEYMAP).and(m -> ArchaicConfig.removeJourneymapDebug), "journeymap.MixinTileDrawStep"),
+
+    common_am2_MixinPlayerTracker(Side.COMMON, require(TargetedMod.AM2), "am2.MixinPlayerTracker"),
 
     // The modFilter argument is a predicate, so you can also use the .and(), .or(), and .negate() methods to mix and match multiple predicates.
     ;
