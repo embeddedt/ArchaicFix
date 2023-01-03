@@ -128,6 +128,7 @@ public enum Mixin implements IMixin {
     common_extrautils_MixinEventHandlerSiege(Side.COMMON, require(TargetedMod.EXTRAUTILS), "extrautils.MixinEventHandlerSiege"),
     common_extrautils_MixinEventHandlerServer(Side.COMMON, require(TargetedMod.EXTRAUTILS), "extrautils.MixinEventHandlerServer"),
     common_extrautils_MixinItemDivisionSigil(Side.COMMON, require(TargetedMod.EXTRAUTILS), "extrautils.MixinItemDivisionSigil"),
+    common_extrautils_MixinTileEntityTrashCan(Side.COMMON, require(TargetedMod.EXTRAUTILS), "extrautils.MixinTileEntityTrashCan"),
 
     client_journeymap_MixinTileDrawStep(Side.CLIENT, require(TargetedMod.JOURNEYMAP).and(m -> ArchaicConfig.removeJourneymapDebug), "journeymap.MixinTileDrawStep")
 
