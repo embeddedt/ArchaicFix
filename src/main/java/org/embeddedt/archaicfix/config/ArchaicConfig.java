@@ -181,4 +181,8 @@ public class ArchaicConfig {
     @Config.Comment("When true, the Phosphor backport is enabled. Disabling is not recommended as it will generally add lag.")
     @Config.DefaultBoolean(true)
     public static boolean enablePhosphor;
+
+    @Config.Comment("When true, dropped items will always render as though fancy graphics are enabled.")
+    @Config.DefaultBoolean(false)
+    public static boolean forceFancyItems;
 }
