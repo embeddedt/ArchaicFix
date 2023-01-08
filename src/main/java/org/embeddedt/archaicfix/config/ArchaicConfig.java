@@ -134,10 +134,6 @@ public class ArchaicConfig {
     @Config.DefaultStringList({ "Wither", "EnderDragon" })
     public static String[] optimizeEntityTickingIgnoreList;
 
-    @Config.Comment("Prevent the integrated server from loading chunks when it doesn't necessarily need to. Can greatly improve performance on teleports, etc at the cost of slower chunkloading.")
-    @Config.DefaultBoolean(false)
-    public static boolean lazyChunkLoading;
-
     @Config.Comment("Disable OptiFine's version checker.")
     @Config.DefaultBoolean(true)
     public static boolean disableOFVersionCheck;

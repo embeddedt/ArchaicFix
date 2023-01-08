@@ -36,14 +36,4 @@ public abstract class MixinWorldServer extends World {
             cir.setReturnValue(Math.min(cir.getReturnValue(), ArchaicConfig.optimizeBlockTickingDistance));
         }
     }
-
-    @Redirect(method = "func_147456_g", at = @At(value = "INVOKE", target = "Ljava/util/Set;iterator()Ljava/util/Iterator;"))
-    private Iterator getOnlyLoadedActiveChunks(Set instance) {
-        if(ArchaicConfig.lazyChunkLoading)
-            return Iterators.filter((Iterator<ChunkCoordIntPair>)instance.iterator(), pair ->
-                this.theChunkProviderServer.chunkExists(pair.chunkXPos, pair.chunkZPos)
-            );
-        else
-            return instance.iterator();
-    }
 }

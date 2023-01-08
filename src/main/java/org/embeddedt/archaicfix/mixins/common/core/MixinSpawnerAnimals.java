@@ -34,17 +34,4 @@ public class MixinSpawnerAnimals {
         }
         return false;
     }
-
-    @Inject(method = "findChunksForSpawning", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/WorldServer;getSpawnPoint()Lnet/minecraft/util/ChunkCoordinates;", ordinal = 0))
-    private void removeUnloadedChunks(WorldServer p_77192_1_, boolean p_77192_2_, boolean p_77192_3_, boolean p_77192_4_, CallbackInfoReturnable<Integer> cir) {
-        if(!ArchaicConfig.lazyChunkLoading)
-            return;
-        Iterator<ChunkCoordIntPair> eligibleChunks = this.eligibleChunksForSpawning.keySet().iterator();
-        IChunkProvider prov = p_77192_1_.getChunkProvider();
-        while(eligibleChunks.hasNext()) {
-            ChunkCoordIntPair pair = eligibleChunks.next();
-            if(!prov.chunkExists(pair.chunkXPos, pair.chunkZPos))
-                eligibleChunks.remove();
-        }
-    }
 }

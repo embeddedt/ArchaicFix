@@ -47,7 +47,6 @@ public enum Mixin implements IMixin {
     common_core_MixinChunkProviderHell(Side.COMMON, always(), "core.MixinChunkProviderHell"),
     common_core_MixinASMData(Side.COMMON, always(), "core.MixinASMData"),
     common_core_MixinModCandidate(Side.COMMON, avoid(TargetedMod.COFHCORE), "core.MixinModCandidate"),
-    common_core_MixinChunkIOExecutor(Side.COMMON, avoid(TargetedMod.COFHCORE), "core.MixinChunkIOExecutor"),
     common_core_MixinNetworkDispatcher(Side.COMMON, m -> ArchaicConfig.fixLoginRaceCondition, "core.MixinNetworkDispatcher"),
     common_core_MixinNetworkManager(Side.COMMON, m -> ArchaicConfig.fixLoginRaceCondition, "core.MixinNetworkManager"),
     common_core_MixinEmbeddedChannel(Side.COMMON, m -> ArchaicConfig.fixLoginRaceCondition, "core.MixinEmbeddedChannel"),
