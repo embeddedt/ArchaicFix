@@ -9,6 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.enchantment.Enchantment;
@@ -18,10 +19,12 @@ import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.sound.SoundLoadEvent;
 import net.minecraftforge.client.event.sound.SoundSetupEvent;
 import net.minecraftforge.common.MinecraftForge;
+import org.embeddedt.archaicfix.ArchaicFix;
 import org.embeddedt.archaicfix.ArchaicLogger;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
 import org.embeddedt.archaicfix.helpers.BuiltInResourcePack;
@@ -29,6 +32,7 @@ import org.embeddedt.archaicfix.helpers.SoundDeviceThread;
 import org.embeddedt.archaicfix.occlusion.OcclusionHelpers;
 import zone.rong.loliasm.api.LoliStringPool;
 
+import java.lang.management.ManagementFactory;
 import java.util.Locale;
 
 public class ClientProxy extends CommonProxy {
@@ -58,6 +62,16 @@ public class ClientProxy extends CommonProxy {
                 lastIntegratedTickTime = lastIntegratedTickTime * 0.8F + (float)currentTickTime / 1000000.0F * 0.2F;
             } else
                 lastIntegratedTickTime = 0;
+        }
+    }
+
+    private float gameStartTime = -1;
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onGuiOpen(GuiOpenEvent event) {
+        if(!event.isCanceled() && event.gui instanceof GuiMainMenu && gameStartTime == -1) {
+            gameStartTime = ManagementFactory.getRuntimeMXBean().getUptime() / 1000f;
+            ArchaicLogger.LOGGER.info("The game loaded in " + gameStartTime + " seconds.");
         }
     }
 
