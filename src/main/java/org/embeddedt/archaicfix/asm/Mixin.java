@@ -56,13 +56,13 @@ public enum Mixin implements IMixin {
     common_gt6_MixinAdvancedCraftingXToY(Side.COMMON, require(TargetedMod.GREGTECH6), "gt6.MixinAdvancedCraftingXToY"),
     common_gt6_MixinGT6_Main(Side.COMMON, require(TargetedMod.GREGTECH6), "gt6.MixinGT6_Main"),
     common_gt6_MixinCR(Side.COMMON, require(TargetedMod.GREGTECH6), "gt6.MixinCR"),
-    common_lighting_MixinAnvilChunkLoader(Side.COMMON, always(), "lighting.MixinAnvilChunkLoader"),
-    common_lighting_MixinChunk(Side.COMMON, always(), "lighting.MixinChunk"),
-    common_lighting_MixinChunkProviderServer(Side.COMMON, always(), "lighting.MixinChunkProviderServer"),
-    common_lighting_MixinChunkVanilla(Side.COMMON, always(), "lighting.MixinChunkVanilla"),
-    common_lighting_MixinExtendedBlockStorage(Side.COMMON, always(), "lighting.MixinExtendedBlockStorage"),
-    common_lighting_MixinSPacketChunkData(Side.COMMON, always(), "lighting.MixinSPacketChunkData"),
-    common_lighting_MixinWorld(Side.COMMON, always(), "lighting.MixinWorld_Lighting"),
+    common_lighting_MixinAnvilChunkLoader(Side.COMMON, phosphor(), "lighting.MixinAnvilChunkLoader"),
+    common_lighting_MixinChunk(Side.COMMON, phosphor(), "lighting.MixinChunk"),
+    common_lighting_MixinChunkProviderServer(Side.COMMON, phosphor(), "lighting.MixinChunkProviderServer"),
+    common_lighting_MixinChunkVanilla(Side.COMMON, phosphor(), "lighting.MixinChunkVanilla"),
+    common_lighting_MixinExtendedBlockStorage(Side.COMMON, phosphor(), "lighting.MixinExtendedBlockStorage"),
+    common_lighting_MixinSPacketChunkData(Side.COMMON, phosphor(), "lighting.MixinSPacketChunkData"),
+    common_lighting_MixinWorld(Side.COMMON, phosphor(), "lighting.MixinWorld_Lighting"),
     common_mo_MixinMatterRegistry(Side.COMMON, require(TargetedMod.MATTEROVERDRIVE), "mo.MixinMatterRegistry"),
     common_mo_MixinMatterRegistrationHandler(Side.COMMON, require(TargetedMod.MATTEROVERDRIVE), "mo.MixinMatterRegistrationHandler"),
     common_mo_MixinVersionCheckHandler(Side.COMMON, require(TargetedMod.MATTEROVERDRIVE), "mo.MixinVersionCheckHandler"),
@@ -93,9 +93,9 @@ public enum Mixin implements IMixin {
     client_core_AccessorSplashProgress(Side.CLIENT, always(), "core.AccessorSplashProgress"),
     client_divinerpg_MixinEntitySparkler(Side.CLIENT, require(TargetedMod.DIVINERPG), "divinerpg.MixinEntitySparkler"),
     client_gt6_MixinGT_API_Proxy_Client(Side.CLIENT, require(TargetedMod.GREGTECH6), "gt6.MixinGT_API_Proxy_Client"),
-    client_lighting_MixinMinecraft(Side.CLIENT, always(), "lighting.MixinMinecraft"),
-    client_lighting_MixinWorld(Side.CLIENT, always(), "lighting.MixinWorld"),
-    client_lighting_MixinChunkCache(Side.CLIENT, always(), "lighting.MixinChunkCache"),
+    client_lighting_MixinMinecraft(Side.CLIENT, phosphor(), "lighting.MixinMinecraft"),
+    client_lighting_MixinWorld(Side.CLIENT, phosphor(), "lighting.MixinWorld"),
+    client_lighting_MixinChunkCache(Side.CLIENT, phosphor(), "lighting.MixinChunkCache"),
 
     client_optifine_MixinVersionCheckThread(Side.CLIENT, require(TargetedMod.OPTIFINE).and(m -> ArchaicConfig.disableOFVersionCheck), "optifine.MixinVersionCheckThread"),
 
@@ -115,9 +115,9 @@ public enum Mixin implements IMixin {
     client_threadedupdates_MixinTessellator_Debug(Side.CLIENT, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.enableThreadedChunkUpdates && ArchaicConfig.enableOcclusionTweaks && Boolean.parseBoolean(System.getProperty("archaicfix.debug.verifyTessellatorAccessThread"))), "threadedupdates.MixinTessellator_Debug"),
 
     // MOD-FILTERED MIXINS
-    common_lighting_fastcraft_MixinChunk(Side.COMMON, require(TargetedMod.FASTCRAFT), "lighting.fastcraft.MixinChunk"),
-    common_lighting_fastcraft_MixinChunkProviderServer(Side.COMMON, require(TargetedMod.FASTCRAFT), "lighting.fastcraft.MixinChunkProviderServer"),
-    common_lighting_fastcraft_MixinWorld(Side.COMMON, require(TargetedMod.FASTCRAFT), "lighting.fastcraft.MixinWorld"),
+    common_lighting_fastcraft_MixinChunk(Side.COMMON, require(TargetedMod.FASTCRAFT).and(phosphor()), "lighting.fastcraft.MixinChunk"),
+    common_lighting_fastcraft_MixinChunkProviderServer(Side.COMMON, require(TargetedMod.FASTCRAFT).and(phosphor()), "lighting.fastcraft.MixinChunkProviderServer"),
+    common_lighting_fastcraft_MixinWorld(Side.COMMON, require(TargetedMod.FASTCRAFT).and(phosphor()), "lighting.fastcraft.MixinWorld"),
 
     common_mekanism_MixinGenHandler(Side.COMMON, require(TargetedMod.MEKANISM), "mekanism.MixinGenHandler"),
 
@@ -143,4 +143,8 @@ public enum Mixin implements IMixin {
     public final Predicate<List<ITargetedMod>> filter;
     @Getter
     public final String mixin;
+
+    static Predicate<List<ITargetedMod>> phosphor() {
+        return m -> ArchaicConfig.enablePhosphor;
+    }
 }

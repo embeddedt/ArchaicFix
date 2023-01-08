@@ -177,4 +177,8 @@ public class ArchaicConfig {
     @Config.Comment("Remove JourneyMap debug feature.")
     @Config.DefaultBoolean(false)
     public static boolean removeJourneymapDebug;
+
+    @Config.Comment("When true, the Phosphor backport is enabled. Disabling is not recommended as it will generally add lag.")
+    @Config.DefaultBoolean(true)
+    public static boolean enablePhosphor;
 }
