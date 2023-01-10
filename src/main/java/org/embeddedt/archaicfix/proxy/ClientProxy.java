@@ -90,7 +90,7 @@ public class ClientProxy extends CommonProxy {
             }
         }
         if(ArchaicConfig.showBlockDebugInfo && mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-            if(event.right.get(event.right.size()-1).length() > 0)
+            if(!event.right.isEmpty() && Objects.firstNonNull(event.right.get(event.right.size() - 1), "").length() > 0)
                 event.right.add("");
             Block block = mc.theWorld.getBlock(mc.objectMouseOver.blockX, mc.objectMouseOver.blockY, mc.objectMouseOver.blockZ);
             int meta = mc.theWorld.getBlockMetadata(mc.objectMouseOver.blockX, mc.objectMouseOver.blockY, mc.objectMouseOver.blockZ);
@@ -99,7 +99,7 @@ public class ClientProxy extends CommonProxy {
         }
         if(ArchaicConfig.modernizeF3Screen) {
             boolean hasReplacedXYZ = false;
-            for(int i = 0; i < event.left.size() - 4; i++) {
+            for(int i = 0; i < event.left.size() - 3; i++) {
                 /* These checks should not be inefficient as most of the time the first one will already fail */
                 if(!hasReplacedXYZ && Objects.firstNonNull(event.left.get(i), "").startsWith("x:")
                         && Objects.firstNonNull(event.left.get(i + 1), "").startsWith("y:")
