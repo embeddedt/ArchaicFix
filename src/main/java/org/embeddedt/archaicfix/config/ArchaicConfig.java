@@ -53,7 +53,7 @@ public class ArchaicConfig {
     public static boolean cacheRecipes;
 
     @Config.Comment("Disable spawn chunks")
-    @Config.DefaultBoolean(true)
+    @Config.DefaultBoolean(false)
     public static boolean disableSpawnChunks;
 
     @Config.Comment("Reduce lag caused by item entities")
