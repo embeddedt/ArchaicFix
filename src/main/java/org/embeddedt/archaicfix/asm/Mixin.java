@@ -134,6 +134,8 @@ public enum Mixin implements IMixin {
 
     common_am2_MixinPlayerTracker(Side.COMMON, require(TargetedMod.AM2), "am2.MixinPlayerTracker"),
 
+    common_foodplus_MixinUpdater(Side.COMMON, require(TargetedMod.FOODPLUS), "foodplus.MixinUpdater")
+
     // The modFilter argument is a predicate, so you can also use the .and(), .or(), and .negate() methods to mix and match multiple predicates.
     ;
 

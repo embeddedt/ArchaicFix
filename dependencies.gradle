@@ -44,4 +44,6 @@ dependencies {
     if(!System.getenv("ARCHAICFIX_GRADLE_NO_RUNTIME_EXTRAS")) {
         runtimeOnly(deobfMaven(curseMaven, "curse.maven:xaerosminimap-263420:3876755"))
     }
+
+    compileOnly files("deps/Food Plus Mod 1.7.10-deobf.jar")
 }

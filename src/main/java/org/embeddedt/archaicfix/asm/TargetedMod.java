@@ -30,7 +30,8 @@ public enum TargetedMod implements ITargetedMod {
     DIVINERPG("DivineRPG", false, contains("divinerpg")),
     SHIPSMOD("ShipsMod", false, startsWith("shipsmod")),
     JOURNEYMAP("JourneyMap", false, startsWith("journeymap")),
-    AM2("ArsMagica2", false, startsWith("1.7.10_AM2-" /* upstream */).or(startsWith("AM2-" /* Lost Era */)))
+    AM2("ArsMagica2", false, startsWith("1.7.10_AM2-" /* upstream */).or(startsWith("AM2-" /* Lost Era */))),
+    FOODPLUS("FoodPlus", false, startsWith("Food Plus").or(startsWith("FoodPlus")))
     ;
 
     @Getter
