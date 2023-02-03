@@ -1,6 +1,5 @@
 package org.embeddedt.archaicfix.config;
 
-import com.falsepattern.lib.config.Config;
 import org.embeddedt.archaicfix.Tags;
 
 @Config(modid = Tags.MODID)
