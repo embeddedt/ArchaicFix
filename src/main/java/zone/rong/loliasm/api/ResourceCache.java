@@ -1,6 +1,6 @@
 package zone.rong.loliasm.api;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import speiger.src.collections.objects.maps.impl.hash.Object2ObjectOpenHashMap;
 
 public class ResourceCache extends Object2ObjectOpenHashMap<String, byte[]> {
 

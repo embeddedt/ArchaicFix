@@ -2,12 +2,12 @@ package org.embeddedt.archaicfix.mixins.common.core;
 
 import cpw.mods.fml.common.discovery.ASMDataTable;
 import cpw.mods.fml.common.discovery.ModCandidate;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import speiger.src.collections.objects.sets.ObjectOpenHashSet;
 import zone.rong.loliasm.api.LoliStringPool;
 
 import java.util.ArrayList;

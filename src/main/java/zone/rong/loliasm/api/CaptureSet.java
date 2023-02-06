@@ -1,6 +1,6 @@
 package zone.rong.loliasm.api;
 
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import speiger.src.collections.objects.sets.ObjectOpenHashSet;
 
 import java.util.HashSet;
 import java.util.Set;

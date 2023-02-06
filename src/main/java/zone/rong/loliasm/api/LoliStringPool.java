@@ -1,26 +1,20 @@
 package zone.rong.loliasm.api;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.EnumChatFormatting;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import org.embeddedt.archaicfix.ArchaicLogger;
+import speiger.src.collections.ints.maps.impl.misc.Int2ObjectArrayMap;
+import speiger.src.collections.objects.sets.ObjectOpenHashSet;
 
-import java.util.ArrayList;
 import java.util.Locale;
 
 public class LoliStringPool {
 
     public static final int FILE_PERMISSIONS_ID = 1;
 
-    private static final Int2ObjectMap<Internal> POOLS = new Int2ObjectArrayMap<>();
+    private static final Int2ObjectArrayMap<Internal> POOLS = new Int2ObjectArrayMap<>();
 
     static {
         establishPool(-1, 12288, "", " ");
-        POOLS.defaultReturnValue(POOLS.get(-1));
+        POOLS.setDefaultReturnValue(POOLS.get(-1));
     }
 
     public static void establishPool(int poolId, int expectedSize, String... startingValues) {
@@ -35,7 +29,7 @@ public class LoliStringPool {
     }
 
     public static int getSize() {
-        return POOLS.defaultReturnValue().internalPool.size();
+        return POOLS.getDefaultReturnValue().internalPool.size();
     }
 
     public static int getSize(int pool) {
@@ -43,7 +37,7 @@ public class LoliStringPool {
     }
 
     public static long getDeduplicatedCount() {
-        return POOLS.defaultReturnValue().deduplicatedCount;
+        return POOLS.getDefaultReturnValue().deduplicatedCount;
     }
 
     public static long getDeduplicatedCount(int pool) {
@@ -52,30 +46,31 @@ public class LoliStringPool {
 
     public static String canonicalize(String string) {
         synchronized (POOLS) {
-            return POOLS.defaultReturnValue().addOrGet(string);
+            return POOLS.getDefaultReturnValue().addOrGet(string);
         }
     }
 
     public static String unsafe$Canonicalize(String string) {
-        return POOLS.defaultReturnValue().addOrGet(string);
+        return POOLS.getDefaultReturnValue().addOrGet(string);
     }
 
     @SuppressWarnings("unused")
     public static String lowerCaseAndCanonicalize(String string) {
         synchronized (POOLS) {
-            return POOLS.defaultReturnValue().addOrGet(string.toLowerCase(Locale.ROOT));
+            return POOLS.getDefaultReturnValue().addOrGet(string.toLowerCase(Locale.ROOT));
         }
     }
 
     @SuppressWarnings("unused")
     public static String unsafe$LowerCaseAndCanonicalize(String string) {
-        return POOLS.defaultReturnValue().addOrGet(string.toLowerCase(Locale.ROOT));
+        return POOLS.getDefaultReturnValue().addOrGet(string.toLowerCase(Locale.ROOT));
     }
 
     public static String canonicalize(String string, int poolId, boolean checkMainPool) {
         if (checkMainPool) {
             synchronized (POOLS) {
-                String canonicalized = POOLS.get(poolId).internalPool.get(string);
+                ObjectOpenHashSet<String> internalPool = POOLS.get(poolId).internalPool;
+                String canonicalized = internalPool.contains(string) ? internalPool.addOrGet(string) : null;
                 if (canonicalized != null) {
                     return canonicalized;
                 }
@@ -88,7 +83,8 @@ public class LoliStringPool {
 
     public static String unsafe$Canonicalize(String string, int poolId, boolean checkMainPool) {
         if (checkMainPool) {
-            String canonicalized = POOLS.get(poolId).internalPool.get(string);
+            ObjectOpenHashSet<String> internalPool = POOLS.get(poolId).internalPool;
+            String canonicalized = internalPool.contains(string) ? internalPool.addOrGet(string) : null;
             if (canonicalized != null) {
                 return canonicalized;
             }

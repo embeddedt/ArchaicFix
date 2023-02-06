@@ -1,6 +1,5 @@
 package org.embeddedt.archaicfix;
 
-import ca.fxco.memoryleakfix.MemoryLeakFix;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.SidedProxy;
@@ -13,20 +12,14 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.client.Minecraft;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraftforge.common.MinecraftForge;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
 import org.embeddedt.archaicfix.ducks.IAcceleratedRecipe;
-import org.embeddedt.archaicfix.helpers.FastutilHelper;
 import org.embeddedt.archaicfix.occlusion.IRenderGlobal;
-import org.embeddedt.archaicfix.occlusion.OcclusionHelpers;
 import org.embeddedt.archaicfix.threadedupdates.ThreadedChunkUpdateHelper;
 import org.embeddedt.archaicfix.proxy.CommonProxy;
 import org.embeddedt.archaicfix.recipe.IFasterCraftingManager;
@@ -60,7 +53,6 @@ public class ArchaicFix
         } catch(ClassNotFoundException e) {
 
         }
-        FastutilHelper.checkLoad();
     }
 
     @EventHandler
