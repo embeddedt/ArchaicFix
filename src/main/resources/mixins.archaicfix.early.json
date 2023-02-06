@@ -6,4 +6,3 @@
   "target": "@env(DEFAULT)",
   "compatibilityLevel": "JAVA_8"
 }
-

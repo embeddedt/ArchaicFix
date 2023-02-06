@@ -1,6 +1,5 @@
 package org.embeddedt.archaicfix.lighting.world.lighting;
 
-import com.falsepattern.lib.compat.BlockPos;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
@@ -331,7 +330,7 @@ public class LightingHooks {
         final int xBase = chunk.xPosition << 4;
         final int zBase = chunk.zPosition << 4;
 
-        final BlockPos.PooledMutableBlockPos pos = BlockPos.PooledMutableBlockPos.retain(xBase, 0, zBase);
+        final BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(xBase, 0, zBase);
 
         if (world.checkChunksExist(xBase - 16, 0, zBase - 16, xBase + 31, 255, zBase + 31)) {
             final ExtendedBlockStorage[] extendedBlockStorage = chunk.getBlockStorageArray();
@@ -368,8 +367,6 @@ public class LightingHooks {
 
             ((IChunkLightingData) chunk).setLightInitialized(true);
         }
-
-        pos.release();
     }
 
     public static void checkChunkLighting(final Chunk chunk, final World world) {

@@ -1,7 +1,6 @@
 package org.embeddedt.archaicfix.lighting.world.lighting;
 
 import atomicstryker.dynamiclights.client.DynamicLights;
-import com.falsepattern.lib.compat.BlockPos;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.IBlockAccess;

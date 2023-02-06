@@ -1,6 +1,5 @@
 package org.embeddedt.archaicfix.config;
 
-import com.falsepattern.lib.StableAPI;
 import cpw.mods.fml.client.IModGuiFactory;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

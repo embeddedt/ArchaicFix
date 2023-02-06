@@ -1,6 +1,5 @@
 package org.embeddedt.archaicfix.lighting.world.lighting;
 
-import com.falsepattern.lib.compat.BlockPos;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;

@@ -1,6 +1,5 @@
 package org.embeddedt.archaicfix.mixins.common.core;
 
-import com.falsepattern.lib.compat.ChunkPos;
 import com.google.common.collect.Iterators;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;

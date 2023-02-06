@@ -21,10 +21,6 @@ repositories {
         }
     }
     maven {
-        name = "MavenPattern"
-        url = "https://mvn.falsepattern.com/releases"
-    }
-    maven {
         name "mvnmrtjp"
         url "http://files.projectredwiki.com/maven"
         metadataSources {
