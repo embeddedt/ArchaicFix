@@ -1,5 +1,6 @@
 package org.embeddedt.archaicfix;
 
+import com.google.common.collect.ImmutableMap;
 import com.gtnewhorizon.gtnhmixins.IEarlyMixinLoader;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import org.apache.logging.log4j.LogManager;
@@ -60,11 +61,17 @@ public class ArchaicCore implements IFMLLoadingPlugin, IEarlyMixinLoader {
 
     public static Set<TargetedMod> coreMods = new HashSet<>();
 
+    private static final ImmutableMap<String, TargetedMod> MODS_BY_CLASS = ImmutableMap.<String, TargetedMod>builder()
+            .put("optifine.OptiFineForgeTweaker", TargetedMod.OPTIFINE)
+            .put("fastcraft.Tweaker", TargetedMod.FASTCRAFT)
+            .put("cofh.asm.LoadingPlugin", TargetedMod.COFHCORE)
+            .build();
+
     private static void detectCoreMods(Set<String> loadedCoreMods) {
-        if(loadedCoreMods.contains("optifine.OptiFineForgeTweaker"))
-            coreMods.add(TargetedMod.OPTIFINE);
-        if(loadedCoreMods.contains("fastcraft.Tweaker"))
-            coreMods.add(TargetedMod.FASTCRAFT);
+        MODS_BY_CLASS.forEach((key, value) -> {
+            if (loadedCoreMods.contains(key))
+                coreMods.add(value);
+        });
     }
 
     @Override
