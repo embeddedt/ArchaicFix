@@ -2,12 +2,16 @@ package org.embeddedt.archaicfix.asm;
 
 import com.gtnewhorizon.gtnhmixins.ILateMixinLoader;
 import com.gtnewhorizon.gtnhmixins.LateMixin;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.embeddedt.archaicfix.ArchaicCore;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @LateMixin
 public class LateMixinPlugin implements ILateMixinLoader {
+    private static final Logger LOGGER = LogManager.getLogger();
     @Override
     public String getMixinConfig() {
         return "mixins.archaicfix.late.json";
@@ -27,6 +31,7 @@ public class LateMixinPlugin implements ILateMixinLoader {
             if(t != null)
                 validMods.add(t);
         }
+        LOGGER.info("Detected mods: [" + validMods.stream().map(TargetedMod::name).collect(Collectors.joining(", ")) + "]");
         for(Mixin mixin : Mixin.values()) {
             if(mixin.getPhase() == Mixin.Phase.LATE && mixin.getFilter().test(validMods))
                 mixins.add(mixin.getMixin());
