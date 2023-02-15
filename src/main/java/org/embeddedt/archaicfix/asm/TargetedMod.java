@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 @RequiredArgsConstructor
 public enum TargetedMod {
     CHICKENCHUNKS("ChickenChunks", "ChickenChunks"),
-    MRTJPCORE("MrTJPCore", "MrTJPCore"),
+    MRTJPCORE("MrTJPCore", "MrTJPCoreMod"),
     CHUNK_PREGENERATOR("ChunkPregenerator", "chunkpregenerator"),
     THERMALEXPANSION("ThermalExpansion", "ThermalExpansion"),
     THERMALFOUNDATION("ThermalFoundation", "ThermalFoundation"),
@@ -22,11 +22,11 @@ public enum TargetedMod {
     MEKANISM("Mekanism", "Mekanism"),
     BOTANIA("Botania", "Botania"),
     COFHCORE("CoFHCore", "CoFHCore"),
-    EXTRAUTILS("ExtraUtilities", "extrautilities"),
+    EXTRAUTILS("ExtraUtilities", "ExtraUtilities"),
     DIVINERPG("DivineRPG", "divinerpg"),
-    SHIPSMOD("ShipsMod", "shipsmod"),
+    SHIPSMOD("ShipsMod", "cuchaz.ships"),
     JOURNEYMAP("JourneyMap", "journeymap"),
-    AM2("ArsMagica2", "am2"),
+    AM2("ArsMagica2", "arsmagica2"),
     FOODPLUS("FoodPlus", "FoodPlus")
     ;
 
