@@ -41,3 +41,15 @@ Non-configurable changes:
 * ChickenChunks should no longer crash in combination with chunkloading from other mods like Extra Utilities
 * Various memory leak fixes (most noticeable when changing dimensions or exiting/rejoining the world)
 * Matter Overdrive only recomputes its registry file if one does not already exist in config/MatterOverdrive
+
+------------
+
+![YourKit logo](https://www.yourkit.com/images/yklogo.png)
+
+YourKit supports open source projects with innovative and intelligent tools
+for monitoring and profiling Java and .NET applications.
+YourKit is the creator of <a href="https://www.yourkit.com/java/profiler/">YourKit Java Profiler</a>,
+<a href="https://www.yourkit.com/.net/profiler/">YourKit .NET Profiler</a>,
+and <a href="https://www.yourkit.com/youmonitor/">YourKit YouMonitor</a>.
+
+Thanks to YourKit for providing a free license for this project.
