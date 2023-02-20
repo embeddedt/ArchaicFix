@@ -6,8 +6,7 @@ The latest development version can be downloaded here: https://nightly.link/embe
 
 ## Dependencies
 
-* [MixinBooter Legacy](https://github.com/tox1cozZ/mixin-booter-legacy) or [SpongeMixins](https://github.com/TimeConqueror/SpongeMixins/releases/tag/1.2.0) (Grimoire is *not* compatible)
-* [FalsePatternLib](https://github.com/FalsePattern/FalsePatternLib)
+Newer version of ArchaicFix only require a GTNHMixins-compatible mixin loader. I recommend [UniMixins](https://github.com/LegacyModdingMC/UniMixins).
 
 ## Credits
 
