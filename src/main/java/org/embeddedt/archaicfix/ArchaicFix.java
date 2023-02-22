@@ -27,7 +27,7 @@ import thaumcraft.api.ThaumcraftApi;
 
 import java.util.*;
 
-@Mod(modid = ArchaicFix.MODID, version = ArchaicFix.VERSION, guiFactory = "org.embeddedt.archaicfix.config.ArchaicGuiConfigFactory")
+@Mod(modid = ArchaicFix.MODID, version = ArchaicFix.VERSION, dependencies = "required-after:gtnhmixins@[2.0.0,);", guiFactory = "org.embeddedt.archaicfix.config.ArchaicGuiConfigFactory")
 public class ArchaicFix
 {
     public static final String MODID = Tags.MODID;
