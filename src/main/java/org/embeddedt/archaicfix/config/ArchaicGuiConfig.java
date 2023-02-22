@@ -1,8 +1,7 @@
 package org.embeddedt.archaicfix.config;
 
-import org.embeddedt.archaicfix.Tags;
-
 import net.minecraft.client.gui.GuiScreen;
+import org.embeddedt.archaicfix.Tags;
 
 public class ArchaicGuiConfig extends SimpleGuiConfig {
     public ArchaicGuiConfig(GuiScreen parent) throws ConfigException {
