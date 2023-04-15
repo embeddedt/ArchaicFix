@@ -85,6 +85,7 @@ public enum Mixin {
     client_core_MixinMinecraft(Side.CLIENT, Phase.EARLY, always(), "core.MixinMinecraft"),
     client_core_MixinNetHandlerPlayClient(Side.CLIENT, Phase.EARLY, always(), "core.MixinNetHandlerPlayClient"),
     client_core_MixinGuiCreateWorld(Side.CLIENT, Phase.EARLY, always(), "core.MixinGuiCreateWorld"),
+    client_core_MixinGuiIngameForge(Side.CLIENT, Phase.EARLY, always(), "core.MixinGuiIngameForge"),
     client_core_MixinFMLClientHandler(Side.CLIENT, Phase.EARLY, always(), "core.MixinFMLClientHandler"),
     client_core_MixinNetHandlerLoginClient(Side.CLIENT, Phase.EARLY, m -> ArchaicConfig.fixLoginRaceCondition, "core.MixinNetHandlerLoginClient"),
     client_core_MixinSplashProgress(Side.CLIENT, Phase.EARLY, always(), "core.MixinSplashProgress"),
