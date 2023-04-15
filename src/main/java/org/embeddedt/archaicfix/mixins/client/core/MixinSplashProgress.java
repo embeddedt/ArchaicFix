@@ -28,7 +28,7 @@ public class MixinSplashProgress {
     private static float memoryColorPercent;
     private static long memoryColorChangeTime;
     private static FontRenderer fontRenderer = null;
-    @Inject(method = "run", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glDisable(I)V", ordinal = 1, remap = false, shift = At.Shift.AFTER), remap = false)
+    @Inject(method = "run", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glDisable(I)V", ordinal = 1, remap = false, shift = At.Shift.AFTER), remap = false, require = 0)
     private void injectDrawMemoryBar(CallbackInfo ci) {
         if(fontRenderer == null) {
             try {
