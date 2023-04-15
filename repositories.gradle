@@ -8,9 +8,6 @@ repositories {
         url = "https://oss.sonatype.org/content/repositories/snapshots/"
     }
     maven {
-        url 'https://jitpack.io'
-    }
-    maven {
         name = "GTNH Maven"
         url = "http://jenkins.usrv.eu:8081/nexus/content/groups/public/"
         allowInsecureProtocol
