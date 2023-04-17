@@ -601,7 +601,7 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
 
     /**
      * @author makamys
-     * @reason Integrate with the logic in {@link org.embeddedt.archaicfix.occlusion.OcclusionHelpers.RenderWorker#run(boolean)}.
+     * @reason Integrate with the logic in {@link OcclusionWorker#run(boolean)}.
      */
     @Overwrite
     public void clipRenderersByFrustum(ICamera p_72729_1_, float p_72729_2_) {

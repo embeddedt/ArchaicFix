@@ -3,11 +3,10 @@ package org.embeddedt.archaicfix.mixins.client.occlusion;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.shader.TesselatorVertexState;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.EmptyChunk;
 import org.embeddedt.archaicfix.occlusion.IWorldRenderer;
-import org.embeddedt.archaicfix.occlusion.OcclusionHelpers;
+import org.embeddedt.archaicfix.occlusion.OcclusionWorker;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -42,11 +41,11 @@ public class MixinWorldRenderer implements IWorldRenderer {
     private boolean arch$isInUpdateList;
     private boolean arch$isFrustumCheckPending;
 
-    private OcclusionHelpers.RenderWorker.CullInfo arch$cullInfo;
+    private OcclusionWorker.CullInfo arch$cullInfo;
 
     @Inject(method = "<init>*", at = @At("RETURN"))
     private void init(CallbackInfo ci) {
-        this.arch$cullInfo = new OcclusionHelpers.RenderWorker.CullInfo();
+        this.arch$cullInfo = new OcclusionWorker.CullInfo();
     }
 
     @Inject(method = "markDirty", at = @At("TAIL"))
@@ -80,7 +79,7 @@ public class MixinWorldRenderer implements IWorldRenderer {
     }
 
     @Override
-    public OcclusionHelpers.RenderWorker.CullInfo arch$getCullInfo() {
+    public OcclusionWorker.CullInfo arch$getCullInfo() {
         return arch$cullInfo;
     }
 }
