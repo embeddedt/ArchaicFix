@@ -1,0 +1,2 @@
+ext.mappingGeneratorVersion = "0.1"
+apply from: 'https://raw.githubusercontent.com/LegacyModdingMC/MappingGenerator/master/extras/auto-patch-examplemod.gradle'

@@ -13,6 +13,20 @@ pluginManagement {
         mavenCentral()
         mavenLocal()
     }
+
+    // MappingGenerator start
+    resolutionStrategy {
+        eachPlugin {
+            if(requested.id.toString() == "io.github.legacymoddingmc.mappinggenerator")
+                useModule("com.github.legacymoddingmc:mappinggenerator:" + requested.version)
+        }
+    }
+    repositories {
+        maven{
+            url = "https://jitpack.io"
+        }
+    }
+    // MappingGenerator end
 }
 
 plugins {
