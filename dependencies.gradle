@@ -2,18 +2,18 @@
 
 dependencies {
     // Provides deobf support like in FG2
-    compileOnly('com.github.GTNewHorizons:CodeChickenLib:1.1.6:dev')
-    compileOnly('com.github.GTNewHorizons:CodeChickenCore:1.1.10:dev')
+    compileOnly('com.github.GTNewHorizons:CodeChickenLib:1.1.8:dev')
+    compileOnly('com.github.GTNewHorizons:CodeChickenCore:1.1.11:dev')
     compileOnly("curse.maven:chickenchunks-229316:2233250")
     compileOnly("mrtjp:MrTJPCore:1.7.10-1.1.0.33:dev") {
         transitive = false
     }
     compileOnly "thaumcraft:Thaumcraft:1.7.10-4.2.3.5:dev"
-    compileOnly('com.github.GTNewHorizons:TC4Tweaks:1.4.16:dev') {
+    compileOnly('com.github.GTNewHorizons:TC4Tweaks:1.4.26:dev') {
         transitive = false
     }
     compileOnly "curse.maven:chunkpregen-267193:3756388"
-    compileOnly('com.github.GTNewHorizons:NotEnoughItems:2.2.14-GTNH:dev')
+    compileOnly('com.github.GTNewHorizons:NotEnoughItems:2.2.46-GTNH:dev')
     compileOnly("com.gregoriust.gregtech:gregtech_1.7.10:6.15.01:dev") {
         transitive = false
     }
@@ -22,7 +22,7 @@ dependencies {
     compileOnly("curse.maven:thermalexpansion-69163:2388759")
     compileOnly("curse.maven:matteroverdrive-229694:2331162")
     compileOnly("curse.maven:projecte-226410:2340786")
-    compileOnly('com.github.GTNewHorizons:Botania:1.9.5-GTNH:dev') {
+    compileOnly('com.github.GTNewHorizons:Botania:1.9.19-GTNH:dev') {
         transitive = false
     }
     compileOnly("org.projectlombok:lombok:1.18.22") {
@@ -37,7 +37,7 @@ dependencies {
     compileOnly(deobfMaven(curseMaven, "curse.maven:divinerpg-363543:2918948"))
     compileOnly(deobfMaven(curseMaven, "curse.maven:journeymap-32274:2367915"))
     compileOnly(deobfMaven(curseMaven, "curse.maven:ars-magica-2-67313:2280862"))
-    runtimeOnly(deobf("https://github.com/makamys/CoreTweaks/releases/download/0.3.0.3/CoreTweaks-1.7.10-0.3.0.3+nomixin.jar"))
+    runtimeOnly(deobf("https://github.com/makamys/CoreTweaks/releases/download/0.3.0.4/CoreTweaks-1.7.10-0.3.0.4+nomixin.jar"))
 
     if(!System.getenv("ARCHAICFIX_GRADLE_NO_RUNTIME_EXTRAS")) {
         runtimeOnly(deobfMaven(curseMaven, "curse.maven:xaerosminimap-263420:3876755"))
