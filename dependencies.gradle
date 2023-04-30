@@ -13,7 +13,7 @@ dependencies {
         transitive = false
     }
     compileOnly "curse.maven:chunkpregen-267193:3756388"
-    compileOnly('com.github.GTNewHorizons:NotEnoughItems:2.2.46-GTNH:dev')
+    compileOnly('com.github.GTNewHorizons:NotEnoughItems:2.3.46-GTNH:dev')
     compileOnly("com.gregoriust.gregtech:gregtech_1.7.10:6.15.01:dev") {
         transitive = false
     }
