@@ -1,2 +1,10 @@
 ext.mappingGeneratorVersion = "0.1.2"
 apply from: 'https://raw.githubusercontent.com/LegacyModdingMC/MappingGenerator/master/extras/auto-patch-examplemod.gradle'
+
+if(System.getenv("EXTRA_MAPPINGS_DEV")) {
+    mappingGenerator.sources = mappingGenerator.sources.get().each { entry ->
+        if(entry[1] == "https://raw.githubusercontent.com/LegacyModdingMC/ExtraMappings/master/params.csv") {
+            entry[1] = entry[1].replaceAll("master", "dev")
+        }
+    }
+}
