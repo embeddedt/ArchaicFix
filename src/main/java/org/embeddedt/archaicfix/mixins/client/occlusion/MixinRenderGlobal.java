@@ -310,13 +310,14 @@ public abstract class MixinRenderGlobal implements IRenderGlobal {
             worldrenderer.isWaitingOnOcclusionQuery = worldrenderer.skipAllRenderPasses() || (mc.theWorld.getChunkFromBlockCoords(worldrenderer.posX, worldrenderer.posZ) instanceof EmptyChunk);
             // can't add fields, re-use
 
-            updates++;
-
-            if(!worldrenderer.isWaitingOnOcclusionQuery || deadline != 0 || OcclusionHelpers.DEBUG_LAZY_CHUNK_UPDATES) {
-                long t = System.nanoTime();
-                if (t > deadline) {
-                    spareTime = false;
-                    break;
+            if(worldrenderer.distanceToEntitySquared(view) > 272f) {
+                updates++;
+                if(!worldrenderer.isWaitingOnOcclusionQuery || deadline != 0 || OcclusionHelpers.DEBUG_LAZY_CHUNK_UPDATES) {
+                    long t = System.nanoTime();
+                    if (t > deadline) {
+                        spareTime = false;
+                        break;
+                    }
                 }
             }
         }
