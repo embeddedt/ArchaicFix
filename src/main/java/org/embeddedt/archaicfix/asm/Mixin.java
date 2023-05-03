@@ -81,7 +81,7 @@ public enum Mixin {
     client_core_MixinIntegratedServer(Side.CLIENT, Phase.EARLY, always(), "core.MixinIntegratedServer"),
     client_core_MixinSkinManager(Side.CLIENT, Phase.EARLY, m -> ArchaicConfig.fixSkinMemoryLeak, "core.MixinSkinManager"),
     client_core_MixinChunkProviderClient(Side.CLIENT, Phase.EARLY, always(), "core.MixinChunkProviderClient"),
-    client_core_MixinWorldRenderer(Side.CLIENT, Phase.EARLY, always(), "core.MixinWorldRenderer"),
+    client_core_MixinWorldRenderer(Side.CLIENT, Phase.EARLY, m -> !Boolean.valueOf(System.getProperty("archaicFix.disableMC129", "false")), "core.MixinWorldRenderer"),
     client_core_MixinMinecraft(Side.CLIENT, Phase.EARLY, always(), "core.MixinMinecraft"),
     client_core_MixinNetHandlerPlayClient(Side.CLIENT, Phase.EARLY, always(), "core.MixinNetHandlerPlayClient"),
     client_core_MixinGuiCreateWorld(Side.CLIENT, Phase.EARLY, always(), "core.MixinGuiCreateWorld"),
