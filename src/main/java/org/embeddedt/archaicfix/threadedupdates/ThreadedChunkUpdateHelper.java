@@ -14,9 +14,9 @@ import net.minecraft.client.shader.TesselatorVertexState;
 import net.minecraft.world.ChunkCache;
 import org.embeddedt.archaicfix.ArchaicLogger;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
-import org.embeddedt.archaicfix.occlusion.IRenderGlobal;
 import org.embeddedt.archaicfix.occlusion.IRenderGlobalListener;
 import org.embeddedt.archaicfix.occlusion.IRendererUpdateOrderProvider;
+import org.embeddedt.archaicfix.occlusion.OcclusionHelpers;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -101,8 +101,8 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
     };
 
     public void init() {
-        ((IRenderGlobal) Minecraft.getMinecraft().renderGlobal).arch$setRendererUpdateOrderProvider(rendererUpdateOrderProvider);
-        ((IRenderGlobal) Minecraft.getMinecraft().renderGlobal).arch$addRenderGlobalListener(this);
+        OcclusionHelpers.renderer.arch$setRendererUpdateOrderProvider(rendererUpdateOrderProvider);
+        OcclusionHelpers.renderer.arch$addRenderGlobalListener(this);
         MAIN_THREAD = Thread.currentThread();
 
         LOGGER.info("Creating " + ArchaicConfig.numChunkUpdateThreads + " chunk builder" + (ArchaicConfig.numChunkUpdateThreads > 1 ? "s" : ""));

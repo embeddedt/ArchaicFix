@@ -27,8 +27,6 @@ public class OcclusionWorker {
     }
 
     public void setWorld(RenderGlobal rg, WorldClient world) {
-
-        render = rg;
         theWorld = world;
     }
 
@@ -45,7 +43,6 @@ public class OcclusionWorker {
     @SuppressWarnings("unused")
     private Frustrum fStack = new Frustrum();
     private WorldClient theWorld;
-    private RenderGlobal render;
 
     /**
      * We cache the values of WorldRenderer#isInFrustum here to avoid the overhead of accessing the field.
@@ -54,12 +51,20 @@ public class OcclusionWorker {
 
     private final Minecraft mc = Minecraft.getMinecraft();
 
+    private RenderGlobal getRender() {
+        return getExtendedRender().getRenderGlobal();
+    }
+    
+    private OcclusionRenderer getExtendedRender() {
+        return OcclusionHelpers.renderer;
+    }
+    
     public void run(boolean immediate) {
         frame++;
         queue.clear();
         int queueIterations = 0;
 
-        if (render == null) {
+        if (getRender() == null) {
             return;
         }
         EntityLivingBase view = mc.renderViewEntity;
@@ -111,6 +116,7 @@ public class OcclusionWorker {
     }
 
     private void prepareRenderers() {
+        RenderGlobal render = getRender();
         if (isWRInFrustum == null || isWRInFrustum.length != render.worldRenderers.length) {
             isWRInFrustum = new boolean[render.worldRenderers.length];
         }
@@ -141,7 +147,7 @@ public class OcclusionWorker {
 
         theWorld.theProfiler.endStartSection("gather_chunks");
 
-        IRenderGlobal extendedRender = (IRenderGlobal) render;
+        OcclusionRenderer extendedRender = getExtendedRender();
 
         theWorld.theProfiler.endStartSection("seed_queue");
 
@@ -210,6 +216,7 @@ public class OcclusionWorker {
     }
 
     private void markRenderer(CullInfo info, EntityLivingBase view) {
+        RenderGlobal render = getRender();
         WorldRenderer rend = render.worldRenderers[info.wrIdx];
         if (!rend.isVisible) {
             rend.isVisible = true;
@@ -221,7 +228,7 @@ public class OcclusionWorker {
         if (rend.needsUpdate || !rend.isInitialized || info.visGraph.isRenderDirty()) {
             rend.needsUpdate = true;
             if (!rend.isInitialized || (rend.needsUpdate && rend.distanceToEntitySquared(view) <= 1128.0F)) {
-                ((IRenderGlobal) render).pushWorkerRenderer(rend);
+                getExtendedRender().pushWorkerRenderer(rend);
             }
         }
     }

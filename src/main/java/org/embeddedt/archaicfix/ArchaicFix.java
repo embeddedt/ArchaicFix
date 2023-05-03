@@ -19,7 +19,6 @@ import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraftforge.common.MinecraftForge;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
 import org.embeddedt.archaicfix.ducks.IAcceleratedRecipe;
-import org.embeddedt.archaicfix.occlusion.IRenderGlobal;
 import org.embeddedt.archaicfix.threadedupdates.ThreadedChunkUpdateHelper;
 import org.embeddedt.archaicfix.proxy.CommonProxy;
 import org.embeddedt.archaicfix.recipe.IFasterCraftingManager;
@@ -77,7 +76,7 @@ public class ArchaicFix
     public void init(FMLInitializationEvent event) {
         if(event.getSide() == Side.CLIENT) {
             if(ArchaicConfig.enableThreadedChunkUpdates
-                    && Minecraft.getMinecraft().renderGlobal instanceof IRenderGlobal) {
+                    && ArchaicConfig.enableOcclusionTweaks) {
                 ThreadedChunkUpdateHelper.instance = new ThreadedChunkUpdateHelper();
                 ThreadedChunkUpdateHelper.instance.init();
             }

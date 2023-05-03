@@ -1,5 +1,6 @@
 package org.embeddedt.archaicfix.occlusion;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.util.EnumFacing;
@@ -8,6 +9,7 @@ import org.embeddedt.archaicfix.occlusion.util.IntStack;
 
 public class OcclusionHelpers {
     public static OcclusionWorker worker;
+    public static OcclusionRenderer renderer;
     public static long chunkUpdateDeadline;
     public static float partialTickTime;
 
@@ -35,8 +37,7 @@ public class OcclusionHelpers {
         deferredAreas.add(x);
     }
 
-    public static synchronized void processUpdate(IRenderGlobal render) {
-
+    public static synchronized void processUpdate(OcclusionRenderer render) {
         if (deferredAreas.isEmpty()) {
             return; // guard against multiple instances (no compatibility with mods that do this to us)
         }
@@ -44,30 +45,5 @@ public class OcclusionHelpers {
         int x = deferredAreas.pop(), y = deferredAreas.pop(), z = deferredAreas.pop();
         int x2 = deferredAreas.pop(), y2 = deferredAreas.pop(), z2 = deferredAreas.pop();
         render.internalMarkBlockUpdate(x, y, z, x2, y2, z2);
-    }
-
-    public static void updateRendererNeighbors(RenderGlobal rg, WorldRenderer[] worldRenderers, int renderChunksWide, int renderChunksDeep, int renderChunksTall) {
-        if(worldRenderers == null) return;
-        for(int i = 0; i < worldRenderers.length; i++) {
-            WorldRenderer rend = worldRenderers[i];
-            OcclusionWorker.CullInfo ci = ((IWorldRenderer) rend).arch$getCullInfo();
-            ci.wrIdx = i;
-            Chunk o = rend.worldObj.getChunkFromBlockCoords(rend.posX, rend.posZ);
-            VisGraph oSides = isChunkEmpty(o) ? OcclusionWorker.DUMMY : ((ICulledChunk)o).getVisibility()[rend.posY >> 4];
-            ci.visGraph = oSides;
-            ci.vis = oSides.getVisibilityArray();
-            for(EnumFacing dir : EnumFacing.values()) {
-                WorldRenderer neighbor = ((IRenderGlobal)rg).getRenderer(
-                        rend.posX + dir.getFrontOffsetX() * 16,
-                        rend.posY + dir.getFrontOffsetY() * 16,
-                        rend.posZ + dir.getFrontOffsetZ() * 16
-                );
-                ci.setNeighbor(dir, neighbor == null ? null : ((IWorldRenderer)neighbor).arch$getCullInfo());
-            }
-        }
-    }
-
-    private static boolean isChunkEmpty(Chunk chunk) {
-        return chunk == null || chunk.isEmpty();
     }
 }
