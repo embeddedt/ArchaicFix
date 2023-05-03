@@ -39,7 +39,7 @@ dependencies {
     compileOnly(deobfMaven(curseMaven, "curse.maven:ars-magica-2-67313:2280862"))
     runtimeOnly(deobf("https://github.com/makamys/CoreTweaks/releases/download/0.3.0.4/CoreTweaks-1.7.10-0.3.0.4+nomixin.jar"))
 
-    if(!System.getenv("ARCHAICFIX_GRADLE_NO_RUNTIME_EXTRAS")) {
+    if(!Boolean.valueOf(project.properties["archaicFix.noRuntimeExtras"] ?: "false")) {
         runtimeOnly(deobfMaven(curseMaven, "curse.maven:xaerosminimap-263420:3876755"))
     }
 
