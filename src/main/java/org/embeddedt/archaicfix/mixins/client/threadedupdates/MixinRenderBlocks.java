@@ -27,11 +27,22 @@ public class MixinRenderBlocks {
                 : null;
 
         boolean offThreadBlock = ThreadedChunkUpdateHelper.canBlockBeRenderedOffThread(block, pass, renderType)
-                && !(task != null && task.cancelled);
+                && !(task != null && task.cancelled)
+                && (!mainThread || ThreadedChunkUpdateHelper.renderBlocksStack.getLevel() == 1);
         if ((mainThread ? pass >= 0 : true) && (mainThread ? offThreadBlock : !offThreadBlock)) {
             // Cancel rendering block if it's delegated to a different thread.
             cir.setReturnValue(mainThread ? task.result[pass].renderedSomething : false);
         }
+    }
+
+    @Inject(method = "renderBlockByRenderType", at = @At("HEAD"))
+    private void pushStack(CallbackInfoReturnable<Boolean> cir) {
+        ThreadedChunkUpdateHelper.renderBlocksStack.push();
+    }
+
+    @Inject(method = "renderBlockByRenderType", at = @At("RETURN"))
+    private void popStack(CallbackInfoReturnable<Boolean> cir) {
+        ThreadedChunkUpdateHelper.renderBlocksStack.pop();
     }
 
     @Redirect(method = "*", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/Tessellator;instance:Lnet/minecraft/client/renderer/Tessellator;"))

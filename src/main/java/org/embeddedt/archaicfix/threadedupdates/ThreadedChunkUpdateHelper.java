@@ -12,7 +12,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.shader.TesselatorVertexState;
 import net.minecraft.world.ChunkCache;
-import org.embeddedt.archaicfix.ArchaicLogger;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
 import org.embeddedt.archaicfix.occlusion.IRenderGlobalListener;
 import org.embeddedt.archaicfix.occlusion.IRendererUpdateOrderProvider;
@@ -31,6 +30,8 @@ public class ThreadedChunkUpdateHelper implements IRenderGlobalListener {
 
     /** Used within the scope of WorldRenderer#updateRenderer (on the main thread). */
     public static WorldRenderer lastWorldRenderer;
+
+    public static final RenderBlocksStack renderBlocksStack = new RenderBlocksStack();
 
     /** Tasks not yet started */
     public BlockingQueue<WorldRenderer> taskQueue = new LinkedBlockingDeque<>();
