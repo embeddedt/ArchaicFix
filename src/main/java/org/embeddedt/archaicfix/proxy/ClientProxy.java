@@ -19,6 +19,7 @@ import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.sound.SoundLoadEvent;
@@ -169,5 +170,16 @@ public class ClientProxy extends CommonProxy {
             soundThread = new SoundDeviceThread();
             soundThread.start();
         }
+    }
+
+    /* coerce NaN fog values back to 0 (https://bugs.mojang.com/browse/MC-10480) */
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onFogColor(EntityViewRenderEvent.FogColors event) {
+        if(Float.isNaN(event.red))
+            event.red = 0f;
+        if(Float.isNaN(event.green))
+            event.green = 0f;
+        if(Float.isNaN(event.blue))
+            event.blue = 0f;
     }
 }
