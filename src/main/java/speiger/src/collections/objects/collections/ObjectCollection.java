@@ -3,6 +3,7 @@ package speiger.src.collections.objects.collections;
 import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
+import speiger.src.collections.objects.utils.ObjectSplititerators;
 import speiger.src.collections.objects.utils.ObjectCollections;
 import speiger.src.collections.utils.ISizeProvider;
 import speiger.src.collections.utils.SanityChecks;
@@ -170,4 +171,11 @@ public interface ObjectCollection<T> extends Collection<T>, ObjectIterable<T>, I
 	 */
 	public default ObjectCollection<T> unmodifiable() { return ObjectCollections.unmodifiable(this); }
 	
+
+	/**
+	 * A Type Specific Type Splititerator to reduce boxing/unboxing
+	 * @return type specific splititerator
+	 */
+	@Override
+	default ObjectSplititerator<T> spliterator() { return ObjectSplititerators.createSplititerator(this, 0); }
 }

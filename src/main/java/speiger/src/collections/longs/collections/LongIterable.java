@@ -14,6 +14,7 @@ import speiger.src.collections.objects.functions.consumer.ObjectLongConsumer;
 import speiger.src.collections.longs.functions.function.LongLongUnaryOperator;
 
 import speiger.src.collections.longs.utils.LongArrays;
+import speiger.src.collections.longs.utils.LongSplititerators;
 import speiger.src.collections.longs.utils.LongIterables;
 import speiger.src.collections.longs.utils.LongIterators;
 import speiger.src.collections.utils.ISizeProvider;
@@ -82,6 +83,13 @@ public interface LongIterable extends Iterable<Long>
 		Objects.requireNonNull(action);
 		iterator().forEachRemaining(input, action);
 	}
+	
+	/**
+	 * A Type Specific Type Splititerator to reduce boxing/unboxing
+	 * @return type specific splititerator
+	 */
+	@Override
+	default LongSplititerator spliterator() { return LongSplititerators.createUnknownSplititerator(iterator(), 0); }
 	
 	/**
 	 * A Helper function to reduce the usage of Streams and allows to convert a Iterable to something else.

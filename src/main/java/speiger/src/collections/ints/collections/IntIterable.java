@@ -14,6 +14,7 @@ import speiger.src.collections.objects.functions.consumer.ObjectIntConsumer;
 import speiger.src.collections.ints.functions.function.IntIntUnaryOperator;
 
 import speiger.src.collections.ints.utils.IntArrays;
+import speiger.src.collections.ints.utils.IntSplititerators;
 import speiger.src.collections.ints.utils.IntIterables;
 import speiger.src.collections.ints.utils.IntIterators;
 import speiger.src.collections.utils.ISizeProvider;
@@ -82,6 +83,13 @@ public interface IntIterable extends Iterable<Integer>
 		Objects.requireNonNull(action);
 		iterator().forEachRemaining(input, action);
 	}
+	
+	/**
+	 * A Type Specific Type Splititerator to reduce boxing/unboxing
+	 * @return type specific splititerator
+	 */
+	@Override
+	default IntSplititerator spliterator() { return IntSplititerators.createUnknownSplititerator(iterator(), 0); }
 	
 	/**
 	 * A Helper function to reduce the usage of Streams and allows to convert a Iterable to something else.

@@ -18,6 +18,8 @@ import speiger.src.collections.objects.utils.ObjectArrays;
 import speiger.src.collections.objects.utils.ObjectArrays;
 import speiger.src.collections.objects.utils.ObjectIterators;
 import speiger.src.collections.utils.Stack;
+import speiger.src.collections.objects.collections.ObjectSplititerator;
+import speiger.src.collections.objects.utils.ObjectSplititerators;
 import speiger.src.collections.utils.IArray;
 import speiger.src.collections.utils.SanityChecks;
 
@@ -34,7 +36,7 @@ public class ObjectArrayList<T> extends AbstractObjectList<T> implements IArray,
 	static final int DEFAULT_ARRAY_SIZE = 10;
 	
 	/** The backing array */
-	public transient T[] data; /* embeddedt patch */
+	protected transient T[] data;
 	/** The current size of the elements stored in the backing array */
 	protected int size = 0;
 	
@@ -876,4 +878,11 @@ public class ObjectArrayList<T> extends AbstractObjectList<T> implements IArray,
 			throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
 	}
 	
+	/**
+	 * A Type Specific Type Splititerator to reduce boxing/unboxing
+	 * @return type specific splititerator
+	 * @note characteristics are ordered, sized, subsized
+	 */
+	@Override
+	public ObjectSplititerator<T> spliterator() { return ObjectSplititerators.createArraySplititerator(data, size, 16464); }
 }

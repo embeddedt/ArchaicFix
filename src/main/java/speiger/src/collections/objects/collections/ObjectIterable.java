@@ -16,6 +16,7 @@ import speiger.src.collections.objects.lists.ObjectList;
 import speiger.src.collections.objects.lists.ObjectArrayList;
 
 import speiger.src.collections.objects.utils.ObjectArrays;
+import speiger.src.collections.objects.utils.ObjectSplititerators;
 import speiger.src.collections.objects.utils.ObjectIterables;
 import speiger.src.collections.objects.utils.ObjectIterators;
 import speiger.src.collections.utils.ISizeProvider;
@@ -56,6 +57,13 @@ public interface ObjectIterable<T> extends Iterable<T>
 		Objects.requireNonNull(action);
 		iterator().forEachRemaining(input, action);
 	}
+	
+	/**
+	 * A Type Specific Type Splititerator to reduce boxing/unboxing
+	 * @return type specific splititerator
+	 */
+	@Override
+	default ObjectSplititerator<T> spliterator() { return ObjectSplititerators.createUnknownSplititerator(iterator(), 0); }
 	
 	/**
 	 * A Helper function to reduce the usage of Streams and allows to convert a Iterable to something else.

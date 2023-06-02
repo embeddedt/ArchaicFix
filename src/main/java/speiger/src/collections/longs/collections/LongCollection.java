@@ -4,7 +4,10 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.function.LongPredicate;
 import java.util.function.Predicate;
+import java.util.stream.LongStream;
+import java.util.stream.StreamSupport;
 import speiger.src.collections.longs.functions.LongConsumer;
+import speiger.src.collections.longs.utils.LongSplititerators;
 import speiger.src.collections.longs.utils.LongCollections;
 import speiger.src.collections.utils.ISizeProvider;
 import speiger.src.collections.utils.SanityChecks;
@@ -255,4 +258,22 @@ public interface LongCollection extends Collection<Long>, LongIterable, ISizePro
 	 */
 	public default LongCollection unmodifiable() { return LongCollections.unmodifiable(this); }
 	
+	/**
+	 * Returns a Java-Type-Specific Stream to reduce boxing/unboxing.
+	 * @return a Stream of the closest java type
+	 */
+	default LongStream primitiveStream() { return StreamSupport.longStream(LongSplititerators.createJavaSplititerator(this, 0), false); }
+	
+	/**
+	 * Returns a Java-Type-Specific Parallel Stream to reduce boxing/unboxing.
+	 * @return a Stream of the closest java type
+	 */
+	default LongStream parallelPrimitiveStream() { return StreamSupport.longStream(LongSplititerators.createJavaSplititerator(this, 0), true); }
+	
+	/**
+	 * A Type Specific Type Splititerator to reduce boxing/unboxing
+	 * @return type specific splititerator
+	 */
+	@Override
+	default LongSplititerator spliterator() { return LongSplititerators.createSplititerator(this, 0); }
 }

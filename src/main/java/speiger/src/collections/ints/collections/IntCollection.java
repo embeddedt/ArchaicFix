@@ -4,7 +4,10 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
+import java.util.stream.StreamSupport;
 import speiger.src.collections.ints.functions.IntConsumer;
+import speiger.src.collections.ints.utils.IntSplititerators;
 import speiger.src.collections.ints.utils.IntCollections;
 import speiger.src.collections.utils.ISizeProvider;
 import speiger.src.collections.utils.SanityChecks;
@@ -255,4 +258,22 @@ public interface IntCollection extends Collection<Integer>, IntIterable, ISizePr
 	 */
 	public default IntCollection unmodifiable() { return IntCollections.unmodifiable(this); }
 	
+	/**
+	 * Returns a Java-Type-Specific Stream to reduce boxing/unboxing.
+	 * @return a Stream of the closest java type
+	 */
+	default IntStream primitiveStream() { return StreamSupport.intStream(IntSplititerators.createJavaSplititerator(this, 0), false); }
+	
+	/**
+	 * Returns a Java-Type-Specific Parallel Stream to reduce boxing/unboxing.
+	 * @return a Stream of the closest java type
+	 */
+	default IntStream parallelPrimitiveStream() { return StreamSupport.intStream(IntSplititerators.createJavaSplititerator(this, 0), true); }
+	
+	/**
+	 * A Type Specific Type Splititerator to reduce boxing/unboxing
+	 * @return type specific splititerator
+	 */
+	@Override
+	default IntSplititerator spliterator() { return IntSplititerators.createSplititerator(this, 0); }
 }

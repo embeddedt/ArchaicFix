@@ -117,7 +117,7 @@
 			"IArray": false,
 			"Splititerators": false,
 			"Strategy": false,
-			"Streams": false
+			"Streams": true
 		},
 		"PriorityQueue": {
 			"Enabled": false,
@@ -412,7 +412,7 @@
 			"IArray": false,
 			"Splititerators": false,
 			"Strategy": false,
-			"Streams": false
+			"Streams": true
 		},
 		"PriorityQueue": {
 			"Enabled": false,
@@ -722,7 +722,7 @@
 			"IArray": false,
 			"Splititerators": false,
 			"Strategy": false,
-			"Streams": false
+			"Streams": true
 		},
 		"PriorityQueue": {
 			"Enabled": false,
@@ -1032,7 +1032,7 @@
 			"IArray": false,
 			"Splititerators": false,
 			"Strategy": false,
-			"Streams": false
+			"Streams": true
 		},
 		"PriorityQueue": {
 			"Enabled": false,
@@ -1340,9 +1340,9 @@
 		"Collection": {
 			"Enabled": true,
 			"IArray": true,
-			"Splititerators": false,
+			"Splititerators": true,
 			"Strategy": false,
-			"Streams": false
+			"Streams": true
 		},
 		"PriorityQueue": {
 			"Enabled": false,
@@ -1650,9 +1650,9 @@
 		"Collection": {
 			"Enabled": true,
 			"IArray": false,
-			"Splititerators": false,
+			"Splititerators": true,
 			"Strategy": false,
-			"Streams": false
+			"Streams": true
 		},
 		"PriorityQueue": {
 			"Enabled": false,
@@ -1962,7 +1962,7 @@
 			"IArray": false,
 			"Splititerators": false,
 			"Strategy": false,
-			"Streams": false
+			"Streams": true
 		},
 		"PriorityQueue": {
 			"Enabled": false,
@@ -2272,7 +2272,7 @@
 			"IArray": false,
 			"Splititerators": false,
 			"Strategy": false,
-			"Streams": false
+			"Streams": true
 		},
 		"PriorityQueue": {
 			"Enabled": false,
@@ -2580,9 +2580,9 @@
 		"Collection": {
 			"Enabled": true,
 			"IArray": false,
-			"Splititerators": false,
+			"Splititerators": true,
 			"Strategy": false,
-			"Streams": false
+			"Streams": true
 		},
 		"PriorityQueue": {
 			"Enabled": false,

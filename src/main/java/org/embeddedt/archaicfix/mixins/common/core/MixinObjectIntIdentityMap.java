@@ -1,13 +1,13 @@
 package org.embeddedt.archaicfix.mixins.common.core;
 
 import net.minecraft.util.ObjectIntIdentityMap;
+import org.embeddedt.archaicfix.helpers.UnexpectionalObjectArrayList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import speiger.src.collections.objects.lists.ObjectArrayList;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ public class MixinObjectIntIdentityMap {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void initIdArray(CallbackInfo ci) {
-        this.field_148748_b = new ObjectArrayList();
+        this.field_148748_b = new UnexpectionalObjectArrayList();
     }
 
     /**
@@ -30,10 +30,6 @@ public class MixinObjectIntIdentityMap {
      */
     @Overwrite
     public Object func_148745_a(int id) {
-        Object[] backingArray = ((ObjectArrayList)this.field_148748_b).data;
-        if(id >= 0 && id < backingArray.length)
-            return backingArray[id];
-        else
-            return null;
+        return ((UnexpectionalObjectArrayList)field_148748_b).getOrNull(id);
     }
 }
