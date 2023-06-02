@@ -154,6 +154,7 @@ public class ArchaicFix
 
     @NetworkCheckHandler
     public boolean doVersionCheck(Map<String, String> mods, Side side) {
+        /*
         if(mods.containsKey(Tags.MODID)) {
             String otherVersion = mods.get(Tags.MODID);
             if(!otherVersion.equals(Tags.VERSION)) {
@@ -161,6 +162,7 @@ public class ArchaicFix
                 return false;
             }
         }
+        */
         return true;
     }
 
