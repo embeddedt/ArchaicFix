@@ -98,8 +98,6 @@ public class LightingEngine implements ILightingEngine {
     private final NeighborInfo[] neighborInfos = new NeighborInfo[6];
     private PooledLongQueue.LongQueueIterator queueIt;
 
-    private final ReentrantLock lock = new ReentrantLock();
-
     public LightingEngine(final World world) {
         this.world = world;
         this.profiler = world.theProfiler;
@@ -194,7 +192,7 @@ public class LightingEngine implements ILightingEngine {
 
         final PooledLongQueue queue = this.queuedLightUpdates[lightType.ordinal()];
 
-        // Quickly check if the queue is empty before we acquire a more expensive lock.
+        // Quickly check if the queue is empty before we try to process it.
         if (queue.isEmpty()) {
             return;
         }
@@ -205,10 +203,6 @@ public class LightingEngine implements ILightingEngine {
     @SideOnly(Side.CLIENT)
     private boolean isCallingFromMainThread() {
         return Minecraft.getMinecraft().func_152345_ab();
-    }
-
-    private void releaseLock() {
-        this.lock.unlock();
     }
 
     private void processLightUpdatesForTypeInner(final EnumSkyBlock lightType, final PooledLongQueue queue) {
