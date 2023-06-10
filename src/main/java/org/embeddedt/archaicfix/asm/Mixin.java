@@ -4,6 +4,7 @@ import cpw.mods.fml.relauncher.FMLLaunchHandler;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
+import org.embeddedt.archaicfix.helpers.DragonAPIHelper;
 
 import java.util.Collection;
 import java.util.List;
@@ -136,7 +137,8 @@ public enum Mixin {
 
     common_foodplus_MixinUpdater(Side.COMMON, Phase.LATE, require(TargetedMod.FOODPLUS).and(m -> ArchaicConfig.disableFoodPlusUpdates), "foodplus.MixinUpdater"),
 
-    common_dragonapi_MixinReikaWorldHelper(Side.COMMON, Phase.LATE, m -> !Boolean.valueOf(System.getProperty("archaicFix.disableFastReikaWorldHelper", "false")), "dragonapi.MixinReikaWorldHelper")
+    /** This mixin will ostensibly be unnecessary after DragonAPI V31b */
+    common_dragonapi_MixinReikaWorldHelper(Side.COMMON, Phase.LATE, m -> DragonAPIHelper.isVersionInInclusiveRange(0, 'a', 31, 'b') && !Boolean.valueOf(System.getProperty("archaicFix.disableFastReikaWorldHelper", "false")), "dragonapi.MixinReikaWorldHelper")
 
     // The modFilter argument is a predicate, so you can also use the .and(), .or(), and .negate() methods to mix and match multiple predicates.
     ;
