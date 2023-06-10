@@ -1,6 +1,7 @@
 package org.embeddedt.archaicfix.mixins.common.dragonapi;
 
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,9 +26,10 @@ public class MixinReikaWorldHelper {
         }
     }
 
-    @Inject(method = "isFakeWorld", at = @At("RETURN"))
-    private static void cacheIsFakeWorldPost(World world, CallbackInfoReturnable<Boolean> cir) {
-        arch$isWorldFake.put(world, cir.getReturnValue());
+    @ModifyReturnValue(method = "isFakeWorld", at = @At("RETURN"))
+    private static boolean cacheIsFakeWorldPost(boolean value, World world) {
+        arch$isWorldFake.put(world, value);
+        return value;
     }
 
 }
