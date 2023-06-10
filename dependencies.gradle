@@ -44,4 +44,5 @@ dependencies {
     }
 
     compileOnly files("deps/Food Plus Mod 1.7.10-deobf.jar")
+    compileOnly(deobfMaven(curseMaven, "curse.maven:dragonapi-235591:3574508"))
 }

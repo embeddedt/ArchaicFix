@@ -134,7 +134,9 @@ public enum Mixin {
 
     common_am2_MixinPlayerTracker(Side.COMMON, Phase.LATE, require(TargetedMod.AM2), "am2.MixinPlayerTracker"),
 
-    common_foodplus_MixinUpdater(Side.COMMON, Phase.LATE, require(TargetedMod.FOODPLUS).and(m -> ArchaicConfig.disableFoodPlusUpdates), "foodplus.MixinUpdater")
+    common_foodplus_MixinUpdater(Side.COMMON, Phase.LATE, require(TargetedMod.FOODPLUS).and(m -> ArchaicConfig.disableFoodPlusUpdates), "foodplus.MixinUpdater"),
+
+    common_dragonapi_MixinReikaWorldHelper(Side.COMMON, Phase.LATE, m -> !Boolean.valueOf(System.getProperty("archaicFix.disableFastReikaWorldHelper", "false")), "dragonapi.MixinReikaWorldHelper")
 
     // The modFilter argument is a predicate, so you can also use the .and(), .or(), and .negate() methods to mix and match multiple predicates.
     ;
