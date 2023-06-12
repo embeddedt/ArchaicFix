@@ -27,7 +27,8 @@ public enum TargetedMod {
     SHIPSMOD("ShipsMod", "cuchaz.ships"),
     JOURNEYMAP("JourneyMap", "journeymap"),
     AM2("ArsMagica2", "arsmagica2"),
-    FOODPLUS("FoodPlus", "FoodPlus")
+    FOODPLUS("FoodPlus", "FoodPlus"),
+    DIVERSITY("Diversity", "diversity")
     ;
 
     @Getter
