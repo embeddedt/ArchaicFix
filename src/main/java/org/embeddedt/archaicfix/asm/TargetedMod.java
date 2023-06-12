@@ -28,7 +28,8 @@ public enum TargetedMod {
     JOURNEYMAP("JourneyMap", "journeymap"),
     AM2("ArsMagica2", "arsmagica2"),
     FOODPLUS("FoodPlus", "FoodPlus"),
-    DIVERSITY("Diversity", "diversity")
+    DIVERSITY("Diversity", "diversity"),
+    AOA("AdventOfAscension", "nevermine")
     ;
 
     @Getter

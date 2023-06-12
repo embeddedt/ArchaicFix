@@ -133,6 +133,8 @@ public enum Mixin {
 
     client_journeymap_MixinTileDrawStep(Side.CLIENT, Phase.LATE, require(TargetedMod.JOURNEYMAP).and(m -> ArchaicConfig.removeJourneymapDebug), "journeymap.MixinTileDrawStep"),
 
+    client_aoa_MixinProjectileEntities(Side.CLIENT, Phase.LATE, require(TargetedMod.AOA), "aoa.MixinProjectileEntities"),
+
     common_am2_MixinPlayerTracker(Side.COMMON, Phase.LATE, require(TargetedMod.AM2), "am2.MixinPlayerTracker"),
 
     common_foodplus_MixinUpdater(Side.COMMON, Phase.LATE, require(TargetedMod.FOODPLUS).and(m -> ArchaicConfig.disableFoodPlusUpdates), "foodplus.MixinUpdater"),
