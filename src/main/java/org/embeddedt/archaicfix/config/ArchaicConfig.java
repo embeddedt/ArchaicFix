@@ -184,4 +184,8 @@ public class ArchaicConfig {
     @Config.Comment("Disable Food Plus' update message.")
     @Config.DefaultBoolean(true)
     public static boolean disableFoodPlusUpdates;
+
+    @Config.Comment("Add the Let's Encrypt root certificates to the default trust store.")
+    @Config.DefaultBoolean(false)
+    public static boolean enableLetsEncryptRoot;
 }

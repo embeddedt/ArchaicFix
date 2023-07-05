@@ -11,6 +11,7 @@ import org.embeddedt.archaicfix.asm.transformer.VampirismTransformer;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
 import org.embeddedt.archaicfix.config.ConfigException;
 import org.embeddedt.archaicfix.config.ConfigurationManager;
+import org.embeddedt.archaicfix.helpers.LetsEncryptHelper;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,6 +27,7 @@ public class ArchaicCore implements IFMLLoadingPlugin, IEarlyMixinLoader {
         } catch(ConfigException e) {
             throw new RuntimeException(e);
         }
+        LetsEncryptHelper.replaceSSLContext();
     }
     @Override
     public String[] getASMTransformerClass() {
