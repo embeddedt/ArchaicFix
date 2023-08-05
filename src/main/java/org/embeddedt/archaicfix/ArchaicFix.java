@@ -48,7 +48,7 @@ public class ArchaicFix
             ArchaicLogger.LOGGER.fatal("=================== WARNING ===================");
             ArchaicLogger.LOGGER.fatal("A version of GG Util that includes threaded lighting was detected. ArchaicFix has prevented launching to avoid issues. Please download a fixed version of GG Util: https://www.curseforge.com/minecraft/mc-mods/gilded-game-utils-fix.");
             ArchaicLogger.LOGGER.fatal("===============================================");
-            throw new UnsupportedOperationException("Bad GG Util version");
+            throw new UnsupportedOperationException("Please download a fixed version of GG Util: https://www.curseforge.com/minecraft/mc-mods/gilded-game-utils-fix");
         } catch(ClassNotFoundException e) {
 
         }
