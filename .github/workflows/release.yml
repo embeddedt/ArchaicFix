@@ -36,6 +36,7 @@ jobs:
         run: ./gradlew publish
         env:
           CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
 
       - name: Release under current tag
         uses: "marvinpinto/action-automatic-releases@latest"
