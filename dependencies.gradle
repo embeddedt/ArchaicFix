@@ -2,8 +2,8 @@
 
 dependencies {
     // Provides deobf support like in FG2
-    compileOnly('com.github.GTNewHorizons:CodeChickenLib:1.1.8:dev')
-    compileOnly('com.github.GTNewHorizons:CodeChickenCore:1.1.11:dev')
+    implementation('com.github.GTNewHorizons:CodeChickenLib:1.1.8:dev')
+    implementation('com.github.GTNewHorizons:CodeChickenCore:1.1.11:dev')
     compileOnly("curse.maven:chickenchunks-229316:2233250")
     compileOnly("mrtjp:MrTJPCore:1.7.10-1.1.0.33:dev") {
         transitive = false
