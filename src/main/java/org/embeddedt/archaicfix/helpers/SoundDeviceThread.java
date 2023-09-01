@@ -1,6 +1,5 @@
 package org.embeddedt.archaicfix.helpers;
 
-import akka.util.Reflect;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundHandler;
@@ -18,6 +17,7 @@ public class SoundDeviceThread extends Thread {
     private static final int ALC_CONNECTED = 0x313;
     public SoundDeviceThread() {
         setName("Default Sound Device Checker");
+        setDaemon(true);
     }
     private String getDefault() {
         return ALC10.alcGetString(null, ALC10.ALC_DEFAULT_DEVICE_SPECIFIER);
