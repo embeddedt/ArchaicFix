@@ -33,7 +33,7 @@ public class LateMixinPlugin implements ILateMixinLoader {
         }
         LOGGER.info("Detected mods: [" + validMods.stream().map(TargetedMod::name).collect(Collectors.joining(", ")) + "]");
         for(Mixin mixin : Mixin.values()) {
-            if(mixin.getPhase() == Mixin.Phase.LATE && mixin.getFilter().test(validMods))
+            if(mixin.getPhase() == Mixin.Phase.LATE && mixin.shouldLoadSide() && mixin.getFilter().test(validMods))
                 mixins.add(mixin.getMixin());
         }
         return mixins;
