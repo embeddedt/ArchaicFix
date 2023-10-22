@@ -6,6 +6,8 @@ import net.minecraft.client.gui.GuiScreenWorking;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.server.integrated.IntegratedServer;
+import net.minecraft.util.Util;
+import org.lwjgl.opengl.Display;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,6 +24,8 @@ public abstract class MixinMinecraft {
     @Shadow public abstract void displayGuiScreen(GuiScreen p_147108_1_);
 
     @Shadow public GuiScreen currentScreen;
+
+    @Shadow private boolean fullscreen;
 
     /** @reason Makes grass display as fancy regardless of the graphics setting. Matches the appearance of 1.8+ */
     @Redirect(method = "runGameLoop", at = @At(value = "FIELD", target = "Lnet/minecraft/client/settings/GameSettings;fancyGraphics:Z"))
@@ -64,5 +68,17 @@ public abstract class MixinMinecraft {
     @Redirect(method = "runGameLoop", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;isActive()Z", remap = false))
     private boolean alwaysHaveDisplayActive() {
         return true;
+    }
+
+    /**
+     * @author embeddedt
+     * @reason fix MC-68754
+     */
+    @Inject(method = "toggleFullscreen", at = @At("RETURN"))
+    private void resetResizeableFlag(CallbackInfo ci) {
+        if (!this.fullscreen && Util.getOSType() == Util.EnumOS.WINDOWS) {
+            Display.setResizable(false);
+            Display.setResizable(true);
+        }
     }
 }
