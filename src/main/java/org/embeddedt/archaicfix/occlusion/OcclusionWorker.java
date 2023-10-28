@@ -49,6 +49,8 @@ public class OcclusionWorker {
      */
     private boolean[] isWRInFrustum;
 
+    private boolean allVis = false;
+
     private final Minecraft mc = Minecraft.getMinecraft();
 
     private RenderGlobal getRender() {
@@ -71,6 +73,9 @@ public class OcclusionWorker {
         if (theWorld == null || view == null) {
             return;
         }
+
+        allVis = mc.playerController.currentGameType.getID() == 3;
+
         long t0 = DEBUG_PRINT_QUEUE_ITERATIONS ? System.nanoTime() : 0;
 
         Frustrum frustum = getFrustum();
@@ -195,13 +200,7 @@ public class OcclusionWorker {
     }
 
     private boolean canStep(CullInfo info, StepDirection stepPos) {
-        boolean allVis = mc.playerController.currentGameType.getID() == 3;
-
-        if (!allVis && !SetVisibility.isVisible(info.vis[0], info.dir.getOpposite().facing, stepPos.facing)) {
-            return false;
-        }
-
-        return true;
+        return allVis || SetVisibility.isVisible(info.vis[0], info.dir.getOpposite().facing, stepPos.facing);
     }
 
     private void maybeEnqueueNeighbor(CullInfo info, StepDirection stepPos, Collection<CullInfo> queue, Frustrum frustum) {
