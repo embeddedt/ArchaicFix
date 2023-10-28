@@ -8,6 +8,8 @@ import net.minecraft.world.chunk.Chunk;
 import org.embeddedt.archaicfix.occlusion.util.IntStack;
 
 public class OcclusionHelpers {
+    public static final EnumFacing[] FACING_VALUES = EnumFacing.values();
+
     public static OcclusionWorker worker;
     public static OcclusionRenderer renderer;
     public static long chunkUpdateDeadline;

@@ -7,7 +7,7 @@ import net.minecraft.util.EnumFacing;
 
 public class SetVisibility {
 
-	private static final int COUNT_FACES = EnumFacing.values().length;
+	private static final int COUNT_FACES = OcclusionHelpers.FACING_VALUES.length;
 
 	public static long setManyVisible(long bitSet, Set<EnumFacing> faces) {
 		Iterator<EnumFacing> iterator = faces.iterator();
@@ -48,7 +48,7 @@ public class SetVisibility {
 
 		StringBuilder stringbuilder = new StringBuilder();
 		stringbuilder.append(' ');
-		EnumFacing[] aenumfacing = EnumFacing.values();
+		EnumFacing[] aenumfacing = OcclusionHelpers.FACING_VALUES;
 		int i = aenumfacing.length;
 		int j;
 		EnumFacing enumfacing;
@@ -59,13 +59,13 @@ public class SetVisibility {
 		}
 
 		stringbuilder.append('\n');
-		aenumfacing = EnumFacing.values();
+		aenumfacing = OcclusionHelpers.FACING_VALUES;
 		i = aenumfacing.length;
 
 		for (j = 0; j < i; ++j) {
 			enumfacing = aenumfacing[j];
 			stringbuilder.append(enumFacingToStringFixed(enumfacing).toUpperCase().charAt(0));
-			EnumFacing[] aenumfacing1 = EnumFacing.values();
+			EnumFacing[] aenumfacing1 = OcclusionHelpers.FACING_VALUES;
 			int k = aenumfacing1.length;
 
 			for (int l = 0; l < k; ++l) {

@@ -128,7 +128,7 @@ public class VisGraph {
 		BitSet blocks = this.visibleBlocks;
 		blocks.set(index, true);
 
-		EnumFacing[] facings = EnumFacing.values();
+		EnumFacing[] facings = OcclusionHelpers.FACING_VALUES;
 		int k = facings.length;
 		while (!linkedlist.isEmpty()) {
 			int j = linkedlist.poll();

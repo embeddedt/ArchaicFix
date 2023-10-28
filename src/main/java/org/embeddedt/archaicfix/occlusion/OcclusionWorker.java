@@ -390,7 +390,7 @@ public class OcclusionWorker {
         public boolean isFrustumCheckPending;
 
         public CullInfo() {
-            this.neighbors = new CullInfo[EnumFacing.values().length];
+            this.neighbors = new CullInfo[OcclusionHelpers.FACING_VALUES.length];
             this.visGraph = DUMMY;
             this.vis = visGraph.getVisibilityArray();
         }
