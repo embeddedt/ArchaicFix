@@ -90,7 +90,6 @@ public class OcclusionRenderer {
         final int height = rg.renderChunksTall;
         final int depth = rg.renderChunksDeep;
         final WorldRenderer[] worldRenderers = rg.worldRenderers;
-        boolean rebuild = false;
 
         for (int i = xStart; i <= xEnd; ++i) {
             int x = i % width;
@@ -109,22 +108,12 @@ public class OcclusionRenderer {
 
                     if (!worldrenderer.needsUpdate || (worldrenderer.isVisible && !((IWorldRenderer)worldrenderer).arch$isInUpdateList())) {
                         worldrenderer.markDirty();
-                        //if (worldrenderer.distanceToEntitySquared(mc.renderViewEntity) <= 2883.0F) {
-                            Chunk chunk = rg.theWorld.getChunkFromBlockCoords(worldrenderer.posX, worldrenderer.posZ);
-                            if (((ICulledChunk) chunk).getVisibility()[worldrenderer.posY >> 4].isRenderDirty()) {
-                                rebuild = true;
-                            }
-                        //}
-                        addRendererToUpdateQueue(worldrenderer);
+                        OcclusionHelpers.worker.dirty = true;
                     } else {
                         for(IRenderGlobalListener l : eventListeners) l.onDirtyRendererChanged(worldrenderer);
                     }
                 }
             }
-        }
-
-        if (rebuild) {
-            OcclusionHelpers.worker.dirty = true;
         }
     }
 
@@ -165,15 +154,6 @@ public class OcclusionRenderer {
                 ((IWorldRenderer)wr).arch$setInUpdateList(false);
             }
             worldRenderersToUpdateList.clear();
-        } else {
-            throw new AssertionError("Transformer applied to the wrong List.clear method");
-        }
-    }
-
-    public boolean sortAndAddRendererUpdateQueue(List instance, Object renderer) {
-        if(instance == rg.worldRenderersToUpdate) {
-            addRendererToUpdateQueue((WorldRenderer)renderer);
-            return true;
         } else {
             throw new AssertionError("Transformer applied to the wrong List.clear method");
         }
