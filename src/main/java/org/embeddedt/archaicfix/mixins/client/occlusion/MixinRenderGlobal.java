@@ -56,7 +56,7 @@ public abstract class MixinRenderGlobal {
 
     @Redirect(method = { "loadRenderers", "markRenderersForNewPosition" }, at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", ordinal = 0))
     private boolean sortAndAddRendererUpdateQueue(List instance, Object renderer) {
-        return OcclusionHelpers.renderer.sortAndAddRendererUpdateQueue(instance, renderer);
+        return false;
     }
 
     @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/OpenGlCapsChecker;checkARBOcclusion()Z"))

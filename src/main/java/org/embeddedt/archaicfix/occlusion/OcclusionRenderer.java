@@ -66,35 +66,7 @@ public class OcclusionRenderer {
     private void addRendererToUpdateQueue(WorldRenderer wr) {
         if(!((IWorldRenderer)wr).arch$isInUpdateList()) {
             ((IWorldRenderer)wr).arch$setInUpdateList(true);
-            if(mc.renderViewEntity == null || resortUpdateList) {
-                worldRenderersToUpdateList.add(wr);
-                resortUpdateList = true;
-                return;
-            }
-            if(worldRenderersToUpdateList.size() > 0) {
-                double targetDistance = WorldRendererDistanceHelper.betterDistanceSquared(mc.renderViewEntity, wr);
-                int low = 0;
-                int high = worldRenderersToUpdateList.size() - 1;
-                int finalIndex = -1;
-                while(low <= high) {
-                    int mid = low + (high - low) / 2;
-                    WorldRenderer other = worldRenderersToUpdateList.get(mid);
-                    double otherDistance = WorldRendererDistanceHelper.betterDistanceSquared(mc.renderViewEntity, other);
-                    if(otherDistance < targetDistance) {
-                        low = mid + 1;
-                    } else if(otherDistance > targetDistance) {
-                        high = mid - 1;
-                    } else {
-                        finalIndex = mid;
-                        break;
-                    }
-                }
-                if(finalIndex == -1)
-                    finalIndex = high;
-                worldRenderersToUpdateList.add(finalIndex+1, wr);
-            } else {
-                worldRenderersToUpdateList.add(wr);
-            }
+            worldRenderersToUpdateList.add(wr);
         }
     }
     
@@ -294,14 +266,7 @@ public class OcclusionRenderer {
             cameraStaticTime = 0;
         }
 
-        /*
-         * Under certain scenarios (such as renderer.setPosition being called, or the player moving), renderers will]
-         * have their distance from the player change. We address that here by sorting the list.
-         */
-        if(resortUpdateList) {
-            worldRenderersToUpdateList.sort(new BasicDistanceSorter(mc.renderViewEntity));
-            resortUpdateList = false;
-        }
+
         if (!rg.worldRenderersToUpdate.isEmpty()) {
             ++frameCounter;
             boolean doUpdateAcceleration = cameraStaticTime > 2 && !OcclusionHelpers.DEBUG_LAZY_CHUNK_UPDATES
@@ -315,6 +280,8 @@ public class OcclusionRenderer {
         int yaw = MathHelper.floor_float(view.rotationYaw + 45) >> 4;
         int pitch = MathHelper.floor_float(view.rotationPitch + 45) >> 4;
         if (OcclusionHelpers.worker.dirty || cameraRotated || OcclusionHelpers.DEBUG_ALWAYS_RUN_OCCLUSION) {
+            // Clear the update queue, the graph search will repopulate it in the correct order
+            OcclusionHelpers.renderer.clearRendererUpdateQueue(rg.worldRenderersToUpdate);
             OcclusionHelpers.worker.run(true);
             PreviousActiveRenderInfo.update();
         }
@@ -369,7 +336,7 @@ public class OcclusionRenderer {
     public void setPositionAndMarkInvisible(WorldRenderer wr, int x, int y, int z) {
         wr.setPosition(x, y, z);
         if(((IWorldRenderer)wr).arch$isInUpdateList())
-            resortUpdateList = true;
+            OcclusionHelpers.worker.dirty = true;
         if(!wr.isInitialized) {
             wr.isWaitingOnOcclusionQuery = false;
             wr.isVisible = false;
@@ -413,7 +380,7 @@ public class OcclusionRenderer {
             rg.prevChunkSortY = cam.getChunkCoordY();
             rg.prevChunkSortZ = cam.getChunkCoordZ();
             rg.markRenderersForNewPosition(MathHelper.floor_double(cam.getX()), MathHelper.floor_double(cam.getY()), MathHelper.floor_double(cam.getZ()));
-            resortUpdateList = true;
+            OcclusionHelpers.worker.dirty = true;
         }
         rg.theWorld.theProfiler.endSection();
 
