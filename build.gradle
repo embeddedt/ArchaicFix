@@ -1,4 +1,4 @@
-//version: 1697697256
+//version: 1702141377
 /*
  DO NOT CHANGE THIS FILE!
  Also, you may replace this file at any time if there is an update available.
@@ -28,27 +28,12 @@ import java.util.concurrent.TimeUnit
 
 buildscript {
     repositories {
-        mavenCentral()
-
-        maven {
-            name 'forge'
-            url 'https://maven.minecraftforge.net'
-        }
         maven {
             // GTNH RetroFuturaGradle and ASM Fork
             name "GTNH Maven"
             url "http://jenkins.usrv.eu:8081/nexus/content/groups/public/"
             allowInsecureProtocol = true
         }
-        maven {
-            name 'sonatype'
-            url 'https://oss.sonatype.org/content/repositories/snapshots/'
-        }
-        maven {
-            name 'Scala CI dependencies'
-            url 'https://repo1.maven.org/maven2/'
-        }
-
         mavenLocal()
     }
 }
@@ -69,7 +54,7 @@ plugins {
     id 'com.diffplug.spotless' version '6.13.0' apply false // 6.13.0 is the last jvm8 supporting version
     id 'com.modrinth.minotaur' version '2.+' apply false
     id 'com.matthewprenger.cursegradle' version '1.4.0' apply false
-    id 'com.gtnewhorizons.retrofuturagradle' version '1.3.24'
+    id 'com.gtnewhorizons.retrofuturagradle' version '1.3.26'
 //PatchStart
     id 'io.github.legacymoddingmc.mappinggenerator' version '0.1.2'
 //PatchEnd
@@ -305,7 +290,7 @@ if (apiPackage) {
 }
 
 if (accessTransformersFile) {
-    for (atFile in accessTransformersFile.split(",")) {
+    for (atFile in accessTransformersFile.split(" ")) {
         String targetFile = "src/main/resources/META-INF/" + atFile.trim()
         if (!getFile(targetFile).exists()) {
             throw new GradleException("Could not resolve \"accessTransformersFile\"! Could not find " + targetFile)
@@ -631,7 +616,7 @@ repositories {
         }
         maven {
             name = "ic2"
-            url = getURL("https://maven.ic2.player.to/", "https://maven2.ic2.player.to/")
+            url = getURL("https://maven2.ic2.player.to/", "https://maven.ic2.player.to/")
             content {
                 includeGroup "net.industrial-craft"
             }
@@ -649,7 +634,7 @@ repositories {
 
 def mixinProviderGroup = "io.github.legacymoddingmc"
 def mixinProviderModule = "unimixins"
-def mixinProviderVersion = "0.1.7.1"
+def mixinProviderVersion = "0.1.13"
 def mixinProviderSpecNoClassifer = "${mixinProviderGroup}:${mixinProviderModule}:${mixinProviderVersion}"
 def mixinProviderSpec = "${mixinProviderSpecNoClassifer}:dev"
 ext.mixinProviderSpec = mixinProviderSpec
@@ -690,6 +675,8 @@ configurations.all {
         substitute module('com.github.GTNewHorizons:SpongePoweredMixin') using module(mixinProviderSpecNoClassifer) withClassifier("dev") because("Unimixins replaces other mixin mods")
         substitute module('com.github.GTNewHorizons:SpongeMixins') using module(mixinProviderSpecNoClassifer) withClassifier("dev") because("Unimixins replaces other mixin mods")
         substitute module('io.github.legacymoddingmc:unimixins') using module(mixinProviderSpecNoClassifer) withClassifier("dev") because("Our previous unimixins upload was missing the dev classifier")
+
+        substitute module('org.scala-lang:scala-library:2.11.1') using module('org.scala-lang:scala-library:2.11.5') because('To allow mixing with Java 8 targets')
     }
 }
 
@@ -796,12 +783,12 @@ ext.java17PatchDependenciesCfg = configurations.create("java17PatchDependencies"
 }
 
 dependencies {
-    def lwjgl3ifyVersion = '1.5.1'
+    def lwjgl3ifyVersion = '1.5.7'
     if (modId != 'lwjgl3ify') {
         java17Dependencies("com.github.GTNewHorizons:lwjgl3ify:${lwjgl3ifyVersion}")
     }
     if (modId != 'hodgepodge') {
-        java17Dependencies('com.github.GTNewHorizons:Hodgepodge:2.3.17')
+        java17Dependencies('com.github.GTNewHorizons:Hodgepodge:2.3.35')
     }
 
     java17PatchDependencies("com.github.GTNewHorizons:lwjgl3ify:${lwjgl3ifyVersion}:forgePatches") {transitive = false}
@@ -1190,9 +1177,8 @@ publishing {
             version = System.getenv("RELEASE_VERSION") ?: identifiedVersion
         }
     }
-
     repositories {
-        if (usesMavenPublishing.toBoolean()) {
+        if (usesMavenPublishing.toBoolean() && System.getenv("MAVEN_USER") != null) {
             maven {
                 url = mavenPublishUrl
                 allowInsecureProtocol = mavenPublishUrl.startsWith("http://") // Mostly for the GTNH maven
@@ -1314,7 +1300,7 @@ def addCurseForgeRelation(String type, String name) {
 
 // Updating
 
-def buildscriptGradleVersion = "8.2.1"
+def buildscriptGradleVersion = "8.5"
 
 tasks.named('wrapper', Wrapper).configure {
     gradleVersion = buildscriptGradleVersion
