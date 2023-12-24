@@ -19,7 +19,6 @@ import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraftforge.common.MinecraftForge;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
 import org.embeddedt.archaicfix.ducks.IAcceleratedRecipe;
-import org.embeddedt.archaicfix.threadedupdates.ThreadedChunkUpdateHelper;
 import org.embeddedt.archaicfix.proxy.CommonProxy;
 import org.embeddedt.archaicfix.recipe.IFasterCraftingManager;
 import thaumcraft.api.ThaumcraftApi;
@@ -74,13 +73,7 @@ public class ArchaicFix
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        if(event.getSide() == Side.CLIENT) {
-            if(ArchaicConfig.enableThreadedChunkUpdates
-                    && ArchaicConfig.enableOcclusionTweaks) {
-                ThreadedChunkUpdateHelper.instance = new ThreadedChunkUpdateHelper();
-                ThreadedChunkUpdateHelper.instance.init();
-            }
-        }
+
     }
 
     @EventHandler

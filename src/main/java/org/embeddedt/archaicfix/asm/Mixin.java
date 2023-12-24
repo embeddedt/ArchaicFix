@@ -101,20 +101,9 @@ public enum Mixin {
 
     client_optifine_MixinVersionCheckThread(Side.CLIENT, Phase.EARLY, require(TargetedMod.OPTIFINE).and(m -> ArchaicConfig.disableOFVersionCheck), "optifine.MixinVersionCheckThread"),
 
-    client_occlusion_MixinChunk(Side.CLIENT, Phase.EARLY, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.enableOcclusionTweaks), "occlusion.MixinChunk"),
-    client_occlusion_MixinEntityRenderer(Side.CLIENT, Phase.EARLY, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.enableOcclusionTweaks), "occlusion.MixinEntityRenderer"),
-    client_occlusion_MixinRenderGlobal(Side.CLIENT, Phase.EARLY, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.enableOcclusionTweaks), "occlusion.MixinRenderGlobal"),
-    client_occlusion_MixinGuiVideoSettings(Side.CLIENT, Phase.EARLY, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.enableOcclusionTweaks), "occlusion.MixinGuiVideoSettings"),
-    client_occlusion_MixinWorldRenderer(Side.CLIENT, Phase.EARLY, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.enableOcclusionTweaks), "occlusion.MixinWorldRenderer"),
-
     client_renderdistance_MixinGameSettings(Side.CLIENT, Phase.EARLY, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.raiseMaxRenderDistance), "renderdistance.MixinGameSettings"),
     client_renderdistance_MixinRenderGlobal(Side.CLIENT, Phase.EARLY, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.raiseMaxRenderDistance), "renderdistance.MixinRenderGlobal"),
     common_renderdistance_MixinPlayerManager(Side.COMMON, Phase.EARLY, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.raiseMaxRenderDistance), "renderdistance.MixinPlayerManager"),
-
-    client_threadedupdates_MixinRenderBlocks(Side.CLIENT, Phase.EARLY, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.enableThreadedChunkUpdates && ArchaicConfig.enableOcclusionTweaks), "threadedupdates.MixinRenderBlocks"),
-    client_threadedupdates_MixinWorldRenderer(Side.CLIENT, Phase.EARLY, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.enableThreadedChunkUpdates && ArchaicConfig.enableOcclusionTweaks), "threadedupdates.MixinWorldRenderer"),
-    client_threadedupdates_MixinTessellator(Side.CLIENT, Phase.EARLY, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.enableThreadedChunkUpdates && ArchaicConfig.enableOcclusionTweaks), "threadedupdates.MixinTessellator"),
-    client_threadedupdates_MixinTessellator_Debug(Side.CLIENT, Phase.EARLY, avoid(TargetedMod.OPTIFINE).and(avoid(TargetedMod.FASTCRAFT)).and(m -> ArchaicConfig.enableThreadedChunkUpdates && ArchaicConfig.enableOcclusionTweaks && Boolean.parseBoolean(System.getProperty("archaicfix.debug.verifyTessellatorAccessThread"))), "threadedupdates.MixinTessellator_Debug"),
 
     // MOD-FILTERED MIXINS
     common_lighting_fastcraft_MixinChunk(Side.COMMON, Phase.EARLY, require(TargetedMod.FASTCRAFT).and(phosphor()), "lighting.fastcraft.MixinChunk"),
