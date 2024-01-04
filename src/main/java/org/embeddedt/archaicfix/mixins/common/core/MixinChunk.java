@@ -13,7 +13,6 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
 import org.embeddedt.archaicfix.ArchaicLogger;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
-import org.embeddedt.archaicfix.ducks.IArchaicWorld;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -48,15 +47,6 @@ public class MixinChunk {
         for (final EntityPlayer player : players) {
             worldObj.updateEntityWithOptionalForce(player, false);
         }
-    }
-
-    @Redirect(method = "onChunkUnload", at = @At(value = "INVOKE", target = "Ljava/util/Collection;iterator()Ljava/util/Iterator;", ordinal = 0))
-    private Iterator markTEForUnload(Collection instance) {
-        if(ArchaicConfig.fixTEUnloadLag) {
-            ((IArchaicWorld)this.worldObj).arch$markTileEntitiesInChunkForRemoval((Chunk)(Object)this);
-            return Iterators.emptyIterator();
-        }
-        return instance.iterator();
     }
 
     @Inject(method = "getBiomeGenForWorldCoords", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/biome/WorldChunkManager;getBiomeGenAt(II)Lnet/minecraft/world/biome/BiomeGenBase;"), cancellable = true)
