@@ -152,7 +152,7 @@ public abstract class MixinWorld {
         if (ArchaicConfig.fixTEUnloadLag) {
             // Arbitrary number chosen because contains() will be fast enough on a tiny list
             if(objects.size() > 3) {
-                Set toRemove = Collections.newSetFromMap(new IdentityHashMap<>());
+                Set toRemove = Collections.newSetFromMap(new IdentityHashMap<>(objects.size()));
                 toRemove.addAll(objects);
                 objects = toRemove;
             }
