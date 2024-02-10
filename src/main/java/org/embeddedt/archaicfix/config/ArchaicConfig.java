@@ -164,4 +164,8 @@ public class ArchaicConfig {
     @Config.Comment("Add the Let's Encrypt root certificates to the default trust store.")
     @Config.DefaultBoolean(false)
     public static boolean enableLetsEncryptRoot;
+
+    @Config.Comment("Allow entities to be hit through grass, instead of breaking the grass plant")
+    @Config.DefaultBoolean(true)
+    public static boolean enableHitThroughGrassFix;
 }

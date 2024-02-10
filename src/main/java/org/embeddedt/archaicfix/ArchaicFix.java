@@ -61,7 +61,9 @@ public class ArchaicFix
             ReflectionHelper.setPrivateValue(Entity.class, null, 1, "field_70152_a", "nextEntityID");
             ArchaicLogger.LOGGER.info("Fixed MC-111480");
         }
-        MinecraftForge.EVENT_BUS.register(new LeftClickEventHandler());
+        if(ArchaicConfig.enableHitThroughGrassFix) {
+            MinecraftForge.EVENT_BUS.register(new LeftClickEventHandler());
+        }
         helper = new FixHelper();
         MinecraftForge.EVENT_BUS.register(helper);
         FMLCommonHandler.instance().bus().register(helper);
