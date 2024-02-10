@@ -29,6 +29,7 @@ public enum TargetedMod {
     AM2("ArsMagica2", "arsmagica2"),
     FOODPLUS("FoodPlus", "FoodPlus"),
     DIVERSITY("Diversity", "diversity"),
+    WAYSTONES("Waystones", "waystones"),
     AOA("AdventOfAscension", "nevermine")
     ;
 

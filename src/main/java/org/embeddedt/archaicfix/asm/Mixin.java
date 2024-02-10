@@ -128,6 +128,8 @@ public enum Mixin {
 
     common_foodplus_MixinUpdater(Side.COMMON, Phase.LATE, require(TargetedMod.FOODPLUS).and(m -> ArchaicConfig.disableFoodPlusUpdates), "foodplus.MixinUpdater"),
 
+    common_waystones_MixinItemWarpStone(Side.COMMON, Phase.LATE, require(TargetedMod.WAYSTONES), "waystones.MixinItemWarpStone"),
+
     /** This mixin will ostensibly be unnecessary after DragonAPI V31b */
     common_dragonapi_MixinReikaWorldHelper(Side.COMMON, Phase.LATE, m -> DragonAPIHelper.isVersionInInclusiveRange(0, 'a', 31, 'b') && !Boolean.valueOf(System.getProperty("archaicFix.disableFastReikaWorldHelper", "false")), "dragonapi.MixinReikaWorldHelper"),
 
