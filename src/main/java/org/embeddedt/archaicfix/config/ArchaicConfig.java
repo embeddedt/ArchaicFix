@@ -168,4 +168,8 @@ public class ArchaicConfig {
     @Config.Comment("Allow entities to be hit through grass, instead of breaking the grass plant")
     @Config.DefaultBoolean(true)
     public static boolean enableHitThroughGrassFix;
+
+    @Config.Comment("Fix vanilla issues with entities spawned as part of structures not being marked persistent (e.g. MC-108664)")
+    @Config.DefaultBoolean(true)
+    public static boolean fixEntityStructurePersistence;
 }

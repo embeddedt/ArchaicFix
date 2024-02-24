@@ -52,6 +52,7 @@ public enum Mixin {
     common_core_MixinEmbeddedChannel(Side.COMMON, Phase.EARLY, m -> ArchaicConfig.fixLoginRaceCondition, "core.MixinEmbeddedChannel"),
     common_core_MixinNetHandlerPlayServer(Side.COMMON, Phase.EARLY, always(), "core.MixinNetHandlerPlayServer"),
     common_core_MixinObjectIntIdentityMap(Side.COMMON, Phase.EARLY, m -> ArchaicConfig.optimizeObjectIntIdentityMap, "core.MixinObjectIntIdentityMap"),
+    common_core_MixinSwampHut(Side.COMMON, Phase.EARLY, m -> ArchaicConfig.fixEntityStructurePersistence, "core.MixinSwampHut"),
     common_gt6_MixinAdvancedCraftingXToY(Side.COMMON, Phase.LATE, require(TargetedMod.GREGTECH6), "gt6.MixinAdvancedCraftingXToY"),
     common_gt6_MixinGT6_Main(Side.COMMON, Phase.LATE, require(TargetedMod.GREGTECH6), "gt6.MixinGT6_Main"),
     common_gt6_MixinCR(Side.COMMON, Phase.LATE, require(TargetedMod.GREGTECH6), "gt6.MixinCR"),
