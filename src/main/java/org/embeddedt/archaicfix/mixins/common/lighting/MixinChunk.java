@@ -1,7 +1,6 @@
 package org.embeddedt.archaicfix.mixins.common.lighting;
 
 import net.minecraft.block.Block;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.EnumSkyBlock;
@@ -68,10 +67,6 @@ public abstract class MixinChunk implements IChunkLighting, IChunkLightingData, 
         LightingHooks.initSkylightForSection(this.worldObj, (Chunk) (Object) this, this.storageArrays[y >> 4]);
     }
 
-    private int getBlockLightOpacity(int x, int y, int z) {
-        return this.getBlock(x, y, z).getLightOpacity(this.worldObj, x, y, z);
-    }
-
     /**
      * @reason Overwrites relightBlock with a more efficient implementation.
      * @author Angeline
@@ -85,7 +80,7 @@ public abstract class MixinChunk implements IChunkLighting, IChunkLightingData, 
             j = y;
         }
 
-        while (j > 0 && this.getBlockLightOpacity(x, j - 1, z) == 0) {
+        while (j > 0 && this.func_150808_b(x, j - 1, z) == 0) {
             --j;
         }
 
@@ -353,6 +348,8 @@ public abstract class MixinChunk implements IChunkLighting, IChunkLightingData, 
     @Shadow public boolean isModified;
 
     @Shadow private int queuedLightChecks;
+
+    @Shadow public abstract int func_150808_b(int p_150808_1_, int p_150808_2_, int p_150808_3_);
 
     @Override
     public void setSkylightUpdatedPublic() {
