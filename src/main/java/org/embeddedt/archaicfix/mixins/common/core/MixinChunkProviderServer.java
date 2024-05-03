@@ -1,5 +1,7 @@
 package org.embeddedt.archaicfix.mixins.common.core;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.WorldChunkManager;
 import net.minecraft.world.chunk.Chunk;
@@ -7,6 +9,7 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.DimensionManager;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
+import org.embeddedt.archaicfix.helpers.CascadeDetectionHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -39,5 +42,10 @@ public abstract class MixinChunkProviderServer {
             }
         }
         return chunk;
+    }
+
+    @WrapOperation(method = "originalLoadChunk", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/Chunk;populateChunk(Lnet/minecraft/world/chunk/IChunkProvider;Lnet/minecraft/world/chunk/IChunkProvider;II)V", remap = true), remap = false)
+    private void populate2WithCascade(Chunk chunk, IChunkProvider prov1, IChunkProvider prov2, int x, int z, Operation<Void> operation) {
+        CascadeDetectionHelper.arch$populateWithCascadeDetection(chunk, () -> operation.call(chunk, prov1, prov2, x, z));
     }
 }

@@ -24,6 +24,7 @@ public enum Mixin {
     common_core_MixinAxisAlignedBB(Side.COMMON, Phase.EARLY, always(), "core.MixinAxisAlignedBB"),
     common_core_MixinMaterialLiquid(Side.COMMON, Phase.EARLY, always(), "core.MixinMaterialLiquid"),
     common_core_MixinChunkProviderServer(Side.COMMON, Phase.EARLY, always(), "core.MixinChunkProviderServer"),
+    common_core_MixinChunkIOProvider(Side.COMMON, Phase.EARLY, always(), "core.MixinChunkIOProvider"),
     common_core_MixinCraftingManager(Side.COMMON, Phase.EARLY, always(), "core.MixinCraftingManager"),
     common_core_MixinSpawnerAnimals(Side.COMMON, Phase.EARLY, always(), "core.MixinSpawnerAnimals"),
     common_core_MixinShapedOreRecipe(Side.COMMON, Phase.EARLY, always(), "core.MixinShapedOreRecipe"),
