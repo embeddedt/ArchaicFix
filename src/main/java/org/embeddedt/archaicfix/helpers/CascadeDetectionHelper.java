@@ -40,7 +40,7 @@ public class CascadeDetectionHelper {
 
     private static ModContainer findModContainer() {
         for(Class<?> clz : getCallingStack()) {
-            if(clz.getName().startsWith("net.minecraft") || clz.getName().startsWith("org.embeddedt.archaicfix")) {
+            if(clz.getName().startsWith("net.minecraft") || clz.getName().startsWith("org.embeddedt.archaicfix") || clz.getName().startsWith("cpw.mods.fml")) {
                 continue;
             }
             int idx = clz.getName().lastIndexOf('.');
