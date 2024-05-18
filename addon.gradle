@@ -1,5 +1,7 @@
 ext.mappingGeneratorVersion = "0.1.2"
-apply from: 'https://raw.githubusercontent.com/LegacyModdingMC/MappingGenerator/master/extras/auto-patch-examplemod.gradle'
+
+// FIXME seems to be broken with newer script
+//apply from: 'https://raw.githubusercontent.com/LegacyModdingMC/MappingGenerator/master/extras/auto-patch-examplemod.gradle'
 
 if(Boolean.valueOf(project.properties["rfg.profiling"] ?: "false")) {
     minecraft.extraRunJvmArguments = minecraft.extraRunJvmArguments.get().findAll { !it.startsWith("-Dmixin.debug") }
