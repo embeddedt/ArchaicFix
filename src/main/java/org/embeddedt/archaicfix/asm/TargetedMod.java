@@ -13,7 +13,7 @@ public enum TargetedMod {
     CHUNK_PREGENERATOR("ChunkPregenerator", "chunkpregenerator"),
     THERMALEXPANSION("ThermalExpansion", "ThermalExpansion"),
     THERMALFOUNDATION("ThermalFoundation", "ThermalFoundation"),
-    GREGTECH6("GregTech", "gregtech"),
+    GREGTECH6("GregTech", "gregapi"),
     MATTEROVERDRIVE("MatterOverdrive", "mo"),
     PROJECTE("ProjectE", "ProjectE"),
     TC4TWEAKS("TC4Tweaks", "tc4tweak"),
