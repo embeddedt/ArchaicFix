@@ -36,6 +36,7 @@ public enum Mixin {
     common_core_MixinShapelessOreRecipe(Side.COMMON, Phase.EARLY, always(), "core.MixinShapelessOreRecipe"),
     common_core_MixinShapelessRecipes(Side.COMMON, Phase.EARLY, always(), "core.MixinShapelessRecipes"),
     common_core_MixinEntityLiving(Side.COMMON, Phase.EARLY, always(), "core.MixinEntityLiving"),
+    common_core_MixinEntityLivingBase_EarlyXpDrop(Side.COMMON, Phase.EARLY, m -> ArchaicConfig.dropXpImmediatelyOnDeath, "core.MixinEntityLivingBase_EarlyXpDrop"),
     common_core_MixinWorld(Side.COMMON, Phase.EARLY, always(), "core.MixinWorld"),
     common_core_MixinEntityTrackerEntry(Side.COMMON, Phase.EARLY, always(), "core.MixinEntityTrackerEntry"),
     common_core_MixinEntityXPOrb(Side.COMMON, Phase.EARLY, always(), "core.MixinEntityXPOrb"),

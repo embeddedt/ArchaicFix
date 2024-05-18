@@ -172,4 +172,8 @@ public class ArchaicConfig {
     @Config.Comment("Fix vanilla issues with entities spawned as part of structures not being marked persistent (e.g. MC-108664)")
     @Config.DefaultBoolean(true)
     public static boolean fixEntityStructurePersistence;
+
+    @Config.Comment("Make entities drop XP immediately on death, like modern versions")
+    @Config.DefaultBoolean(true)
+    public static boolean dropXpImmediatelyOnDeath;
 }
