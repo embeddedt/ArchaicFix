@@ -1,5 +1,6 @@
 package org.embeddedt.archaicfix.mixins.common.core;
 
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.world.World;
@@ -8,7 +9,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityItem.class)
@@ -32,15 +32,16 @@ public abstract class MixinEntityItem extends Entity {
         return (this.age + this.getEntityId()) % 4 == 0;
     }
 
-    @Redirect(method = "onUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/item/EntityItem;moveEntity(DDD)V", ordinal = 0))
-    private void moveIfNecessary(EntityItem item, double x, double y, double z) {
+    @WrapWithCondition(method = "onUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/item/EntityItem;moveEntity(DDD)V", ordinal = 0))
+    private boolean moveIfNecessary(EntityItem item, double x, double y, double z) {
         arch$movedThisTick = arch$shouldItemMove();
-        if(arch$movedThisTick)
-            item.moveEntity(x, y, z);
-        else {
+        if(arch$movedThisTick) {
+            return true;
+        } else {
             arch$oldMotionX = item.motionX;
             arch$oldMotionY = item.motionY;
             arch$oldMotionZ = item.motionZ;
+            return false;
         }
     }
 
