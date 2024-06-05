@@ -11,7 +11,6 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 import cpw.mods.fml.relauncher.Side;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
@@ -28,7 +27,8 @@ import java.util.*;
 @Mod(modid = ArchaicFix.MODID, version = ArchaicFix.VERSION, dependencies = "required-after:gtnhmixins@[2.0.0,);", guiFactory = "org.embeddedt.archaicfix.config.ArchaicGuiConfigFactory")
 public class ArchaicFix
 {
-    public static final String MODID = Tags.MODID;
+    public static final String MODID = "archaicfix";
+    public static final String MODNAME = "ArchaicFix";
     public static final String VERSION = Tags.VERSION;
 
     private FixHelper helper;
@@ -48,9 +48,7 @@ public class ArchaicFix
             ArchaicLogger.LOGGER.fatal("A version of GG Util that includes threaded lighting was detected. ArchaicFix has prevented launching to avoid issues. Please download a fixed version of GG Util: https://www.curseforge.com/minecraft/mc-mods/gilded-game-utils-fix.");
             ArchaicLogger.LOGGER.fatal("===============================================");
             throw new UnsupportedOperationException("Please download a fixed version of GG Util: https://www.curseforge.com/minecraft/mc-mods/gilded-game-utils-fix");
-        } catch(ClassNotFoundException e) {
-
-        }
+        } catch (ClassNotFoundException ignored) {}
     }
 
     @EventHandler
@@ -90,19 +88,20 @@ public class ArchaicFix
     }
 
     private void printRecipeDebug() {
-        if(!ArchaicConfig.cacheRecipes)
+        if (!ArchaicConfig.cacheRecipes)
             return;
+
         HashMap<Class<? extends IRecipe>, Integer> recipeTypeMap = new HashMap<>();
-        for(Object o : CraftingManager.getInstance().getRecipeList()) {
-            recipeTypeMap.compute(((IRecipe)o).getClass(), (key, oldValue) -> {
-                if(oldValue == null)
+        for (IRecipe o : CraftingManager.getInstance().getRecipeList()) {
+            recipeTypeMap.compute(o.getClass(), (key, oldValue) -> {
+                if (oldValue == null)
                     return 1;
                 else
                     return oldValue + 1;
             });
         }
         recipeTypeMap.entrySet().stream()
-                .sorted(Comparator.comparingInt(pair -> pair.getValue()))
+                .sorted(Comparator.comparingInt(Map.Entry::getValue))
                 .forEach(pair -> {
                     String acceleratedSuffix = IAcceleratedRecipe.class.isAssignableFrom(pair.getKey()) ? " (accelerated)" : "";
                     ArchaicLogger.LOGGER.info("There are " + pair.getValue() + " recipes of type " + pair.getKey().getName() + acceleratedSuffix);
@@ -113,15 +112,14 @@ public class ArchaicFix
     }
 
     private void removeThaumcraftLeak() {
-        if(!Loader.isModLoaded("Thaumcraft")) {
+        if (!Loader.isModLoaded("Thaumcraft")) {
             boolean thaumcraftGhostApiPresent = false;
             try {
                 Class.forName("thaumcraft.api.ThaumcraftApi");
                 thaumcraftGhostApiPresent = true;
-            } catch(Exception e) {
+            } catch (Exception ignored) {}
 
-            }
-            if(thaumcraftGhostApiPresent) {
+            if (thaumcraftGhostApiPresent) {
                 try {
                     ArchaicLogger.LOGGER.info("Cleared " + ThaumcraftApi.objectTags.size() + " unused Thaumcraft aspects");
                     ThaumcraftApi.objectTags.clear();
@@ -138,8 +136,6 @@ public class ArchaicFix
         }
     }
 
-
-
     @EventHandler
     public void loadComplete(FMLLoadCompleteEvent event) {
         proxy.loadcomplete();
@@ -150,8 +146,8 @@ public class ArchaicFix
     @NetworkCheckHandler
     public boolean doVersionCheck(Map<String, String> mods, Side side) {
         /*
-        if(mods.containsKey(Tags.MODID)) {
-            String otherVersion = mods.get(Tags.MODID);
+        if (mods.containsKey(MODID)) {
+            String otherVersion = mods.get(MODID);
             if(!otherVersion.equals(Tags.VERSION)) {
                 ArchaicLogger.LOGGER.error("Remote side " + side + " has different version " + otherVersion);
                 return false;

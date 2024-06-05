@@ -1,8 +1,8 @@
 package org.embeddedt.archaicfix.config;
 
-import org.embeddedt.archaicfix.Tags;
+import static org.embeddedt.archaicfix.ArchaicFix.MODID;
 
-@Config(modid = Tags.MODID)
+@Config(modid = MODID)
 public class ArchaicConfig {
     @Config.DefaultBoolean(true)
     public static boolean hideDownloadingTerrainScreen;
