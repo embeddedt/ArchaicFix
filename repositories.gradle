@@ -7,13 +7,21 @@ repositories {
         name = "sonatype"
         url = "https://oss.sonatype.org/content/repositories/snapshots/"
     }
-    maven {
-        name "mvnmrtjp"
-        url "http://files.projectredwiki.com/maven"
-        metadataSources {
-            mavenPom()
-            artifact()
+
+    //Not having this causes jitpack to stall builds for minutes on systems without mrtjpcore already cached
+    exclusiveContent {
+        forRepository {
+            maven {
+                name "mvnmrtjp"
+                url "https://files.projectredwiki.com/maven"
+                metadataSources {
+                    mavenPom()
+                    artifact()
+                }
+            }
         }
-        allowInsecureProtocol
+        filter {
+            includeGroup("mrtjp")
+        }
     }
 }
