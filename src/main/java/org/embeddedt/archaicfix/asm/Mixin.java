@@ -30,6 +30,7 @@ public enum Mixin {
     common_core_MixinShapedOreRecipe(Side.COMMON, Phase.EARLY, always(), "core.MixinShapedOreRecipe"),
     common_core_MixinLongHashMap(Side.COMMON, Phase.EARLY, always(), "core.MixinLongHashMap"),
     common_core_MixinBlock(Side.COMMON, Phase.EARLY, always(), "core.MixinBlock"),
+    common_core_MixinBlock_Late(Side.COMMON, Phase.EARLY, always(), "core.MixinBlock_Late"),
     common_core_MixinEnchantmentHelper(Side.COMMON, Phase.EARLY, always(), "core.MixinEnchantmentHelper"),
     common_core_MixinWorldChunkManager(Side.COMMON, Phase.EARLY, always(), "core.MixinWorldChunkManager"),
     common_core_MixinShapedRecipes(Side.COMMON, Phase.EARLY, always(), "core.MixinShapedRecipes"),

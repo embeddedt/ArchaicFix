@@ -4,7 +4,6 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.block.Block;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.IBlockAccess;
 import org.embeddedt.archaicfix.block.ThreadedBlockData;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -56,14 +55,5 @@ public abstract class MixinBlock {
             arch$threadBlockData.set(calculated);
         }
         return calculated;
-    }
-
-    /**
-     * @author embeddedt
-     * @reason Avoid calling getBlock
-     */
-    @Redirect(method = "getLightValue(Lnet/minecraft/world/IBlockAccess;III)I", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/IBlockAccess;getBlock(III)Lnet/minecraft/block/Block;"), require = 0)
-    public Block getLightValue(IBlockAccess world, int x, int y, int z) {
-        return (Block)(Object)this;
     }
 }
