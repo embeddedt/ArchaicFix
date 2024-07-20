@@ -15,7 +15,6 @@ import org.embeddedt.archaicfix.ArchaicLogger;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
 import org.embeddedt.archaicfix.helpers.BuiltInResourcePack;
 import org.embeddedt.archaicfix.helpers.SoundDeviceThread;
-import zone.rong.loliasm.api.LoliStringPool;
 
 import java.lang.management.ManagementFactory;
 
@@ -26,7 +25,6 @@ public class ClientProxy extends CommonProxy {
     public void preinit() {
         super.preinit();
         Minecraft.memoryReserve = new byte[0];
-        MinecraftForge.EVENT_BUS.register(new LoliStringPool.EventHandler());
         MinecraftForge.EVENT_BUS.register(this);
         FMLCommonHandler.instance().bus().register(this);
         if(ArchaicConfig.modernizeTextures) {

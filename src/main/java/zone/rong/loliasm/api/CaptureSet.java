@@ -1,7 +1,5 @@
 package zone.rong.loliasm.api;
 
-import speiger.src.collections.objects.sets.ObjectOpenHashSet;
-
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,7 +9,7 @@ public class CaptureSet<K> extends HashSet<K> {
 
     public CaptureSet() {
         super();
-        this.backingCaptures = new ObjectOpenHashSet<>();
+        this.backingCaptures = new HashSet<>();
     }
 
     public CaptureSet(Set<K> populate) {

@@ -2,12 +2,12 @@ package org.embeddedt.archaicfix.mixins.common.core;
 
 import cpw.mods.fml.common.discovery.ASMDataTable;
 import cpw.mods.fml.common.discovery.ModCandidate;
+import org.embeddedt.archaicfix.asm.EarlyStringPool;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import zone.rong.loliasm.api.LoliStringPool;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -39,7 +39,7 @@ public class MixinModCandidate {
         className = className.replace('/','.');
         int pkgIdx = className.lastIndexOf('.');
         if (pkgIdx > -1) {
-            String pkg = LoliStringPool.canonicalize(className.substring(0, pkgIdx));
+            String pkg = EarlyStringPool.canonicalize(className.substring(0, pkgIdx));
             packageSet.add(pkg);
             table.registerPackage((ModCandidate)(Object)this, pkg);
         }

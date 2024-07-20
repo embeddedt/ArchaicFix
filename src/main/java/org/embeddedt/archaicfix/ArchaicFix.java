@@ -16,6 +16,7 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraftforge.common.MinecraftForge;
+import org.embeddedt.archaicfix.asm.EarlyStringPool;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
 import org.embeddedt.archaicfix.ducks.IAcceleratedRecipe;
 import org.embeddedt.archaicfix.proxy.CommonProxy;
@@ -73,7 +74,7 @@ public class ArchaicFix
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-
+        EarlyStringPool.clear();
     }
 
     @EventHandler
