@@ -26,8 +26,6 @@ import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-import speiger.src.collections.longs.collections.LongCollection;
-import speiger.src.collections.longs.sets.LongOpenHashSet;
 
 import java.util.*;
 
@@ -46,9 +44,6 @@ public abstract class MixinWorld {
     @Shadow public abstract Chunk getChunkFromChunkCoords(int p_72964_1_, int p_72964_2_);
 
     @Shadow protected IChunkProvider chunkProvider;
-
-    @Shadow public List loadedTileEntityList;
-    private LongCollection tileEntitiesChunkToBeRemoved = new LongOpenHashSet();
 
     @Redirect(method = "getBiomeGenForCoordsBody", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/biome/WorldChunkManager;getBiomeGenAt(II)Lnet/minecraft/world/biome/BiomeGenBase;"))
     private BiomeGenBase skipBiomeGenOnClient(WorldChunkManager manager, int x, int z) {
