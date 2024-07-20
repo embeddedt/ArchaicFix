@@ -11,6 +11,6 @@
   "credits": "The Forge and FML guys, for making this example",
   "logoFile": "",
   "screenshots": [],
-  "dependencies": ["required-after:gtnhmixins@[2.0.0,)"]
+  "dependencies": ["required-after:gtnhmixins@[2.0.0,)", "required-after:unimixins@[0.1.16,)"]
 }
 ]
