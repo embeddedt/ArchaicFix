@@ -7,10 +7,10 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import speiger.src.collections.objects.sets.ObjectOpenHashSet;
 import zone.rong.loliasm.api.LoliStringPool;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -25,7 +25,7 @@ public class MixinModCandidate {
     @Redirect(method = "<init>(Ljava/io/File;Ljava/io/File;Lcpw/mods/fml/common/discovery/ContainerType;ZZ)V", at = @At(value = "FIELD", target = "Lcpw/mods/fml/common/discovery/ModCandidate;packages:Ljava/util/List;", remap = false), remap = false)
     private void avoidPackageList(ModCandidate instance, List<String> value) {
         this.packages = null;
-        packageSet = new ObjectOpenHashSet<>();
+        packageSet = new HashSet<>();
     }
 
     /**
