@@ -54,20 +54,20 @@ public abstract class MixinWorld {
 
     private final Chunk[] chunkCache = new Chunk[4];
 
-    @WrapOperation(method = "getChunkFromChunkCoords", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/IChunkProvider;provideChunk(II)Lnet/minecraft/world/chunk/Chunk;"))
     private Chunk cacheChunkFetch(IChunkProvider instance, int x, int z, Operation<Chunk> original) {
         if(!ArchaicConfig.chunkFetchCache || isRemote) { //Don't run this if the config is off or if this is a client world
             return original.call(instance, x, z);
         }
 
-		for (int i = 0; i < chunkPositionsCache.length; i++) {
-			long packedChunkCoords = chunkPositionsCache[i];
-			int checkX = (int) packedChunkCoords;
-			int checkZ = (int) (packedChunkCoords >> 32);
-			if (checkX == x && checkZ == z && chunkCache[i] != null) {
+        for (int i = 0; i < chunkPositionsCache.length; i++) {
+            long packedChunkCoords = chunkPositionsCache[i];
+            int checkX = (int) packedChunkCoords;
+            int checkZ = (int) (packedChunkCoords >> 32);
+            if (checkX == x && checkZ == z && chunkCache[i] != null) {
                 return chunkCache[i]; //Found chunk in cache! Don't run the provider again!!!
-			}
-		}
+            }
+        }
+
         //Chunk not found in cache, add it to the cache and return it.
         Chunk chunk = original.call(instance, x, z);
         updateCaches(ChunkCoordIntPair.chunkXZ2Int(x, z), chunk);
