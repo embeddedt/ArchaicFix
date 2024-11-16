@@ -1,13 +1,17 @@
 package org.embeddedt.archaicfix.mixins.common.core;
 
 import com.google.common.collect.ImmutableSet;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -44,6 +48,44 @@ public abstract class MixinWorld {
     @Shadow public abstract Chunk getChunkFromChunkCoords(int p_72964_1_, int p_72964_2_);
 
     @Shadow protected IChunkProvider chunkProvider;
+
+    //Initially populate it with ridiculous values since if it was populated with 0 or -1 by default it might produce a false negative, and return null in the cache.
+    private final long[] chunkPositionsCache = new long[]{Long.MAX_VALUE, Long.MAX_VALUE, Long.MAX_VALUE, Long.MAX_VALUE};
+
+    private final Chunk[] chunkCache = new Chunk[4];
+
+    @WrapOperation(method = "getChunkFromChunkCoords", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/IChunkProvider;provideChunk(II)Lnet/minecraft/world/chunk/Chunk;"))
+    private Chunk cacheChunkFetch(IChunkProvider instance, int x, int z, Operation<Chunk> original) {
+        if(!ArchaicConfig.chunkFetchCache || isRemote) { //Don't run this if the config is off or if this is a client world
+            return original.call(instance, x, z);
+        }
+
+		for (int i = 0; i < chunkPositionsCache.length; i++) {
+			long packedChunkCoords = chunkPositionsCache[i];
+			int checkX = (int) packedChunkCoords;
+			int checkZ = (int) (packedChunkCoords >> 32);
+			if (checkX == x && checkZ == z && chunkCache[i] != null) {
+                return chunkCache[i]; //Found chunk in cache! Don't run the provider again!!!
+			}
+		}
+        //Chunk not found in cache, add it to the cache and return it.
+        Chunk chunk = original.call(instance, x, z);
+        updateCaches(ChunkCoordIntPair.chunkXZ2Int(x, z), chunk);
+        return chunk;
+    }
+
+    /// Push the previous highest value out of the caches and add the new ones at the top.
+    private void updateCaches(long coords, Chunk chunk) {
+        chunkCache[3] = chunkCache[2];
+        chunkCache[2] = chunkCache[1];
+        chunkCache[1] = chunkCache[0];
+        chunkCache[0] = chunk;
+
+        chunkPositionsCache[3] = chunkPositionsCache[2];
+        chunkPositionsCache[2] = chunkPositionsCache[1];
+        chunkPositionsCache[1] = chunkPositionsCache[0];
+        chunkPositionsCache[0] = coords;
+    }
 
     @Redirect(method = "getBiomeGenForCoordsBody", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/biome/WorldChunkManager;getBiomeGenAt(II)Lnet/minecraft/world/biome/BiomeGenBase;"))
     private BiomeGenBase skipBiomeGenOnClient(WorldChunkManager manager, int x, int z) {

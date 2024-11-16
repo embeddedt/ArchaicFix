@@ -73,6 +73,10 @@ public class ArchaicConfig {
     @Config.DefaultBoolean(true)
     public static boolean fixVanillaCascadingWorldgen;
 
+    @Config.Comment("Speed up world gen and other block placement tasks, by caching the last few chunks that were fetched. Should significantly speed up some generation.")
+    @Config.DefaultBoolean(true)
+    public static boolean chunkFetchCache;
+
     @Config.Comment("Force all mixins to be loaded and the cache to be cleared. This saves RAM, but may reveal bugs in mods' mixin configs. Based on MemoryLeakFix.")
     @Config.DefaultBoolean(false)
     public static boolean clearMixinCache;
