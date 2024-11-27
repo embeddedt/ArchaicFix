@@ -7,7 +7,6 @@ import org.embeddedt.archaicfix.config.ArchaicConfig;
 import org.embeddedt.archaicfix.helpers.DragonAPIHelper;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Locale;
 import java.util.function.Predicate;
 
@@ -94,7 +93,7 @@ public enum Mixin {
     client_core_MixinNetHandlerLoginClient(Side.CLIENT, Phase.EARLY, m -> ArchaicConfig.fixLoginRaceCondition, "core.MixinNetHandlerLoginClient"),
     client_core_MixinSplashProgress(Side.CLIENT, Phase.EARLY, always(), "core.MixinSplashProgress"),
     client_core_AccessorSplashProgress(Side.CLIENT, Phase.EARLY, always(), "core.AccessorSplashProgress"),
-    client_core_MixinRenderItem(Side.CLIENT, Phase.EARLY, always(), "core.MixinRenderItem"),
+    client_core_MixinRenderItem(Side.CLIENT, Phase.EARLY, m -> ArchaicConfig.forceFancyItems, "core.MixinRenderItem"),
     client_divinerpg_MixinEntitySparkler(Side.CLIENT, Phase.LATE, require(TargetedMod.DIVINERPG), "divinerpg.MixinEntitySparkler"),
     client_gt6_MixinGT_API_Proxy_Client(Side.CLIENT, Phase.LATE, require(TargetedMod.GREGTECH6), "gt6.MixinGT_API_Proxy_Client"),
     client_lighting_MixinMinecraft(Side.CLIENT, Phase.EARLY, phosphor(), "lighting.MixinMinecraft"),
