@@ -1,6 +1,6 @@
 package org.embeddedt.archaicfix.mixins.client.aoa;
 
-import com.llamalad7.mixinextras.injector.WrapWithCondition;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.projectile.EntityThrowable;

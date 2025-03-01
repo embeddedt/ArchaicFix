@@ -536,8 +536,6 @@ public class LightingEngine implements ILightingEngine {
         return (y << sY) | (x + (1 << lX - 1) << sX) | (z + (1 << lZ - 1) << sZ);
     }
 
-    private static int ITEMS_PROCESSED = 0, CHUNKS_FETCHED = 0;
-
     /**
      * Polls a new item from <code>curQueue</code> and fills in state data members
      *
@@ -561,10 +559,7 @@ public class LightingEngine implements ILightingEngine {
         if (this.curChunkIdentifier != chunkIdentifier) {
             this.curChunk = this.getChunk(this.curPos);
             this.curChunkIdentifier = chunkIdentifier;
-            CHUNKS_FETCHED++;
         }
-
-        ITEMS_PROCESSED++;
 
         return true;
     }

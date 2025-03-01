@@ -3,8 +3,6 @@ package org.embeddedt.archaicfix.mixins.common.core;
 import io.netty.channel.*;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.util.ReferenceCountUtil;
-import io.netty.util.internal.PlatformDependent;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,8 +20,6 @@ public abstract class MixinEmbeddedChannel extends AbstractChannel {
     protected MixinEmbeddedChannel(Channel parent) {
         super(parent);
     }
-
-    @Shadow public abstract ChannelConfig config();
 
     @Shadow private Throwable lastException;
     /**

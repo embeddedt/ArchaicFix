@@ -1,7 +1,6 @@
 package org.embeddedt.archaicfix.mixins.client.core;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.inventory.GuiBeacon;
 import net.minecraft.client.renderer.OpenGlHelper;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;

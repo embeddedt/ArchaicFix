@@ -11,7 +11,6 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public final class LeftClickEventHandler {

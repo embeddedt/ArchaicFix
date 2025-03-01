@@ -1,6 +1,5 @@
 package org.embeddedt.archaicfix.helpers;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
 import lombok.var;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

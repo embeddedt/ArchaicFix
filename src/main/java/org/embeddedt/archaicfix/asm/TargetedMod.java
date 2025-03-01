@@ -4,8 +4,6 @@ package org.embeddedt.archaicfix.asm;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.function.Predicate;
-
 @RequiredArgsConstructor
 public enum TargetedMod {
     CHICKENCHUNKS("ChickenChunks", "ChickenChunks"),
