@@ -9,7 +9,6 @@ import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.network.NetworkCheckHandler;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
-import cpw.mods.fml.relauncher.ReflectionHelper;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.crafting.CraftingManager;
@@ -55,9 +54,8 @@ public class ArchaicFix
     @EventHandler
     public void preinit(FMLPreInitializationEvent event)
     {
-        int nextID = ReflectionHelper.getPrivateValue(Entity.class, null, "field_70152_a", "nextEntityID");
-        if(nextID == 0) {
-            ReflectionHelper.setPrivateValue(Entity.class, null, 1, "field_70152_a", "nextEntityID");
+        if(Entity.nextEntityID == 0) {
+            Entity.nextEntityID = 1;
             ArchaicLogger.LOGGER.info("Fixed MC-111480");
         }
         if(ArchaicConfig.enableHitThroughGrassFix) {
