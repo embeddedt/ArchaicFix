@@ -56,7 +56,7 @@ public class FixHelper {
     }
 
     @SubscribeEvent
-    public void onNetworkRegister(FMLNetworkEvent.CustomPacketRegistrationEvent event) {
+    public void onNetworkRegister(FMLNetworkEvent.CustomPacketRegistrationEvent<?> event) {
         if(event.operation.equals("REGISTER")) {
             boolean hasArchaic = event.registrations.contains("archaicfix");
             if(event.handler instanceof NetHandlerPlayServer) {

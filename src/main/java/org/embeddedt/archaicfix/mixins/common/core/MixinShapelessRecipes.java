@@ -17,17 +17,17 @@ import java.util.Set;
 
 @Mixin(ShapelessRecipes.class)
 public class MixinShapelessRecipes implements IAcceleratedRecipe {
-    @Shadow @Final public List recipeItems;
+    @Shadow @Final public List<ItemStack> recipeItems;
 
     private Set<Item> allPossibleItems;
 
     @Inject(method = "<init>", at = @At("RETURN"))
-    public void buildItemCache(ItemStack p_i1918_1_, List p_i1918_2_, CallbackInfo ci)
+    public void buildItemCache(ItemStack p_i1918_1_, List<ItemStack> p_i1918_2_, CallbackInfo ci)
     {
         ImmutableSet.Builder<Item> builder = ImmutableSet.builder();
-        for(Object stack : recipeItems) {
-            if(stack != null && ((ItemStack)stack).getItem() != null)
-                builder.add(((ItemStack)stack).getItem());
+        for(ItemStack stack : recipeItems) {
+            if(stack != null && stack.getItem() != null)
+                builder.add(stack.getItem());
         }
         allPossibleItems = builder.build();
     }

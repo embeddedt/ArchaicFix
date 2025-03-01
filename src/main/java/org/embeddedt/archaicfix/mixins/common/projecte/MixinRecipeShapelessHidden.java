@@ -19,6 +19,7 @@ public class MixinRecipeShapelessHidden implements IAcceleratedRecipe {
     private ArrayList<Object> input;
     private Set<Item> allPossibleInputs = null;
 
+    @SuppressWarnings("unchecked")
     private void genMatchCache() {
         allPossibleInputs = null;
         ImmutableSet.Builder<Item> builder = ImmutableSet.builder();

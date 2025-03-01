@@ -14,7 +14,7 @@ import java.util.*;
 public abstract class MixinMapGenStructure {
 
     @Redirect(method = { "func_143028_c", "func_142038_b", "func_151545_a", "generateStructuresInChunk" }, at = @At(value = "INVOKE", target = "Ljava/util/Map;values()Ljava/util/Collection;"))
-    private Collection getStructureMapValues(Map structureMap) {
+    private Collection<StructureStart> getStructureMapValues(Map<Long, StructureStart> structureMap) {
         return ImmutableList.copyOf(structureMap.values());
     }
 }
