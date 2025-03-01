@@ -4,7 +4,8 @@ import cpw.mods.fml.client.SplashProgress;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(SplashProgress.class)
+@SuppressWarnings("deprecation")
+@Mixin(value = SplashProgress.class, remap = false)
 public interface AccessorSplashProgress {
     @Accessor("barBorderColor")
     static int getBarBorderColor() {

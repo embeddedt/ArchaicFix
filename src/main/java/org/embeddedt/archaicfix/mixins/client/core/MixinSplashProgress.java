@@ -20,7 +20,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.lang.reflect.Field;
 
-@Mixin(targets = { "cpw/mods/fml/client/SplashProgress$3" })
+@SuppressWarnings("deprecation")
+@Mixin(targets = { "cpw/mods/fml/client/SplashProgress$3" }, remap = false)
 public class MixinSplashProgress {
     private static final int memoryGoodColor = 0x78CB34;
     private static final int memoryWarnColor = 0xE6E84A;

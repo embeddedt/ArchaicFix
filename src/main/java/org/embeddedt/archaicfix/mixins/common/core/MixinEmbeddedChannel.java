@@ -21,7 +21,7 @@ public abstract class MixinEmbeddedChannel extends AbstractChannel {
         super(parent);
     }
 
-    @Shadow private Throwable lastException;
+    @Shadow(remap = false) private Throwable lastException;
     /**
      * Used to simulate socket buffers. When autoRead is false, all inbound information will be temporarily stored here.
      */
