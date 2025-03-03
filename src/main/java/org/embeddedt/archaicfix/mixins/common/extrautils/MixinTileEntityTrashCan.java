@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinTileEntityTrashCan {
     @Shadow(remap = false) private boolean added;
 
-    @Inject(method = "readFromNBT", at = @At("TAIL"), remap = false)
+    @Inject(method = "readFromNBT", at = @At("TAIL"))
     private void forceRescan(NBTTagCompound par1NBTTagCompound, CallbackInfo ci) {
         this.added = true;
     }
