@@ -16,6 +16,7 @@ public class MixinPlayerChunkViewerManager {
 
     private ArrayList<PlayerChunkViewerManager.TicketChange> oldTicketChanges;
 
+    @SuppressWarnings("unchecked")
     @Redirect(method = "update", at = @At(value = "INVOKE", target = "Ljava/util/LinkedList;iterator()Ljava/util/Iterator;"), remap = false)
     private Iterator<?> getSafeIterator(LinkedList<?> list) {
         if(list == this.ticketChanges) {

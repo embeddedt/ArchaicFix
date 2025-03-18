@@ -1,10 +1,7 @@
 package org.embeddedt.archaicfix.mixins.common.core;
 
-import com.google.common.collect.Iterators;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.world.*;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraft.world.storage.ISaveHandler;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
@@ -12,10 +9,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-
-import java.util.Iterator;
-import java.util.Set;
 
 @Mixin(WorldServer.class)
 public abstract class MixinWorldServer extends World {

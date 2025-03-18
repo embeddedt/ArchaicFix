@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import cpw.mods.fml.relauncher.ReflectionHelper;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 
 import com.google.common.base.Splitter;
@@ -100,8 +99,7 @@ public abstract class BuiltInResourcePack extends AbstractResourcePack {
     
     @SuppressWarnings("unchecked")
     private static void inject(IResourcePack resourcePack) {
-        List defaultResourcePacks = ReflectionHelper.getPrivateValue(Minecraft.class, Minecraft.getMinecraft(), "defaultResourcePacks", "field_110449_ao");
-        defaultResourcePacks.add(resourcePack);
+        Minecraft.getMinecraft().defaultResourcePacks.add(resourcePack);
         IResourceManager resMan = Minecraft.getMinecraft().getResourceManager();
         if(resMan instanceof SimpleReloadableResourceManager) {
             ((SimpleReloadableResourceManager)resMan).reloadResourcePack(resourcePack);

@@ -1,7 +1,6 @@
 package org.embeddedt.archaicfix.mixins.client.renderdistance;
 
 import net.minecraft.client.settings.GameSettings;
-import org.embeddedt.archaicfix.ArchaicFix;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;

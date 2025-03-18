@@ -10,8 +10,8 @@ import java.util.Set;
  */
 public class DummyMap<K, V> implements Map<K, V> {
 
-    private static final DummyMap INSTANCE = new DummyMap<>();
-    private static final Set SET_INSTANCE = Collections.newSetFromMap(INSTANCE);
+    private static final DummyMap<?, Boolean> INSTANCE = new DummyMap<>();
+    private static final Set<?> SET_INSTANCE = Collections.newSetFromMap(INSTANCE);
 
     @SuppressWarnings("unchecked")
     public static <K, V> Map<K, V> of() {
@@ -37,14 +37,14 @@ public class DummyMap<K, V> implements Map<K, V> {
 
     public V remove(Object key) { return null; }
 
-    public void putAll(Map m) { }
+    public void putAll(Map<? extends K, ? extends V> m) { }
 
     public void clear() { }
 
-    public Set keySet() { return Collections.emptySet(); }
+    public Set<K> keySet() { return Collections.emptySet(); }
 
-    public Collection values() { return Collections.emptySet(); }
+    public Collection<V> values() { return Collections.emptySet(); }
 
-    public Set entrySet() { return Collections.emptySet(); }
+    public Set<Entry<K, V>> entrySet() { return Collections.emptySet(); }
 
 }

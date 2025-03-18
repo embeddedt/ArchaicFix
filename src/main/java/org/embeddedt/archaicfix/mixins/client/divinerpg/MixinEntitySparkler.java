@@ -1,14 +1,11 @@
 package org.embeddedt.archaicfix.mixins.client.divinerpg;
 
 import net.divinerpg.entities.arcana.projectile.EntitySparkler;
-import net.divinerpg.entities.vanilla.projectile.EntitySparklerFX;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntitySparkler.class)

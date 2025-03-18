@@ -2,24 +2,17 @@ package org.embeddedt.archaicfix.mixins.common.lighting;
 
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 import org.embeddedt.archaicfix.lighting.api.ILightingEngineProvider;
 import org.embeddedt.archaicfix.lighting.world.lighting.LightingEngine;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-import java.util.Set;
-
 @Mixin(World.class)
 public abstract class MixinWorld_Lighting implements ILightingEngineProvider {
-    @Shadow protected Set activeChunkSet;
-
-    @Shadow public abstract IChunkProvider getChunkProvider();
 
     private LightingEngine lightingEngine;
 

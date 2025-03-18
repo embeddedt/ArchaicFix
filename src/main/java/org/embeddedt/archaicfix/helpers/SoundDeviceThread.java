@@ -1,8 +1,6 @@
 package org.embeddedt.archaicfix.helpers;
 
-import cpw.mods.fml.relauncher.ReflectionHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.audio.SoundManager;
 import net.minecraft.client.renderer.GLAllocation;
 import org.embeddedt.archaicfix.ArchaicLogger;
@@ -35,9 +33,9 @@ public class SoundDeviceThread extends Thread {
     public void run() {
         try {
             String previousDefault = null;
-            SoundManager manager = ReflectionHelper.getPrivateValue(SoundHandler.class, Minecraft.getMinecraft().getSoundHandler(), "sndManager", "field_147694_f");
+            SoundManager manager = Minecraft.getMinecraft().getSoundHandler().sndManager;
             while(!Thread.interrupted()) {
-                boolean managerLoaded = ReflectionHelper.getPrivateValue(SoundManager.class, manager, "loaded", "field_148617_f");
+                boolean managerLoaded = manager.loaded;
                 if(managerLoaded && !ClientProxy.soundSystemReloadLock) {
                     if(previousDefault == null) {
                         previousDefault = getDefault();

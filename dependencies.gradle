@@ -34,6 +34,7 @@ dependencies {
     compileOnly(deobfMaven(curseMaven, "curse.maven:divinerpg-363543:2918948"))
     compileOnly(deobfMaven(curseMaven, "curse.maven:journeymap-32274:2367915"))
     compileOnly(deobfMaven(curseMaven, "curse.maven:ars-magica-2-67313:2280862"))
+    compileOnly(deobfMaven(curseMaven, "curse.maven:waystones-245755:2559125"))
     runtimeOnly(deobf("https://github.com/makamys/CoreTweaks/releases/download/0.3.0.4/CoreTweaks-1.7.10-0.3.0.4+nomixin.jar"))
 
     if(!Boolean.valueOf(project.properties["archaicFix.noRuntimeExtras"] ?: "false")) {

@@ -5,6 +5,7 @@ import java.util.Set;
 
 public class CaptureSet<K> extends HashSet<K> {
 
+    private static final long serialVersionUID = -231949409716453515L;
     private final Set<K> backingCaptures;
 
     public CaptureSet() {

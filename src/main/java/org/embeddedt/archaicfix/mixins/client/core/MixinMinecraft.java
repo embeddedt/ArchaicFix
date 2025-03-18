@@ -15,7 +15,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Minecraft.class)
+// run after https://github.com/GTNewHorizons/Angelica/blob/master/src/mixin/java/com/gtnewhorizons/angelica/mixins/early/sodium/MixinMinecraft.java
+// to allow the getFancyGrass mixin to fail silently
+@Mixin(value = Minecraft.class, priority = 999)
 public abstract class MixinMinecraft {
     @Shadow private IntegratedServer theIntegratedServer;
 
@@ -28,7 +30,7 @@ public abstract class MixinMinecraft {
     @Shadow private boolean fullscreen;
 
     /** @reason Makes grass display as fancy regardless of the graphics setting. Matches the appearance of 1.8+ */
-    @Redirect(method = "runGameLoop", at = @At(value = "FIELD", target = "Lnet/minecraft/client/settings/GameSettings;fancyGraphics:Z"))
+    @Redirect(method = "runGameLoop", at = @At(value = "FIELD", target = "Lnet/minecraft/client/settings/GameSettings;fancyGraphics:Z"), expect = 0)
     private boolean getFancyGrass(GameSettings gameSettings) {
         return true;
     }

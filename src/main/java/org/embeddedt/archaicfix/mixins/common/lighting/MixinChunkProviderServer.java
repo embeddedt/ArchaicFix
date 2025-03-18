@@ -2,22 +2,19 @@ package org.embeddedt.archaicfix.mixins.common.lighting;
 
 import net.minecraft.util.IProgressUpdate;
 import net.minecraft.world.WorldServer;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkProviderServer;
 import org.embeddedt.archaicfix.lighting.api.ILightingEngineProvider;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Set;
 
 @Mixin(ChunkProviderServer.class)
 public abstract class MixinChunkProviderServer {
-    @Shadow private Set chunksToUnload;
+    @Shadow private Set<Long> chunksToUnload;
 
     @Shadow public WorldServer worldObj;
 

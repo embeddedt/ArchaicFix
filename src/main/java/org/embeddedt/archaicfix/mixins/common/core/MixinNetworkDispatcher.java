@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(NetworkDispatcher.class)
 public class MixinNetworkDispatcher {
-    @Shadow @Final private Side side;
+    @Shadow(remap = false) @Final private Side side;
 
     @Redirect(method = "clientListenForServerHandshake", at = @At(value = "INVOKE", remap = true, target =
             "Lnet/minecraft/network/NetworkManager;setConnectionState(Lnet/minecraft/network/EnumConnectionState;)V"))

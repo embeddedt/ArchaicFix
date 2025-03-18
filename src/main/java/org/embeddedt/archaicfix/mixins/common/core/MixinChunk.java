@@ -23,12 +23,6 @@ public abstract class MixinChunk implements ICascadeDetectionChunk {
     @Shadow @Final private List<Entity>[] entityLists;
     @Shadow @Final private World worldObj;
 
-    @Shadow @Final public int xPosition;
-
-    @Shadow @Final public int zPosition;
-
-    @Shadow public Map chunkTileEntityMap;
-
     @Shadow
     protected abstract void populateChunk(IChunkProvider provider1, IChunkProvider provider2, int x, int z);
 

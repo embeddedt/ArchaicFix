@@ -3,7 +3,6 @@ package org.embeddedt.archaicfix.mixins.common.core;
 import net.minecraft.util.LongHashMap;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(LongHashMap.class)
 public abstract class MixinLongHashMap {

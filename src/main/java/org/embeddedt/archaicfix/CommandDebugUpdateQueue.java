@@ -1,7 +1,6 @@
 package org.embeddedt.archaicfix;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
-import cpw.mods.fml.relauncher.ReflectionHelper;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
@@ -28,7 +27,8 @@ public class CommandDebugUpdateQueue extends CommandBase {
         if(server != null) {
             sender.addChatMessage(new ChatComponentText("Update queue sizes:"));
             for(WorldServer world : server.worldServers) {
-                TreeSet<NextTickListEntry> ticks = ReflectionHelper.getPrivateValue(WorldServer.class, world, "field_73065_O", "pendingTickListEntriesTreeSet");
+                @SuppressWarnings("unchecked")
+                TreeSet<NextTickListEntry> ticks = world.pendingTickListEntriesTreeSet;
                 if(ticks.size() > 0)
                     sender.addChatMessage(new ChatComponentText("Dimension " + world.provider.dimensionId + ": " + ticks.size()));
             }

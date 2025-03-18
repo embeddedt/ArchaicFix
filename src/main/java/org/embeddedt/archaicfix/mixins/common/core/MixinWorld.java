@@ -7,6 +7,7 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
@@ -39,7 +40,7 @@ public abstract class MixinWorld {
 
     @Shadow protected WorldInfo worldInfo;
 
-    @Shadow public List playerEntities;
+    @Shadow public List<EntityPlayer> playerEntities;
 
     @Shadow public abstract Chunk getChunkFromChunkCoords(int p_72964_1_, int p_72964_2_);
 
@@ -123,7 +124,7 @@ public abstract class MixinWorld {
 
         for (int i = 0; i < this.playerEntities.size(); ++i)
         {
-            entityplayer = (EntityPlayer)this.playerEntities.get(i);
+            entityplayer = this.playerEntities.get(i);
             j = MathHelper.floor_double(entityplayer.posX / 16.0D);
             k = MathHelper.floor_double(entityplayer.posZ / 16.0D);
 
@@ -142,12 +143,12 @@ public abstract class MixinWorld {
         }
     }
 
-    @Redirect(method = "updateEntities", slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/tileentity/TileEntity;onChunkUnload()V")), at = @At(value = "INVOKE", target = "Ljava/util/List;removeAll(Ljava/util/Collection;)Z", ordinal = 0))
-    private boolean removeInUnloaded(List<?> instance, Collection<?> objects) {
+    @Redirect(method = "updateEntities", slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/tileentity/TileEntity;onChunkUnload()V", remap = false)), at = @At(value = "INVOKE", target = "Ljava/util/List;removeAll(Ljava/util/Collection;)Z", ordinal = 0))
+    private boolean removeInUnloaded(List<TileEntity> instance, Collection<TileEntity> objects) {
         if (ArchaicConfig.fixTEUnloadLag) {
             // Arbitrary number chosen because contains() will be fast enough on a tiny list
             if(objects.size() > 3) {
-                Set toRemove = Collections.newSetFromMap(new IdentityHashMap<>(objects.size()));
+                Set<TileEntity> toRemove = Collections.newSetFromMap(new IdentityHashMap<>(objects.size()));
                 toRemove.addAll(objects);
                 objects = toRemove;
             }

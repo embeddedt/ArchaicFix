@@ -1,11 +1,9 @@
 package org.embeddedt.archaicfix.thaumcraft;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Maps;
 import cpw.mods.fml.common.registry.GameData;
 import net.glease.tc4tweak.modules.generateItemHash.GenerateItemHash;
 import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import org.embeddedt.archaicfix.ArchaicLogger;

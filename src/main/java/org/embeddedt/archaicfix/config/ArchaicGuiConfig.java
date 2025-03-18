@@ -1,7 +1,6 @@
 package org.embeddedt.archaicfix.config;
 
 import net.minecraft.client.gui.GuiScreen;
-import org.embeddedt.archaicfix.Tags;
 
 import static org.embeddedt.archaicfix.ArchaicFix.MODID;
 import static org.embeddedt.archaicfix.ArchaicFix.MODNAME;

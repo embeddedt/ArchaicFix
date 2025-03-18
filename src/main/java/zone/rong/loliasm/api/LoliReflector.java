@@ -40,7 +40,7 @@ public class LoliReflector {
         }
     }
 
-    public static Class defineMixinClass(String className, byte[] classBytes) {
+    public static Class<?> defineMixinClass(String className, byte[] classBytes) {
         try {
             // defineClass(Launch.classLoader, className, classBytes);
             Map<String, byte[]> resourceCache = (Map<String, byte[]>) resolveFieldGetter(LaunchClassLoader.class, "resourceCache").invoke(Launch.classLoader);
@@ -55,23 +55,23 @@ public class LoliReflector {
         return null;
     }
 
-    public static <CL extends ClassLoader> Class defineClass(CL classLoader, Class clazz) {
+    public static <CL extends ClassLoader> Class<?> defineClass(CL classLoader, Class<?> clazz) {
         String name = Type.getInternalName(clazz);
         InputStream byteStream = clazz.getResourceAsStream('/' + name + ".class");
         try {
             byte[] classBytes = new byte[byteStream.available()];
             final int bytesRead = byteStream.read(classBytes);
             Preconditions.checkState(bytesRead == classBytes.length);
-            return (Class) classLoader$DefineClass.invokeExact(classLoader, name.replace('/', '.'), classBytes, 0, classBytes.length);
+            return (Class<?>) classLoader$DefineClass.invokeExact(classLoader, name.replace('/', '.'), classBytes, 0, classBytes.length);
         } catch (Throwable e) {
             e.printStackTrace();
         }
         return clazz;
     }
 
-    public static <CL extends ClassLoader> Class defineClass(CL classLoader, String name, byte[] classBytes) {
+    public static <CL extends ClassLoader> Class<?> defineClass(CL classLoader, String name, byte[] classBytes) {
         try {
-            return (Class) classLoader$DefineClass.invokeExact(classLoader, name, classBytes, 0, classBytes.length);
+            return (Class<?>) classLoader$DefineClass.invokeExact(classLoader, name, classBytes, 0, classBytes.length);
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
@@ -122,7 +122,7 @@ public class LoliReflector {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static MethodHandle resolveMethod(Class<?> clazz, String methodName, String obfMethodName, Class<?>... args) {
         try {
             return LOOKUP.unreflect(ReflectionHelper.findMethod((Class)clazz, null, new String[] { methodName, obfMethodName }, args));
@@ -132,7 +132,7 @@ public class LoliReflector {
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static Method getMethod(Class<?> clazz, String methodName, String obfMethodName, Class<?>... args) {
         return ReflectionHelper.findMethod((Class)clazz, null, new String[] { methodName, obfMethodName }, args);
     }
@@ -215,6 +215,7 @@ public class LoliReflector {
         return false;
     }
 
+    @SuppressWarnings("unchecked")
     public static boolean doesTweakExist(String tweakName) {
         return ((List<String>) Launch.blackboard.get("TweakClasses")).contains(tweakName);
     }
@@ -234,12 +235,6 @@ public class LoliReflector {
 
     public static void addTransformerExclusion(String transformerExclusion) {
         transformerExclusions.put(transformerExclusion);
-    }
-
-    private static void fixOpenJ9PrivateStaticFinalRestraint(Field field) throws Throwable {
-        Field modifiers = Field.class.getDeclaredField("modifiers");
-        modifiers.setAccessible(true);
-        LOOKUP.unreflectSetter(modifiers).invokeExact(field, field.getModifiers() & ~Modifier.FINAL);
     }
 
 }

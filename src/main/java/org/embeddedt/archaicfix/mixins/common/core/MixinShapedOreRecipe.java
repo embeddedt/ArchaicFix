@@ -21,6 +21,7 @@ public class MixinShapedOreRecipe implements IAcceleratedRecipe {
     @Shadow(remap = false) private Object[] input;
     private Set<Item> allPossibleInputs = null;
 
+    @SuppressWarnings("unchecked")
     private void genMatchCache() {
         ImmutableSet.Builder<Item> builder = ImmutableSet.builder();
         for(Object o : input) {

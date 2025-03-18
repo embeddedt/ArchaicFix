@@ -1,7 +1,6 @@
 package org.embeddedt.archaicfix.mixins.common.core;
 
 import io.netty.channel.Channel;
-import io.netty.util.AttributeKey;
 import net.minecraft.network.EnumConnectionState;
 import net.minecraft.network.NetworkManager;
 import org.embeddedt.archaicfix.ducks.IArchaicNetworkManager;
