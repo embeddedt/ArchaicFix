@@ -43,6 +43,7 @@ dependencies {
 
     compileOnly files("deps/Food Plus Mod 1.7.10-deobf.jar")
     compileOnly(deobfMaven(curseMaven, "curse.maven:dragonapi-235591:3574508"))
+    compileOnly(deobfMaven(curseMaven, "curse.maven:applied-energistics-2-223794:2296430"))
 
     // Provides deobf support like in FG2
     runtimeOnlyNonPublishable('com.github.GTNewHorizons:CodeChickenLib:1.2.1:dev')

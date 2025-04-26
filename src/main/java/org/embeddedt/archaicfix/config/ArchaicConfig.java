@@ -176,4 +176,8 @@ public class ArchaicConfig {
     @Config.Comment("Make entities drop XP immediately on death, like modern versions")
     @Config.DefaultBoolean(true)
     public static boolean dropXpImmediatelyOnDeath;
+
+    @Config.Comment("Disable NEI item rendering in AE2 to fix duplicate stack size rendering when using AE2 rv3-beta-6 with NEI > 2.6.37-GTNH")
+    @Config.DefaultBoolean(true)
+    public static boolean disableAE2NEIItemRendering;
 }
