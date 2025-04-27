@@ -2,12 +2,13 @@ package org.embeddedt.archaicfix.mixins.common.core;
 
 import com.google.common.collect.ImmutableSet;
 import cpw.mods.fml.common.FMLCommonHandler;
+import java.util.List;
+import java.util.Set;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
@@ -23,12 +24,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-
-import java.util.*;
 
 @Mixin(World.class)
 public abstract class MixinWorld {
@@ -141,18 +139,5 @@ public abstract class MixinWorld {
                 }
             }
         }
-    }
-
-    @Redirect(method = "updateEntities", slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/tileentity/TileEntity;onChunkUnload()V", remap = false)), at = @At(value = "INVOKE", target = "Ljava/util/List;removeAll(Ljava/util/Collection;)Z", ordinal = 0))
-    private boolean removeInUnloaded(List<TileEntity> instance, Collection<TileEntity> objects) {
-        if (ArchaicConfig.fixTEUnloadLag) {
-            // Arbitrary number chosen because contains() will be fast enough on a tiny list
-            if(objects.size() > 3) {
-                Set<TileEntity> toRemove = Collections.newSetFromMap(new IdentityHashMap<>(objects.size()));
-                toRemove.addAll(objects);
-                objects = toRemove;
-            }
-        }
-        return instance.removeAll(objects);
     }
 }

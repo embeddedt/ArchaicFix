@@ -38,6 +38,7 @@ public enum Mixin {
     common_core_MixinEntityLiving(Side.COMMON, Phase.EARLY, always(), "core.MixinEntityLiving"),
     common_core_MixinEntityLivingBase_EarlyXpDrop(Side.COMMON, Phase.EARLY, m -> ArchaicConfig.dropXpImmediatelyOnDeath, "core.MixinEntityLivingBase_EarlyXpDrop"),
     common_core_MixinWorld(Side.COMMON, Phase.EARLY, always(), "core.MixinWorld"),
+    common_core_MixinWorld_UpdateEntities(Side.COMMON, Phase.EARLY, avoid(TargetedMod.HODGEPODGE), "core.MixinWorld_UpdateEntities"),
     common_core_MixinEntityTrackerEntry(Side.COMMON, Phase.EARLY, always(), "core.MixinEntityTrackerEntry"),
     common_core_MixinEntityXPOrb(Side.COMMON, Phase.EARLY, always(), "core.MixinEntityXPOrb"),
     common_core_MixinEntityItem(Side.COMMON, Phase.EARLY, avoid(TargetedMod.SHIPSMOD).and(m -> ArchaicConfig.itemLagReduction), "core.MixinEntityItem"),

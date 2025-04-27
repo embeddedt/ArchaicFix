@@ -29,7 +29,8 @@ public enum TargetedMod {
     DIVERSITY("Diversity", "diversity"),
     WAYSTONES("Waystones", "waystones"),
     AE2("AppliedEnergistics2", "appliedenergistics2"),
-    AOA("AdventOfAscension", "nevermine")
+    AOA("AdventOfAscension", "nevermine"),
+    HODGEPODGE("Hodgepodge", "hodgepodge")
     ;
 
     @Getter
