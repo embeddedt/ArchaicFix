@@ -67,6 +67,7 @@ public class ArchaicCore implements IFMLLoadingPlugin, IEarlyMixinLoader {
             .put("optifine.OptiFineForgeTweaker", TargetedMod.OPTIFINE)
             .put("fastcraft.Tweaker", TargetedMod.FASTCRAFT)
             .put("cofh.asm.LoadingPlugin", TargetedMod.COFHCORE)
+            .put("com.mitchej123.hodgepodge.core.HodgepodgeCore", TargetedMod.HODGEPODGE)
             .build();
 
     private static void detectCoreMods(Set<String> loadedCoreMods) {
@@ -80,12 +81,18 @@ public class ArchaicCore implements IFMLLoadingPlugin, IEarlyMixinLoader {
     public List<String> getMixins(Set<String> loadedCoreMods) {
         List<String> mixins = new ArrayList<>();
         detectCoreMods(loadedCoreMods);
-        LOGGER.info("Detected coremods: [" + coreMods.stream().map(TargetedMod::name).collect(Collectors.joining(", ")) + "]");
-        for(Mixin mixin : Mixin.values()) {
-            if(mixin.getPhase() == Mixin.Phase.EARLY && mixin.shouldLoadSide() && mixin.getFilter().test(coreMods)) {
+        LOGGER.info("Detected coremods: [{}]", coreMods.stream().map(TargetedMod::name).collect(Collectors.joining(", ")));
+        final List<String> notLoading = new ArrayList<>();
+
+        for (Mixin mixin : Mixin.values()) {
+            if (mixin.getPhase() == Mixin.Phase.EARLY && mixin.shouldLoadSide() && mixin.getFilter().test(coreMods)) {
                 mixins.add(mixin.getMixin());
+            } else {
+                notLoading.add(mixin.getMixin());
             }
         }
+
+        LOGGER.info("Not loading the following early mixins: [{}]", String.join(", ", notLoading));
         return mixins;
     }
 }

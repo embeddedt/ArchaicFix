@@ -38,6 +38,7 @@ public enum Mixin {
     common_core_MixinEntityLiving(Side.COMMON, Phase.EARLY, always(), "core.MixinEntityLiving"),
     common_core_MixinEntityLivingBase_EarlyXpDrop(Side.COMMON, Phase.EARLY, m -> ArchaicConfig.dropXpImmediatelyOnDeath, "core.MixinEntityLivingBase_EarlyXpDrop"),
     common_core_MixinWorld(Side.COMMON, Phase.EARLY, always(), "core.MixinWorld"),
+    common_core_MixinWorld_UpdateEntities(Side.COMMON, Phase.EARLY, avoid(TargetedMod.HODGEPODGE), "core.MixinWorld_UpdateEntities"),
     common_core_MixinEntityTrackerEntry(Side.COMMON, Phase.EARLY, always(), "core.MixinEntityTrackerEntry"),
     common_core_MixinEntityXPOrb(Side.COMMON, Phase.EARLY, always(), "core.MixinEntityXPOrb"),
     common_core_MixinEntityItem(Side.COMMON, Phase.EARLY, avoid(TargetedMod.SHIPSMOD).and(m -> ArchaicConfig.itemLagReduction), "core.MixinEntityItem"),
@@ -131,6 +132,8 @@ public enum Mixin {
     common_foodplus_MixinUpdater(Side.COMMON, Phase.LATE, require(TargetedMod.FOODPLUS).and(m -> ArchaicConfig.disableFoodPlusUpdates), "foodplus.MixinUpdater"),
 
     common_waystones_MixinItemWarpStone(Side.COMMON, Phase.LATE, require(TargetedMod.WAYSTONES), "waystones.MixinItemWarpStone"),
+
+    client_ae2_MixinNEIItemRender(Side.CLIENT, Phase.LATE, require(TargetedMod.AE2).and(m -> ArchaicConfig.disableAE2NEIItemRendering), "ae2.MixinNEIItemRender"),
 
     /** This mixin will ostensibly be unnecessary after DragonAPI V31b */
     common_dragonapi_MixinReikaWorldHelper(Side.COMMON, Phase.LATE, m -> DragonAPIHelper.isVersionInInclusiveRange(0, 'a', 31, 'b') && !Boolean.valueOf(System.getProperty("archaicFix.disableFastReikaWorldHelper", "false")), "dragonapi.MixinReikaWorldHelper"),
