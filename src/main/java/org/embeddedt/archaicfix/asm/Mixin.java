@@ -132,6 +132,8 @@ public enum Mixin {
 
     common_waystones_MixinItemWarpStone(Side.COMMON, Phase.LATE, require(TargetedMod.WAYSTONES), "waystones.MixinItemWarpStone"),
 
+    client_ae2_MixinNEIItemRender(Side.CLIENT, Phase.LATE, require(TargetedMod.AE2).and(m -> ArchaicConfig.disableAE2NEIItemRendering), "ae2.MixinNEIItemRender"),
+
     /** This mixin will ostensibly be unnecessary after DragonAPI V31b */
     common_dragonapi_MixinReikaWorldHelper(Side.COMMON, Phase.LATE, m -> DragonAPIHelper.isVersionInInclusiveRange(0, 'a', 31, 'b') && !Boolean.valueOf(System.getProperty("archaicFix.disableFastReikaWorldHelper", "false")), "dragonapi.MixinReikaWorldHelper"),
 
