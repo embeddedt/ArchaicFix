@@ -19,6 +19,7 @@ import org.embeddedt.archaicfix.recipe.RecipeWeigher;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.HashSet;
@@ -35,7 +36,10 @@ public class MixinCraftingManager implements IFasterCraftingManager {
 
     private volatile LastMatchedInfo lastMatchedInfo = null;
 
-    @Inject(method = "findMatchingRecipe", at = @At(value = "INVOKE", target = "Ljava/util/List;size()I"), cancellable = true)
+    @Inject(method = "findMatchingRecipe", at = @At(value = "CONSTANT", args = "intValue=0"), slice = @Slice(
+            from = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;<init>(Lnet/minecraft/item/Item;II)V"),
+            to =  @At(value = "INVOKE", target = "Ljava/util/List;size()I")
+    ), cancellable = true)
     private void fasterRecipeSearch(InventoryCrafting inventory, World world, CallbackInfoReturnable<ItemStack> cir) {
         if(!ArchaicConfig.cacheRecipes)
             return;
