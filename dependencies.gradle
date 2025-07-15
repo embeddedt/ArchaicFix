@@ -10,7 +10,7 @@ dependencies {
         transitive = false
     }
     compileOnly "curse.maven:chunkpregen-267193:3756388"
-    compileOnly('com.github.GTNewHorizons:NotEnoughItems:2.6.1-GTNH:dev')
+    compileOnly('com.github.GTNewHorizons:NotEnoughItems:2.7.64-GTNH:dev')
     compileOnly("com.gregoriust.gregtech:gregtech_1.7.10:6.15.01:dev") {
         transitive = false
     }
@@ -19,7 +19,7 @@ dependencies {
     compileOnly("curse.maven:thermalexpansion-69163:2388759")
     compileOnly("curse.maven:matteroverdrive-229694:2331162")
     compileOnly("curse.maven:projecte-226410:2340786")
-    compileOnly('com.github.GTNewHorizons:Botania:1.11.3-GTNH:dev') {
+    compileOnly('com.github.GTNewHorizons:Botania:1.12.16-GTNH:dev') {
         transitive = false
     }
     compileOnly("org.projectlombok:lombok:1.18.22") {
@@ -46,6 +46,6 @@ dependencies {
     compileOnly(deobfMaven(curseMaven, "curse.maven:applied-energistics-2-223794:2296430"))
 
     // Provides deobf support like in FG2
-    runtimeOnlyNonPublishable('com.github.GTNewHorizons:CodeChickenLib:1.2.1:dev')
-    runtimeOnlyNonPublishable('com.github.GTNewHorizons:CodeChickenCore:1.2.1:dev')
+    runtimeOnlyNonPublishable('com.github.GTNewHorizons:CodeChickenLib:1.3.0:dev')
+    runtimeOnlyNonPublishable('com.github.GTNewHorizons:CodeChickenCore:1.4.3:dev')
 }
