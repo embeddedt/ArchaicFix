@@ -28,7 +28,7 @@ public enum TargetedMod implements ITargetMod {
     MRTJPCORE("MrTJPCoreMod"),
     OPTIFINE("optifine.OptiFineForgeTweaker", null),
     PROJECTE("ProjectE"),
-    SHIPSMOD("cuchaz.ships"),
+    SHIPSMOD("cuchaz.ships.core.CoreModPlugin","cuchaz.ships"),
     TC4TWEAKS("tc4tweak"),
     THERMALEXPANSION("ThermalExpansion"),
     THERMALFOUNDATION("ThermalFoundation"),
