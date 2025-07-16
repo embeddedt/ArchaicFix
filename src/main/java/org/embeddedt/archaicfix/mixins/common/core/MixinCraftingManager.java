@@ -41,8 +41,6 @@ public class MixinCraftingManager implements IFasterCraftingManager {
             to =  @At(value = "INVOKE", target = "Ljava/util/List;size()I")
     ), cancellable = true)
     private void fasterRecipeSearch(InventoryCrafting inventory, World world, CallbackInfoReturnable<ItemStack> cir) {
-        if(!ArchaicConfig.cacheRecipes)
-            return;
         LastMatchedInfo retInfo = lastMatchedInfo;
         if(retInfo == null || !retInfo.matches(inventory)) {
             Set<Item> stacks = new HashSet<>();

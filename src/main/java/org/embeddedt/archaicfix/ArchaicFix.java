@@ -82,8 +82,11 @@ public class ArchaicFix
 
     @EventHandler
     public void serverStarted(FMLServerStartedEvent event) {
-        ((IFasterCraftingManager)CraftingManager.getInstance()).clearRecipeCache();
-        ArchaicLogger.LOGGER.info("Cleared recipe cache");
+        final CraftingManager craftingManager = CraftingManager.getInstance();
+        if (craftingManager instanceof IFasterCraftingManager) {
+            ((IFasterCraftingManager) craftingManager).clearRecipeCache();
+            ArchaicLogger.LOGGER.info("Cleared recipe cache");
+        }
     }
 
     private void printRecipeDebug() {
