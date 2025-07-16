@@ -1,38 +1,41 @@
 package org.embeddedt.archaicfix;
 
-import com.google.common.collect.ImmutableMap;
 import com.gtnewhorizon.gtnhmixins.IEarlyMixinLoader;
+import com.gtnewhorizon.gtnhmixins.builders.IMixins;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.embeddedt.archaicfix.asm.Mixin;
-import org.embeddedt.archaicfix.asm.TargetedMod;
 import org.embeddedt.archaicfix.asm.transformer.VampirismTransformer;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
 import org.embeddedt.archaicfix.config.ConfigException;
 import org.embeddedt.archaicfix.config.ConfigurationManager;
 import org.embeddedt.archaicfix.helpers.LetsEncryptHelper;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @IFMLLoadingPlugin.Name("ArchaicCore")
 @IFMLLoadingPlugin.MCVersion("1.7.10")
 public class ArchaicCore implements IFMLLoadingPlugin, IEarlyMixinLoader {
+
     public static final Logger LOGGER = LogManager.getLogger("ArchaicCore");
+
     static {
         VampirismTransformer.init();
         try {
             ConfigurationManager.registerConfig(ArchaicConfig.class);
-        } catch(ConfigException e) {
+        } catch (ConfigException e) {
             throw new RuntimeException(e);
         }
         LetsEncryptHelper.replaceSSLContext();
     }
+
     @Override
     public String[] getASMTransformerClass() {
-        return new String[] {
-            "org.embeddedt.archaicfix.asm.ArchaicTransformer"
+        return new String[]{
+                "org.embeddedt.archaicfix.asm.ArchaicTransformer"
         };
     }
 
@@ -61,38 +64,8 @@ public class ArchaicCore implements IFMLLoadingPlugin, IEarlyMixinLoader {
         return "mixins.archaicfix.early.json";
     }
 
-    public static Set<TargetedMod> coreMods = new HashSet<>();
-
-    private static final ImmutableMap<String, TargetedMod> MODS_BY_CLASS = ImmutableMap.<String, TargetedMod>builder()
-            .put("optifine.OptiFineForgeTweaker", TargetedMod.OPTIFINE)
-            .put("fastcraft.Tweaker", TargetedMod.FASTCRAFT)
-            .put("cofh.asm.LoadingPlugin", TargetedMod.COFHCORE)
-            .put("com.mitchej123.hodgepodge.core.HodgepodgeCore", TargetedMod.HODGEPODGE)
-            .build();
-
-    private static void detectCoreMods(Set<String> loadedCoreMods) {
-        MODS_BY_CLASS.forEach((key, value) -> {
-            if (loadedCoreMods.contains(key))
-                coreMods.add(value);
-        });
-    }
-
     @Override
     public List<String> getMixins(Set<String> loadedCoreMods) {
-        List<String> mixins = new ArrayList<>();
-        detectCoreMods(loadedCoreMods);
-        LOGGER.info("Detected coremods: [{}]", coreMods.stream().map(TargetedMod::name).collect(Collectors.joining(", ")));
-        final List<String> notLoading = new ArrayList<>();
-
-        for (Mixin mixin : Mixin.values()) {
-            if (mixin.getPhase() == Mixin.Phase.EARLY && mixin.shouldLoadSide() && mixin.getFilter().test(coreMods)) {
-                mixins.add(mixin.getMixin());
-            } else {
-                notLoading.add(mixin.getMixin());
-            }
-        }
-
-        LOGGER.info("Not loading the following early mixins: [{}]", String.join(", ", notLoading));
-        return mixins;
+        return IMixins.getEarlyMixins(Mixin.class, loadedCoreMods);
     }
 }

@@ -1,40 +1,46 @@
 package org.embeddedt.archaicfix.asm;
 
 
+import com.gtnewhorizon.gtnhmixins.builders.ITargetMod;
+import com.gtnewhorizon.gtnhmixins.builders.TargetModBuilder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
-public enum TargetedMod {
-    CHICKENCHUNKS("ChickenChunks", "ChickenChunks"),
-    MRTJPCORE("MrTJPCore", "MrTJPCoreMod"),
-    CHUNK_PREGENERATOR("ChunkPregenerator", "chunkpregenerator"),
-    THERMALEXPANSION("ThermalExpansion", "ThermalExpansion"),
-    THERMALFOUNDATION("ThermalFoundation", "ThermalFoundation"),
-    GREGTECH6("GregTech", "gregapi"),
-    MATTEROVERDRIVE("MatterOverdrive", "mo"),
-    PROJECTE("ProjectE", "ProjectE"),
-    TC4TWEAKS("TC4Tweaks", "tc4tweak"),
-    FASTCRAFT("FastCraft", null),
-    OPTIFINE("OptiFine", null),
-    MEKANISM("Mekanism", "Mekanism"),
-    BOTANIA("Botania", "Botania"),
-    COFHCORE("CoFHCore", "CoFHCore"),
-    EXTRAUTILS("ExtraUtilities", "ExtraUtilities"),
-    DIVINERPG("DivineRPG", "divinerpg"),
-    SHIPSMOD("ShipsMod", "cuchaz.ships"),
-    JOURNEYMAP("JourneyMap", "journeymap"),
-    AM2("ArsMagica2", "arsmagica2"),
-    FOODPLUS("FoodPlus", "FoodPlus"),
-    DIVERSITY("Diversity", "diversity"),
-    WAYSTONES("Waystones", "waystones"),
-    AE2("AppliedEnergistics2", "appliedenergistics2"),
-    AOA("AdventOfAscension", "nevermine"),
-    HODGEPODGE("Hodgepodge", "hodgepodge")
-    ;
+@Getter
+public enum TargetedMod implements ITargetMod {
 
-    @Getter
-    private final String modName;
-    @Getter
-    private final String modId;
+    ADVENT_OF_ASCENSION("nevermine"),
+    AE2("appliedenergistics2"),
+    ARS_MAGICA_2("arsmagica2"),
+    BOTANIA("Botania"),
+    CHICKENCHUNKS("ChickenChunks"),
+    CHUNK_PREGENERATOR("chunkpregenerator"),
+    COFHCORE("cofh.asm.LoadingPlugin", "CoFHCore"),
+    DIVERSITY("diversity"),
+    DIVINERPG("divinerpg"),
+    EXTRAUTILS("ExtraUtilities"),
+    FASTCRAFT("fastcraft.Tweaker", null),
+    FOODPLUS("FoodPlus"),
+    GREGTECH6("gregapi"),
+    HODGEPODGE("com.mitchej123.hodgepodge.core.HodgepodgeCore", "hodgepodge"),
+    JOURNEYMAP("journeymap"),
+    MATTER_OVERDRIVE("mo"),
+    MEKANISM("Mekanism"),
+    MRTJPCORE("MrTJPCoreMod"),
+    OPTIFINE("optifine.OptiFineForgeTweaker", null),
+    PROJECTE("ProjectE"),
+    SHIPSMOD("cuchaz.ships"),
+    TC4TWEAKS("tc4tweak"),
+    THERMALEXPANSION("ThermalExpansion"),
+    THERMALFOUNDATION("ThermalFoundation"),
+    WAYSTONES("waystones");
+
+    private final TargetModBuilder builder;
+
+    TargetedMod(String modId) {
+        this(null, modId);
+    }
+
+    TargetedMod(String coremodClass, String modId) {
+        this.builder = new TargetModBuilder().setCoreModClass(coremodClass).setModId(modId);
+    }
 }
