@@ -6,191 +6,191 @@ import lombok.Getter;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
 import org.embeddedt.archaicfix.helpers.DragonAPIHelper;
 
-import java.util.Locale;
+import javax.annotation.Nonnull;
 import java.util.function.Supplier;
 
 @Getter
 public enum Mixin implements IMixins {
 
-    MINECRAFT(new MixinBuilder()
+    MINECRAFT(new ArchaicBuilder()
             .setPhase(Phase.EARLY)
             .addCommonMixins(
-                    "common.core.AccessorEntityLiving",
-                    "common.core.MixinEntityPlayerMP",
-                    "common.core.MixinWorldServer",
-                    "common.core.MixinMapGenStructure",
-                    "common.core.MixinEntityVillager",
-                    "common.core.MixinMerchantRecipe",
-                    "common.core.MixinAxisAlignedBB",
-                    "common.core.MixinMaterialLiquid",
-                    "common.core.MixinChunkProviderServer",
-                    "common.core.MixinChunkIOProvider",
-                    "common.core.MixinCraftingManager",
-                    "common.core.MixinSpawnerAnimals",
-                    "common.core.MixinShapedOreRecipe",
-                    "common.core.MixinLongHashMap",
-                    "common.core.MixinBlock",
-                    "common.core.MixinBlock_Late",
-                    "common.core.MixinEnchantmentHelper",
-                    "common.core.MixinWorldChunkManager",
-                    "common.core.MixinShapedRecipes",
-                    "common.core.MixinShapelessOreRecipe",
-                    "common.core.MixinShapelessRecipes",
-                    "common.core.MixinEntityLiving",
-                    "common.core.MixinWorld",
-                    "common.core.MixinEntityTrackerEntry",
-                    "common.core.MixinEntityXPOrb",
-                    "common.core.MixinEntity",
-                    "common.core.MixinForgeChunkManager",
-                    "common.core.MixinChunk",
-                    "common.core.MixinStructureStart",
-                    "common.core.MixinOreDictionary",
-                    "common.core.MixinChunkProviderHell",
-                    "common.core.MixinASMData",
-                    "common.core.MixinNetHandlerPlayServer")
+                    "core.AccessorEntityLiving",
+                    "core.MixinEntityPlayerMP",
+                    "core.MixinWorldServer",
+                    "core.MixinMapGenStructure",
+                    "core.MixinEntityVillager",
+                    "core.MixinMerchantRecipe",
+                    "core.MixinAxisAlignedBB",
+                    "core.MixinMaterialLiquid",
+                    "core.MixinChunkProviderServer",
+                    "core.MixinChunkIOProvider",
+                    "core.MixinCraftingManager",
+                    "core.MixinSpawnerAnimals",
+                    "core.MixinShapedOreRecipe",
+                    "core.MixinLongHashMap",
+                    "core.MixinBlock",
+                    "core.MixinBlock_Late",
+                    "core.MixinEnchantmentHelper",
+                    "core.MixinWorldChunkManager",
+                    "core.MixinShapedRecipes",
+                    "core.MixinShapelessOreRecipe",
+                    "core.MixinShapelessRecipes",
+                    "core.MixinEntityLiving",
+                    "core.MixinWorld",
+                    "core.MixinEntityTrackerEntry",
+                    "core.MixinEntityXPOrb",
+                    "core.MixinEntity",
+                    "core.MixinForgeChunkManager",
+                    "core.MixinChunk",
+                    "core.MixinStructureStart",
+                    "core.MixinOreDictionary",
+                    "core.MixinChunkProviderHell",
+                    "core.MixinASMData",
+                    "core.MixinNetHandlerPlayServer")
             .addClientMixins(
-                    "client.core.MixinThreadDownloadImageData",
-                    "client.core.MixinBlockFence",
-                    "client.core.MixinEntityRenderer",
-                    "client.core.MixinGuiBeaconButton",
-                    "client.core.MixinGuiButton",
-                    "client.core.MixinGuiContainerCreative",
-                    "client.core.MixinIntegratedServer",
-                    "client.core.MixinChunkProviderClient",
-                    "client.core.MixinMinecraft",
-                    "client.core.MixinNetHandlerPlayClient",
-                    "client.core.MixinGuiCreateWorld",
-                    "client.core.MixinGuiIngameForge",
-                    "client.core.MixinFMLClientHandler",
-                    "client.core.MixinSplashProgress",
-                    "client.core.AccessorSplashProgress")),
-    PHOSPHOR(new MixinBuilder()
+                    "core.MixinThreadDownloadImageData",
+                    "core.MixinBlockFence",
+                    "core.MixinEntityRenderer",
+                    "core.MixinGuiBeaconButton",
+                    "core.MixinGuiButton",
+                    "core.MixinGuiContainerCreative",
+                    "core.MixinIntegratedServer",
+                    "core.MixinChunkProviderClient",
+                    "core.MixinMinecraft",
+                    "core.MixinNetHandlerPlayClient",
+                    "core.MixinGuiCreateWorld",
+                    "core.MixinGuiIngameForge",
+                    "core.MixinFMLClientHandler",
+                    "core.MixinSplashProgress",
+                    "core.AccessorSplashProgress")),
+    PHOSPHOR(new ArchaicBuilder()
             .setPhase(Phase.EARLY)
             .setApplyIf(() -> ArchaicConfig.enablePhosphor)
             .addCommonMixins(
-                    "common.lighting.MixinAnvilChunkLoader",
-                    "common.lighting.MixinChunk",
-                    "common.lighting.MixinChunkProviderServer",
-                    "common.lighting.MixinChunkVanilla",
-                    "common.lighting.MixinExtendedBlockStorage",
-                    "common.lighting.MixinSPacketChunkData",
-                    "common.lighting.MixinWorld_Lighting")
+                    "lighting.MixinAnvilChunkLoader",
+                    "lighting.MixinChunk",
+                    "lighting.MixinChunkProviderServer",
+                    "lighting.MixinChunkVanilla",
+                    "lighting.MixinExtendedBlockStorage",
+                    "lighting.MixinSPacketChunkData",
+                    "lighting.MixinWorld_Lighting")
             .addClientMixins(
-                    "client.lighting.MixinMinecraft",
-                    "client.lighting.MixinWorld",
-                    "client.lighting.MixinChunkCache")),
-    PHOSPHOR_FASTCRAFT(new MixinBuilder()
+                    "lighting.MixinMinecraft",
+                    "lighting.MixinWorld",
+                    "lighting.MixinChunkCache")),
+    PHOSPHOR_FASTCRAFT(new ArchaicBuilder()
             .setPhase(Phase.EARLY)
             .setApplyIf(() -> ArchaicConfig.enablePhosphor)
             .addRequiredMod(TargetedMod.FASTCRAFT)
             .addCommonMixins(
-                    "common.lighting.fastcraft.MixinChunk",
-                    "common.lighting.fastcraft.MixinChunkProviderServer",
-                    "common.lighting.fastcraft.MixinWorld")),
+                    "lighting.fastcraft.MixinChunk",
+                    "lighting.fastcraft.MixinChunkProviderServer",
+                    "lighting.fastcraft.MixinWorld")),
 
-    GREGTECH6(new MixinBuilder()
+    GREGTECH6(new ArchaicBuilder()
             .setPhase(Phase.LATE)
             .addRequiredMod(TargetedMod.GREGTECH6)
             .addCommonMixins(
-                    "common.gt6.MixinAdvancedCraftingXToY",
-                    "common.gt6.MixinGT6_Main",
-                    "common.gt6.MixinCR")
-            .addClientMixins("client.gt6.MixinGT_API_Proxy_Client")),
+                    "gt6.MixinAdvancedCraftingXToY",
+                    "gt6.MixinGT6_Main",
+                    "gt6.MixinCR")
+            .addClientMixins("gt6.MixinGT_API_Proxy_Client")),
 
-    RACE_CONDITION_LOGGING(new MixinBuilder()
+    RACE_CONDITION_LOGGING(new ArchaicBuilder()
             .setPhase(Phase.EARLY)
             .setApplyIf(() -> ArchaicConfig.fixLoginRaceCondition)
             .addCommonMixins(
-                    "common.core.MixinNetworkDispatcher",
-                    "common.core.MixinNetworkManager",
-                    "common.core.MixinEmbeddedChannel")
-            .addClientMixins("client.core.MixinNetHandlerLoginClient")),
+                    "core.MixinNetworkDispatcher",
+                    "core.MixinNetworkManager",
+                    "core.MixinEmbeddedChannel")
+            .addClientMixins("core.MixinNetHandlerLoginClient")),
 
-    MATTER_OVERDRIVE(new MixinBuilder()
+    MATTER_OVERDRIVE(new ArchaicBuilder()
             .setPhase(Phase.LATE)
             .addRequiredMod(TargetedMod.MATTER_OVERDRIVE)
             .addCommonMixins(
-                    "common.mo.MixinMatterRegistry",
-                    "common.mo.MixinMatterRegistrationHandler",
-                    "common.mo.MixinVersionCheckHandler")),
+                    "mo.MixinMatterRegistry",
+                    "mo.MixinMatterRegistrationHandler",
+                    "mo.MixinVersionCheckHandler")),
 
-    CHUNK_PREGENERATOR(new MixinBuilder()
+    CHUNK_PREGENERATOR(new ArchaicBuilder()
             .setPhase(Phase.LATE)
             .addRequiredMod(TargetedMod.CHUNK_PREGENERATOR)
             .addCommonMixins(
-                    "common.pregen.MixinChunkProcessor",
-                    "common.pregen.MixinChunkHelper")),
+                    "pregen.MixinChunkProcessor",
+                    "pregen.MixinChunkHelper")),
 
-    THAUMCRAFT_HASHING(new MixinBuilder()
+    THAUMCRAFT_HASHING(new ArchaicBuilder()
             .setPhase(Phase.LATE)
             .addRequiredMod(TargetedMod.TC4TWEAKS)
             .setApplyIf(() -> ArchaicConfig.betterThaumcraftHashing)
             .addCommonMixins(
-                    "common.tc4tweaks.MixinGenerateItemHash",
-                    "common.tc4tweaks.MixinMappingThread")),
+                    "tc4tweaks.MixinGenerateItemHash",
+                    "tc4tweaks.MixinMappingThread")),
 
-    MAX_RENDER_DISTANCE(new MixinBuilder()
+    MAX_RENDER_DISTANCE(new ArchaicBuilder()
             .setPhase(Phase.EARLY)
             .setApplyIf(() -> ArchaicConfig.raiseMaxRenderDistance)
             .addExcludedMod(TargetedMod.OPTIFINE)
             .addExcludedMod(TargetedMod.FASTCRAFT)
-            .addCommonMixins("common.renderdistance.MixinPlayerManager")
+            .addCommonMixins("renderdistance.MixinPlayerManager")
             .addClientMixins(
-                    "client.renderdistance.MixinGameSettings",
-                    "client.renderdistance.MixinRenderGlobal")),
+                    "renderdistance.MixinGameSettings",
+                    "renderdistance.MixinRenderGlobal")),
 
-    EXTRA_UTILS(new MixinBuilder()
+    EXTRA_UTILS(new ArchaicBuilder()
             .setPhase(Phase.LATE)
             .addRequiredMod(TargetedMod.EXTRAUTILS)
             .addCommonMixins(
-                    "common.extrautils.MixinEventHandlerSiege",
-                    "common.extrautils.MixinEventHandlerServer",
-                    "common.extrautils.MixinItemDivisionSigil",
-                    "common.extrautils.MixinTileEntityTrashCan")),
+                    "extrautils.MixinEventHandlerSiege",
+                    "extrautils.MixinEventHandlerServer",
+                    "extrautils.MixinItemDivisionSigil",
+                    "extrautils.MixinTileEntityTrashCan")),
 
-    WORLD_UPDATE_ENTITIES(new MixinBuilder()
+    WORLD_UPDATE_ENTITIES(new ArchaicBuilder()
             .setPhase(Phase.EARLY)
             .addExcludedMod(TargetedMod.HODGEPODGE)
-            .addCommonMixins("common.core.MixinWorld_UpdateEntities")),
+            .addCommonMixins("core.MixinWorld_UpdateEntities")),
 
-    ITEM_LAG_REDUCTION(new MixinBuilder()
+    ITEM_LAG_REDUCTION(new ArchaicBuilder()
             .setPhase(Phase.EARLY)
             .addExcludedMod(TargetedMod.SHIPSMOD)
             .setApplyIf(() -> ArchaicConfig.itemLagReduction)
-            .addCommonMixins("common.core.MixinEntityItem")),
+            .addCommonMixins("core.MixinEntityItem")),
 
-    MIXINMODCANDIDATE(new MixinBuilder()
+    MIXINMODCANDIDATE(new ArchaicBuilder()
             .setPhase(Phase.EARLY)
             .addExcludedMod(TargetedMod.COFHCORE)
-            .addCommonMixins("common.core.MixinModCandidate")),
+            .addCommonMixins("core.MixinModCandidate")),
 
-    common_chickenchunks_MixinPlayerChunkViewerManager(Side.COMMON, Phase.LATE, TargetedMod.CHICKENCHUNKS, "chickenchunks.MixinPlayerChunkViewerManager"),
-    common_core_MixinEntityLivingBase_EarlyXpDrop(Side.COMMON, Phase.EARLY, () -> ArchaicConfig.dropXpImmediatelyOnDeath, "core.MixinEntityLivingBase_EarlyXpDrop"),
-    common_core_MixinSwampHut(Side.COMMON, Phase.EARLY, () -> ArchaicConfig.fixEntityStructurePersistence, "core.MixinSwampHut"),
-    common_mrtjp_MixinBlockUpdateHandler(Side.COMMON, Phase.LATE, TargetedMod.MRTJPCORE, "mrtjp.MixinBlockUpdateHandler"),
-    common_projecte_MixinRecipeShapelessHidden(Side.COMMON, Phase.LATE, TargetedMod.PROJECTE, "projecte.MixinRecipeShapelessHidden"),
-    common_thermal_MixinTECraftingHandler(Side.COMMON, Phase.LATE, TargetedMod.THERMALEXPANSION, "thermal.MixinTECraftingHandler"),
+    chickenchunks_MixinPlayerChunkViewerManager(Side.COMMON, Phase.LATE, TargetedMod.CHICKENCHUNKS, "chickenchunks.MixinPlayerChunkViewerManager"),
+    core_MixinEntityLivingBase_EarlyXpDrop(Side.COMMON, Phase.EARLY, () -> ArchaicConfig.dropXpImmediatelyOnDeath, "core.MixinEntityLivingBase_EarlyXpDrop"),
+    core_MixinSwampHut(Side.COMMON, Phase.EARLY, () -> ArchaicConfig.fixEntityStructurePersistence, "core.MixinSwampHut"),
+    mrtjp_MixinBlockUpdateHandler(Side.COMMON, Phase.LATE, TargetedMod.MRTJPCORE, "mrtjp.MixinBlockUpdateHandler"),
+    projecte_MixinRecipeShapelessHidden(Side.COMMON, Phase.LATE, TargetedMod.PROJECTE, "projecte.MixinRecipeShapelessHidden"),
+    thermal_MixinTECraftingHandler(Side.COMMON, Phase.LATE, TargetedMod.THERMALEXPANSION, "thermal.MixinTECraftingHandler"),
 
     // CLIENT MIXINS,
-    client_core_MixinSkinManager(Side.CLIENT, Phase.EARLY, () -> ArchaicConfig.fixSkinMemoryLeak, "core.MixinSkinManager"),
-    client_core_MixinWorldRenderer(Side.CLIENT, Phase.EARLY, () -> !Boolean.parseBoolean(System.getProperty("archaicFix.disableMC129", "false")), "core.MixinWorldRenderer"),
-    client_core_MixinRenderItem(Side.CLIENT, Phase.EARLY, () -> ArchaicConfig.forceFancyItems, "core.MixinRenderItem"),
-    client_divinerpg_MixinEntitySparkler(Side.CLIENT, Phase.LATE, TargetedMod.DIVINERPG, "divinerpg.MixinEntitySparkler"),
-    client_optifine_MixinVersionCheckThread(Side.CLIENT, Phase.EARLY, TargetedMod.OPTIFINE, () -> ArchaicConfig.disableOFVersionCheck, "optifine.MixinVersionCheckThread"),
+    core_MixinSkinManager(Side.CLIENT, Phase.EARLY, () -> ArchaicConfig.fixSkinMemoryLeak, "core.MixinSkinManager"),
+    core_MixinWorldRenderer(Side.CLIENT, Phase.EARLY, () -> !Boolean.parseBoolean(System.getProperty("archaicFix.disableMC129", "false")), "core.MixinWorldRenderer"),
+    core_MixinRenderItem(Side.CLIENT, Phase.EARLY, () -> ArchaicConfig.forceFancyItems, "core.MixinRenderItem"),
+    divinerpg_MixinEntitySparkler(Side.CLIENT, Phase.LATE, TargetedMod.DIVINERPG, "divinerpg.MixinEntitySparkler"),
+    optifine_MixinVersionCheckThread(Side.CLIENT, Phase.EARLY, TargetedMod.OPTIFINE, () -> ArchaicConfig.disableOFVersionCheck, "optifine.MixinVersionCheckThread"),
 
     // MOD-FILTERED MIXINS
-    common_mekanism_MixinGenHandler(Side.COMMON, Phase.LATE, TargetedMod.MEKANISM, "mekanism.MixinGenHandler"),
-    common_thermal_MixinBlockOre(Side.COMMON, Phase.LATE, TargetedMod.THERMALFOUNDATION, "thermal.MixinBlockOre"),
-    common_botania_MixinBlockSpecialFlower(Side.COMMON, Phase.LATE, TargetedMod.BOTANIA, "botania.MixinBlockSpecialFlower"),
-    client_journeymap_MixinTileDrawStep(Side.CLIENT, Phase.LATE, TargetedMod.JOURNEYMAP, () -> ArchaicConfig.removeJourneymapDebug, "journeymap.MixinTileDrawStep"),
-    client_aoa_MixinProjectileEntities(Side.CLIENT, Phase.LATE, TargetedMod.ADVENT_OF_ASCENSION, "aoa.MixinProjectileEntities"),
-    common_am2_MixinPlayerTracker(Side.COMMON, Phase.LATE, TargetedMod.ARS_MAGICA_2, "am2.MixinPlayerTracker"),
-    common_foodplus_MixinUpdater(Side.COMMON, Phase.LATE, TargetedMod.FOODPLUS, () -> ArchaicConfig.disableFoodPlusUpdates, "foodplus.MixinUpdater"),
-    common_waystones_MixinItemWarpStone(Side.COMMON, Phase.LATE, TargetedMod.WAYSTONES, "waystones.MixinItemWarpStone"),
-    client_ae2_MixinNEIItemRender(Side.CLIENT, Phase.LATE, TargetedMod.AE2, () -> ArchaicConfig.disableAE2NEIItemRendering, "ae2.MixinNEIItemRender"),
+    mekanism_MixinGenHandler(Side.COMMON, Phase.LATE, TargetedMod.MEKANISM, "mekanism.MixinGenHandler"),
+    thermal_MixinBlockOre(Side.COMMON, Phase.LATE, TargetedMod.THERMALFOUNDATION, "thermal.MixinBlockOre"),
+    botania_MixinBlockSpecialFlower(Side.COMMON, Phase.LATE, TargetedMod.BOTANIA, "botania.MixinBlockSpecialFlower"),
+    journeymap_MixinTileDrawStep(Side.CLIENT, Phase.LATE, TargetedMod.JOURNEYMAP, () -> ArchaicConfig.removeJourneymapDebug, "journeymap.MixinTileDrawStep"),
+    aoa_MixinProjectileEntities(Side.CLIENT, Phase.LATE, TargetedMod.ADVENT_OF_ASCENSION, "aoa.MixinProjectileEntities"),
+    am2_MixinPlayerTracker(Side.COMMON, Phase.LATE, TargetedMod.ARS_MAGICA_2, "am2.MixinPlayerTracker"),
+    foodplus_MixinUpdater(Side.COMMON, Phase.LATE, TargetedMod.FOODPLUS, () -> ArchaicConfig.disableFoodPlusUpdates, "foodplus.MixinUpdater"),
+    waystones_MixinItemWarpStone(Side.COMMON, Phase.LATE, TargetedMod.WAYSTONES, "waystones.MixinItemWarpStone"),
+    ae2_MixinNEIItemRender(Side.CLIENT, Phase.LATE, TargetedMod.AE2, () -> ArchaicConfig.disableAE2NEIItemRendering, "ae2.MixinNEIItemRender"),
     /** This mixin will ostensibly be unnecessary after DragonAPI V31b */
-    common_dragonapi_MixinReikaWorldHelper(Side.COMMON, Phase.LATE, () -> DragonAPIHelper.isVersionInInclusiveRange(0, 'a', 31, 'b') && !Boolean.parseBoolean(System.getProperty("archaicFix.disableFastReikaWorldHelper", "false")), "dragonapi.MixinReikaWorldHelper"),
-    common_diversity_MixinServerHandler(Side.COMMON, Phase.LATE, TargetedMod.DIVERSITY, "diversity.MixinServerHandler");
+    dragonapi_MixinReikaWorldHelper(Side.COMMON, Phase.LATE, () -> DragonAPIHelper.isVersionInInclusiveRange(0, 'a', 31, 'b') && !Boolean.parseBoolean(System.getProperty("archaicFix.disableFastReikaWorldHelper", "false")), "dragonapi.MixinReikaWorldHelper"),
+    diversity_MixinServerHandler(Side.COMMON, Phase.LATE, TargetedMod.DIVERSITY, "diversity.MixinServerHandler");
 
     private final MixinBuilder builder;
 
@@ -207,12 +207,29 @@ public enum Mixin implements IMixins {
     }
 
     Mixin(Side side, Phase phase, TargetedMod requiredMod, Supplier<Boolean> applyIf, String mixin) {
-        this.builder = new MixinBuilder().setPhase(phase).addSidedMixins(side, getMixinClass(side, mixin));
+        this.builder = new ArchaicBuilder().setPhase(phase).addSidedMixins(side, mixin);
         if (requiredMod != null) this.builder.addRequiredMod(requiredMod);
         if (applyIf != null) this.builder.setApplyIf(applyIf);
     }
 
-    private static String getMixinClass(Side side, String s) {
-        return side.name().toLowerCase(Locale.ROOT) + "." + s;
+    static class ArchaicBuilder extends MixinBuilder {
+        @Override
+        public MixinBuilder addCommonMixins(@Nonnull String... mixins) {
+            for (int i = 0; i < mixins.length; i++) mixins[i] = "common." + mixins[i];
+            return super.addCommonMixins(mixins);
+        }
+
+        @Override
+        public MixinBuilder addClientMixins(@Nonnull String... mixins) {
+            for (int i = 0; i < mixins.length; i++) mixins[i] = "client." + mixins[i];
+            return super.addClientMixins(mixins);
+        }
+
+        @Override
+        public MixinBuilder addSidedMixins(@Nonnull Side side, @Nonnull String... mixins) {
+            if (side == Side.COMMON) return this.addCommonMixins(mixins);
+            if (side == Side.CLIENT) return this.addClientMixins(mixins);
+            return super.addSidedMixins(side, mixins);
+        }
     }
 }
