@@ -164,7 +164,7 @@ public enum Mixin implements IMixins {
             .addExcludedMod(TargetedMod.COFHCORE)
             .addCommonMixins("common.core.MixinModCandidate")),
 
-    common_chickenchunks_MixinPlayerChunkViewerManager(Side.COMMON, Phase.EARLY, TargetedMod.CHICKENCHUNKS, "chickenchunks.MixinPlayerChunkViewerManager"),
+    common_chickenchunks_MixinPlayerChunkViewerManager(Side.COMMON, Phase.LATE, TargetedMod.CHICKENCHUNKS, "chickenchunks.MixinPlayerChunkViewerManager"),
     common_core_MixinEntityLivingBase_EarlyXpDrop(Side.COMMON, Phase.EARLY, () -> ArchaicConfig.dropXpImmediatelyOnDeath, "core.MixinEntityLivingBase_EarlyXpDrop"),
     common_core_MixinSwampHut(Side.COMMON, Phase.EARLY, () -> ArchaicConfig.fixEntityStructurePersistence, "core.MixinSwampHut"),
     common_mrtjp_MixinBlockUpdateHandler(Side.COMMON, Phase.LATE, TargetedMod.MRTJPCORE, "mrtjp.MixinBlockUpdateHandler"),
