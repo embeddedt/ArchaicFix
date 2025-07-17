@@ -165,33 +165,103 @@ public enum Mixin implements IMixins {
             .addExcludedMod(TargetedMod.COFHCORE)
             .addCommonMixins("core.MixinModCandidate")),
 
-    chickenchunks_MixinPlayerChunkViewerManager(new ArchaicBuilder().addCommonMixins("chickenchunks.MixinPlayerChunkViewerManager").setPhase(Phase.LATE).addRequiredMod(TargetedMod.CHICKENCHUNKS)),
-    core_MixinEntityLivingBase_EarlyXpDrop(new ArchaicBuilder().addCommonMixins("core.MixinEntityLivingBase_EarlyXpDrop").setPhase(Phase.EARLY).setApplyIf(() -> ArchaicConfig.dropXpImmediatelyOnDeath)),
-    core_MixinSwampHut(new ArchaicBuilder().addCommonMixins("core.MixinSwampHut").setPhase(Phase.EARLY).setApplyIf(() -> ArchaicConfig.fixEntityStructurePersistence)),
-    mrtjp_MixinBlockUpdateHandler(new ArchaicBuilder().addCommonMixins("mrtjp.MixinBlockUpdateHandler").setPhase(Phase.LATE).addRequiredMod(TargetedMod.MRTJPCORE)),
-    projecte_MixinRecipeShapelessHidden(new ArchaicBuilder().addCommonMixins("projecte.MixinRecipeShapelessHidden").setPhase(Phase.LATE).addRequiredMod(TargetedMod.PROJECTE)),
-    thermal_MixinTECraftingHandler(new ArchaicBuilder().addCommonMixins("thermal.MixinTECraftingHandler").setPhase(Phase.LATE).addRequiredMod(TargetedMod.THERMALEXPANSION)),
+    chickenchunks_MixinPlayerChunkViewerManager(new ArchaicBuilder()
+            .addCommonMixins("chickenchunks.MixinPlayerChunkViewerManager")
+            .setPhase(Phase.LATE)
+            .addRequiredMod(TargetedMod.CHICKENCHUNKS)),
+    core_MixinEntityLivingBase_EarlyXpDrop(new ArchaicBuilder()
+            .addCommonMixins("core.MixinEntityLivingBase_EarlyXpDrop")
+            .setPhase(Phase.EARLY)
+            .setApplyIf(() -> ArchaicConfig.dropXpImmediatelyOnDeath)),
+    core_MixinSwampHut(new ArchaicBuilder()
+            .addCommonMixins("core.MixinSwampHut")
+            .setPhase(Phase.EARLY)
+            .setApplyIf(() -> ArchaicConfig.fixEntityStructurePersistence)),
+    mrtjp_MixinBlockUpdateHandler(new ArchaicBuilder()
+            .addCommonMixins("mrtjp.MixinBlockUpdateHandler")
+            .setPhase(Phase.LATE)
+            .addRequiredMod(TargetedMod.MRTJPCORE)),
+    projecte_MixinRecipeShapelessHidden(new ArchaicBuilder()
+            .addCommonMixins("projecte.MixinRecipeShapelessHidden")
+            .setPhase(Phase.LATE)
+            .addRequiredMod(TargetedMod.PROJECTE)),
+    thermal_MixinTECraftingHandler(new ArchaicBuilder()
+            .addCommonMixins("thermal.MixinTECraftingHandler")
+            .setPhase(Phase.LATE)
+            .addRequiredMod(TargetedMod.THERMALEXPANSION)),
 
     // CLIENT MIXINS,
-    core_MixinSkinManager(new ArchaicBuilder().addClientMixins("core.MixinSkinManager").setPhase(Phase.EARLY).setApplyIf(() -> ArchaicConfig.fixSkinMemoryLeak)),
-    core_MixinWorldRenderer(new ArchaicBuilder().addClientMixins("core.MixinWorldRenderer").setPhase(Phase.EARLY).setApplyIf(() -> !Boolean.parseBoolean(System.getProperty("archaicFix.disableMC129", "false")))),
-    core_MixinRenderItem(new ArchaicBuilder().addClientMixins("core.MixinRenderItem").setPhase(Phase.EARLY).setApplyIf(() -> ArchaicConfig.forceFancyItems)),
-    divinerpg_MixinEntitySparkler(new ArchaicBuilder().addClientMixins("divinerpg.MixinEntitySparkler").setPhase(Phase.LATE).addRequiredMod(TargetedMod.DIVINERPG)),
-    optifine_MixinVersionCheckThread(new ArchaicBuilder().addClientMixins("optifine.MixinVersionCheckThread").setPhase(Phase.EARLY).addRequiredMod(TargetedMod.OPTIFINE).setApplyIf(() -> ArchaicConfig.disableOFVersionCheck)),
+    core_MixinSkinManager(new ArchaicBuilder()
+            .addClientMixins("core.MixinSkinManager")
+            .setPhase(Phase.EARLY)
+            .setApplyIf(() -> ArchaicConfig.fixSkinMemoryLeak)),
+    core_MixinWorldRenderer(new ArchaicBuilder()
+            .addClientMixins("core.MixinWorldRenderer")
+            .setPhase(Phase.EARLY)
+            .setApplyIf(() -> !Boolean.parseBoolean(System.getProperty("archaicFix.disableMC129", "false")))),
+    core_MixinRenderItem(new ArchaicBuilder()
+            .addClientMixins("core.MixinRenderItem")
+            .setPhase(Phase.EARLY)
+            .setApplyIf(() -> ArchaicConfig.forceFancyItems)),
+    divinerpg_MixinEntitySparkler(new ArchaicBuilder()
+            .addClientMixins("divinerpg.MixinEntitySparkler")
+            .setPhase(Phase.LATE)
+            .addRequiredMod(TargetedMod.DIVINERPG)),
+    optifine_MixinVersionCheckThread(new ArchaicBuilder()
+            .addClientMixins("optifine.MixinVersionCheckThread")
+            .setPhase(Phase.EARLY)
+            .addRequiredMod(TargetedMod.OPTIFINE)
+            .setApplyIf(() -> ArchaicConfig.disableOFVersionCheck)),
 
     // MOD-FILTERED MIXINS
-    mekanism_MixinGenHandler(new ArchaicBuilder().addCommonMixins("mekanism.MixinGenHandler").setPhase(Phase.LATE).addRequiredMod(TargetedMod.MEKANISM)),
-    thermal_MixinBlockOre(new ArchaicBuilder().addCommonMixins("thermal.MixinBlockOre").setPhase(Phase.LATE).addRequiredMod(TargetedMod.THERMALFOUNDATION)),
-    botania_MixinBlockSpecialFlower(new ArchaicBuilder().addCommonMixins("botania.MixinBlockSpecialFlower").setPhase(Phase.LATE).addRequiredMod(TargetedMod.BOTANIA)),
-    journeymap_MixinTileDrawStep(new ArchaicBuilder().addClientMixins("journeymap.MixinTileDrawStep").setPhase(Phase.LATE).addRequiredMod(TargetedMod.JOURNEYMAP).setApplyIf(() -> ArchaicConfig.removeJourneymapDebug)),
-    aoa_MixinProjectileEntities(new ArchaicBuilder().addClientMixins("aoa.MixinProjectileEntities").setPhase(Phase.LATE).addRequiredMod(TargetedMod.ADVENT_OF_ASCENSION)),
-    am2_MixinPlayerTracker(new ArchaicBuilder().addCommonMixins("am2.MixinPlayerTracker").setPhase(Phase.LATE).addRequiredMod(TargetedMod.ARS_MAGICA_2)),
-    foodplus_MixinUpdater(new ArchaicBuilder().addCommonMixins("foodplus.MixinUpdater").setPhase(Phase.LATE).addRequiredMod(TargetedMod.FOODPLUS).setApplyIf(() -> ArchaicConfig.disableFoodPlusUpdates)),
-    waystones_MixinItemWarpStone(new ArchaicBuilder().addCommonMixins("waystones.MixinItemWarpStone").setPhase(Phase.LATE).addRequiredMod(TargetedMod.WAYSTONES)),
-    ae2_MixinNEIItemRender(new ArchaicBuilder().addClientMixins("ae2.MixinNEIItemRender").setPhase(Phase.LATE).addRequiredMod(TargetedMod.AE2).setApplyIf(() -> ArchaicConfig.disableAE2NEIItemRendering)),
+    mekanism_MixinGenHandler(new ArchaicBuilder()
+            .addCommonMixins("mekanism.MixinGenHandler")
+            .setPhase(Phase.LATE)
+            .addRequiredMod(TargetedMod.MEKANISM)),
+    thermal_MixinBlockOre(new ArchaicBuilder()
+            .addCommonMixins("thermal.MixinBlockOre")
+            .setPhase(Phase.LATE)
+            .addRequiredMod(TargetedMod.THERMALFOUNDATION)),
+    botania_MixinBlockSpecialFlower(new ArchaicBuilder()
+            .addCommonMixins("botania.MixinBlockSpecialFlower")
+            .setPhase(Phase.LATE)
+            .addRequiredMod(TargetedMod.BOTANIA)),
+    journeymap_MixinTileDrawStep(new ArchaicBuilder()
+            .addClientMixins("journeymap.MixinTileDrawStep")
+            .setPhase(Phase.LATE)
+            .addRequiredMod(TargetedMod.JOURNEYMAP)
+            .setApplyIf(() -> ArchaicConfig.removeJourneymapDebug)),
+    aoa_MixinProjectileEntities(new ArchaicBuilder()
+            .addClientMixins("aoa.MixinProjectileEntities")
+            .setPhase(Phase.LATE)
+            .addRequiredMod(TargetedMod.ADVENT_OF_ASCENSION)),
+    am2_MixinPlayerTracker(new ArchaicBuilder()
+            .addCommonMixins("am2.MixinPlayerTracker")
+            .setPhase(Phase.LATE)
+            .addRequiredMod(TargetedMod.ARS_MAGICA_2)),
+    foodplus_MixinUpdater(new ArchaicBuilder()
+            .addCommonMixins("foodplus.MixinUpdater")
+            .setPhase(Phase.LATE)
+            .addRequiredMod(TargetedMod.FOODPLUS)
+            .setApplyIf(() -> ArchaicConfig.disableFoodPlusUpdates)),
+    waystones_MixinItemWarpStone(new ArchaicBuilder()
+            .addCommonMixins("waystones.MixinItemWarpStone")
+            .setPhase(Phase.LATE)
+            .addRequiredMod(TargetedMod.WAYSTONES)),
+    ae2_MixinNEIItemRender(new ArchaicBuilder()
+            .addClientMixins("ae2.MixinNEIItemRender")
+            .setPhase(Phase.LATE)
+            .addRequiredMod(TargetedMod.AE2)
+            .setApplyIf(() -> ArchaicConfig.disableAE2NEIItemRendering)),
     /** This mixin will ostensibly be unnecessary after DragonAPI V31b */
-    dragonapi_MixinReikaWorldHelper(new ArchaicBuilder().addCommonMixins("dragonapi.MixinReikaWorldHelper").setPhase(Phase.LATE).setApplyIf(() -> DragonAPIHelper.isVersionInInclusiveRange(0, 'a', 31, 'b') && !Boolean.parseBoolean(System.getProperty("archaicFix.disableFastReikaWorldHelper", "false")))),
-    diversity_MixinServerHandler(new ArchaicBuilder().addCommonMixins("diversity.MixinServerHandler").setPhase(Phase.LATE).addRequiredMod(TargetedMod.DIVERSITY));
+    dragonapi_MixinReikaWorldHelper(new ArchaicBuilder()
+            .addCommonMixins("dragonapi.MixinReikaWorldHelper")
+            .setPhase(Phase.LATE)
+            .setApplyIf(() -> DragonAPIHelper.isVersionInInclusiveRange(0, 'a', 31, 'b') && !Boolean.parseBoolean(System.getProperty("archaicFix.disableFastReikaWorldHelper", "false")))),
+    diversity_MixinServerHandler(new ArchaicBuilder()
+            .addCommonMixins("diversity.MixinServerHandler")
+            .setPhase(Phase.LATE)
+            .addRequiredMod(TargetedMod.DIVERSITY));
 
     private final MixinBuilder builder;
 
