@@ -26,7 +26,6 @@ public enum Mixin implements IMixins {
                     "core.MixinMaterialLiquid",
                     "core.MixinChunkProviderServer",
                     "core.MixinChunkIOProvider",
-                    "core.MixinCraftingManager",
                     "core.MixinSpawnerAnimals",
                     "core.MixinShapedOreRecipe",
                     "core.MixinLongHashMap",
@@ -65,6 +64,10 @@ public enum Mixin implements IMixins {
                     "core.MixinFMLClientHandler",
                     "core.MixinSplashProgress",
                     "core.AccessorSplashProgress")),
+    RECIPE_CACHING(new ArchaicBuilder()
+            .setPhase(Phase.EARLY)
+            .setApplyIf(() -> ArchaicConfig.cacheRecipes)
+            .addCommonMixins("core.MixinCraftingManager")),
     PHOSPHOR(new ArchaicBuilder()
             .setPhase(Phase.EARLY)
             .setApplyIf(() -> ArchaicConfig.enablePhosphor)

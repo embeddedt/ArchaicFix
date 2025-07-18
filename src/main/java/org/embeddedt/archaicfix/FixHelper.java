@@ -42,7 +42,7 @@ public class FixHelper {
                 recipe.invalidatePotentialItems();
         }
         recipesHoldingPotentialItems.clear();
-        if(CraftingManager.getInstance() != null)
+        if(CraftingManager.getInstance() instanceof IFasterCraftingManager)
             ((IFasterCraftingManager)CraftingManager.getInstance()).clearRecipeCache();
         OreDictIterator.clearCache(event.Name);
     }

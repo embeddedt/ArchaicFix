@@ -11,7 +11,6 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
 import org.embeddedt.archaicfix.ArchaicLogger;
-import org.embeddedt.archaicfix.config.ArchaicConfig;
 import org.embeddedt.archaicfix.recipe.IFasterCraftingManager;
 import org.embeddedt.archaicfix.recipe.LastMatchedInfo;
 import org.embeddedt.archaicfix.recipe.RecipeCacheLoader;
@@ -41,8 +40,6 @@ public class MixinCraftingManager implements IFasterCraftingManager {
             to =  @At(value = "INVOKE", target = "Ljava/util/List;size()I")
     ), cancellable = true)
     private void fasterRecipeSearch(InventoryCrafting inventory, World world, CallbackInfoReturnable<ItemStack> cir) {
-        if(!ArchaicConfig.cacheRecipes)
-            return;
         LastMatchedInfo retInfo = lastMatchedInfo;
         if(retInfo == null || !retInfo.matches(inventory)) {
             Set<Item> stacks = new HashSet<>();
