@@ -1,10 +1,10 @@
 package org.embeddedt.archaicfix;
 
-import com.mojang.realmsclient.gui.ChatFormatting;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.NextTickListEntry;
 import net.minecraft.world.WorldServer;
 
@@ -29,11 +29,11 @@ public class CommandDebugUpdateQueue extends CommandBase {
             for(WorldServer world : server.worldServers) {
                 @SuppressWarnings("unchecked")
                 TreeSet<NextTickListEntry> ticks = world.pendingTickListEntriesTreeSet;
-                if(ticks.size() > 0)
+                if(!ticks.isEmpty())
                     sender.addChatMessage(new ChatComponentText("Dimension " + world.provider.dimensionId + ": " + ticks.size()));
             }
         } else {
-            sender.addChatMessage(new ChatComponentText(ChatFormatting.RED + "No server found."));
+            sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "No server found."));
         }
     }
 }
