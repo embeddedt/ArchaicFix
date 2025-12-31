@@ -141,6 +141,10 @@ public class ArchaicConfig {
     @Config.DefaultBoolean(true)
     public static boolean showSplashMemoryBar;
 
+    @Config.Comment("Tweak F3 screen to be closer to modern versions.")
+    @Config.DefaultBoolean(false)
+    public static boolean modernizeF3Screen;
+
     @Config.Comment("Replace tall grass texture with modern version.")
     @Config.DefaultBoolean(false)
     public static boolean modernizeTextures;
