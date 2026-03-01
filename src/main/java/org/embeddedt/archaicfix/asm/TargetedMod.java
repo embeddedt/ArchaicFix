@@ -13,6 +13,7 @@ public enum TargetedMod implements ITargetMod {
     ARS_MAGICA_2("arsmagica2"),
     BOTANIA("Botania"),
     CHICKENCHUNKS("ChickenChunks"),
+    CHUNKAPI("chunkapi"),
     CHUNK_PREGENERATOR("chunkpregenerator"),
     COFHCORE("cofh.asm.LoadingPlugin", "CoFHCore"),
     DIVERSITY("diversity"),
@@ -35,12 +36,19 @@ public enum TargetedMod implements ITargetMod {
     WAYSTONES("waystones");
 
     private final TargetModBuilder builder;
-
+    private final String ID;
+    
     TargetedMod(String modId) {
         this(null, modId);
     }
 
     TargetedMod(String coremodClass, String modId) {
         this.builder = new TargetModBuilder().setCoreModClass(coremodClass).setModId(modId);
+        this.ID = modId;
+    }
+    
+    public String ModID()
+    {
+        return ID;
     }
 }
