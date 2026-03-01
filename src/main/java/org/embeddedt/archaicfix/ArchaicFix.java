@@ -1,5 +1,6 @@
 package org.embeddedt.archaicfix;
 
+import com.falsepattern.chunk.api.DataRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.SidedProxy;
@@ -16,6 +17,9 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraftforge.common.MinecraftForge;
 import org.embeddedt.archaicfix.asm.EarlyStringPool;
+import org.embeddedt.archaicfix.asm.TargetedMod;
+import org.embeddedt.archaicfix.chunkapi.ChunkAPICompat;
+import org.embeddedt.archaicfix.chunkapi.ChunkLightingDataManager;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
 import org.embeddedt.archaicfix.ducks.IAcceleratedRecipe;
 import org.embeddedt.archaicfix.proxy.CommonProxy;
@@ -24,7 +28,7 @@ import thaumcraft.api.ThaumcraftApi;
 
 import java.util.*;
 
-@Mod(modid = ArchaicFix.MODID, version = ArchaicFix.VERSION, dependencies = "required-after:gtnhmixins@[2.0.0,);required-after:unimixins@[0.1.16,);", guiFactory = "org.embeddedt.archaicfix.config.ArchaicGuiConfigFactory")
+@Mod(modid = ArchaicFix.MODID, version = ArchaicFix.VERSION, dependencies = "required-after:gtnhmixins@[2.0.0,);required-after:unimixins@[0.1.16,);after:chunkapi", guiFactory = "org.embeddedt.archaicfix.config.ArchaicGuiConfigFactory")
 public class ArchaicFix
 {
     public static final String MODID = "archaicfix";
@@ -72,6 +76,10 @@ public class ArchaicFix
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
+        if (Loader.isModLoaded(TargetedMod.CHUNKAPI.ModID()))
+        {
+            ChunkAPICompat.init(); // This must be a call to the class because otherwise the JVM will try to load DataManager.
+        }
         EarlyStringPool.clear();
     }
 

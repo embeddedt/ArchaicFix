@@ -2,6 +2,7 @@ package org.embeddedt.archaicfix.asm;
 
 import com.gtnewhorizon.gtnhmixins.builders.IMixins;
 import com.gtnewhorizon.gtnhmixins.builders.MixinBuilder;
+import cpw.mods.fml.common.Loader;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.embeddedt.archaicfix.config.ArchaicConfig;
@@ -83,6 +84,10 @@ public enum Mixin implements IMixins {
                     "lighting.MixinMinecraft",
                     "lighting.MixinWorld",
                     "lighting.MixinChunkCache")),
+    PHOSPHOR_NO_CHUNKAPI(new ArchaicBuilder()
+            .setPhase(Phase.LATE)
+            .setApplyIf(() -> ArchaicConfig.enablePhosphor && !Loader.isModLoaded(TargetedMod.CHUNKAPI.ModID()))
+            .addCommonMixins("lighting.base.MixinAnvilChunkLoaderBase")),
     PHOSPHOR_FASTCRAFT(new ArchaicBuilder()
             .setPhase(Phase.EARLY)
             .setApplyIf(() -> ArchaicConfig.enablePhosphor)
@@ -91,7 +96,6 @@ public enum Mixin implements IMixins {
                     "lighting.fastcraft.MixinChunk",
                     "lighting.fastcraft.MixinChunkProviderServer",
                     "lighting.fastcraft.MixinWorld")),
-
     GREGTECH6(new ArchaicBuilder()
             .setPhase(Phase.LATE)
             .addRequiredMod(TargetedMod.GREGTECH6)
