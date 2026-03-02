@@ -76,7 +76,7 @@ public class ArchaicFix
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        if (Loader.isModLoaded(TargetedMod.CHUNKAPI.ModID()))
+        if (Loader.isModLoaded(TargetedMod.CHUNKAPI.ModID()) && ArchaicConfig.enablePhosphor)
         {
             ChunkAPICompat.init(); // This must be a call to the class because otherwise the JVM will try to load DataManager.
         }
