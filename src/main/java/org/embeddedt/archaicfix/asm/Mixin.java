@@ -64,7 +64,8 @@ public enum Mixin implements IMixins {
                     "core.MixinGuiIngameForge",
                     "core.MixinFMLClientHandler",
                     "core.MixinSplashProgress",
-                    "core.AccessorSplashProgress")),
+                    "core.AccessorSplashProgress",
+                    "core.MixinTimer")),
     RECIPE_CACHING(new ArchaicBuilder()
             .setPhase(Phase.EARLY)
             .setApplyIf(() -> ArchaicConfig.cacheRecipes)
