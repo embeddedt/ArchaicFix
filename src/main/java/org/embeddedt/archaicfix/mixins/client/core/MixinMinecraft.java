@@ -25,8 +25,6 @@ public abstract class MixinMinecraft {
 
     @Shadow public abstract void displayGuiScreen(GuiScreen p_147108_1_);
 
-    @Shadow public GuiScreen currentScreen;
-
     @Shadow private boolean fullscreen;
 
     /** @reason Makes grass display as fancy regardless of the graphics setting. Matches the appearance of 1.8+ */
@@ -35,10 +33,8 @@ public abstract class MixinMinecraft {
         return true;
     }
     /** @reason Removes a call to {@link System#gc()} to make world loading as fast as possible */
-    @Inject(method = "loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at = @At(value = "INVOKE", target = "Ljava/lang/System;gc()V"), cancellable = true)
-    private void onSystemGC(WorldClient worldClient, String reason, CallbackInfo ci) {
-        ci.cancel();
-    }
+    @Redirect(method = "loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at = @At(value = "INVOKE", target = "Ljava/lang/System;gc()V"))
+    private void onSystemGC() {}
 
     @Inject(method = "checkGLError", at = @At("HEAD"), cancellable = true)
     private void skipErrorCheck(String msg, CallbackInfo ci) {
