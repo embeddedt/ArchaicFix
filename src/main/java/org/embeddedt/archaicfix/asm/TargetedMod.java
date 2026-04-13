@@ -30,6 +30,7 @@ public enum TargetedMod implements ITargetMod {
     OPTIFINE("optifine.OptiFineForgeTweaker", null),
     PROJECTE("ProjectE"),
     SHIPSMOD("cuchaz.ships.core.CoreModPlugin","cuchaz.ships"),
+    SUPERNOVA("com.mitchej123.supernova.core.SupernovaCore", "supernova"),
     TC4TWEAKS("tc4tweak"),
     THERMALEXPANSION("ThermalExpansion"),
     THERMALFOUNDATION("ThermalFoundation"),
