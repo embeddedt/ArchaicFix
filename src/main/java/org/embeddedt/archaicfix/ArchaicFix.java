@@ -58,6 +58,10 @@ public class ArchaicFix
     @EventHandler
     public void preinit(FMLPreInitializationEvent event)
     {
+        if (ArchaicConfig.enablePhosphor && Loader.isModLoaded("supernova")) {
+            ArchaicConfig.enablePhosphor = false;
+            ArchaicLogger.LOGGER.info("Supernova detected, disabling Phosphor.");
+        }
         if(Entity.nextEntityID == 0) {
             Entity.nextEntityID = 1;
             ArchaicLogger.LOGGER.info("Fixed MC-111480");
