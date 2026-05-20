@@ -47,7 +47,6 @@ public enum Mixin implements IMixins {
                     "core.MixinStructureStart",
                     "core.MixinOreDictionary",
                     "core.MixinChunkProviderHell",
-                    "core.MixinASMData",
                     "core.MixinNetHandlerPlayServer")
             .addClientMixins(
                     "core.MixinThreadDownloadImageData",
@@ -171,8 +170,13 @@ public enum Mixin implements IMixins {
             .setApplyIf(() -> ArchaicConfig.itemLagReduction)
             .addCommonMixins("core.MixinEntityItem")),
 
-    MIXINMODCANDIDATE(new ArchaicBuilder()
+    CANONICALIZE_ASMDATA_TABLE(new ArchaicBuilder()
             .setPhase(Phase.EARLY)
+            .setApplyIf(() -> ArchaicConfig.canonicalizeASMDataTable)
+            .addCommonMixins("core.MixinASMData")),
+    CANONICALIZE_ASMDATA_TABLE_NOCOFH(new ArchaicBuilder()
+            .setPhase(Phase.EARLY)
+            .setApplyIf(() -> ArchaicConfig.canonicalizeASMDataTable)
             .addExcludedMod(TargetedMod.COFHCORE)
             .addCommonMixins("core.MixinModCandidate")),
 

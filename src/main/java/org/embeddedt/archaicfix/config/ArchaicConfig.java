@@ -180,4 +180,8 @@ public class ArchaicConfig {
     @Config.Comment("Disable NEI item rendering in AE2 to fix duplicate stack size rendering when using AE2 rv3-beta-6 with NEI > 2.6.37-GTNH")
     @Config.DefaultBoolean(false)
     public static boolean disableAE2NEIItemRendering;
+
+    @Config.Comment("Reduce RAM usage of the ASMDataTable by pooling some of the Strings")
+    @Config.DefaultBoolean(true)
+    public static boolean canonicalizeASMDataTable;
 }
