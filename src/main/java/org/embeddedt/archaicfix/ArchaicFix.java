@@ -62,6 +62,10 @@ public class ArchaicFix
             ArchaicConfig.enablePhosphor = false;
             ArchaicLogger.LOGGER.info("Supernova detected, disabling Phosphor.");
         }
+        if (ArchaicConfig.enablePhosphor && Loader.isModLoaded("cubicchunks")) {
+            ArchaicConfig.enablePhosphor = false;
+            ArchaicLogger.LOGGER.info("Cubic Chunks detected, disabling Phosphor.");
+        }
         if(Entity.nextEntityID == 0) {
             Entity.nextEntityID = 1;
             ArchaicLogger.LOGGER.info("Fixed MC-111480");
