@@ -72,6 +72,7 @@ public enum Mixin implements IMixins {
     PHOSPHOR(new ArchaicBuilder()
             .setPhase(Phase.EARLY)
             .setApplyIf(() -> ArchaicConfig.enablePhosphor)
+            .addExcludedMod(TargetedMod.CUBIC_CHUNKS)
             .addExcludedMod(TargetedMod.SUPERNOVA)
             .addCommonMixins(
                     "lighting.MixinAnvilChunkLoader",
@@ -88,12 +89,14 @@ public enum Mixin implements IMixins {
     PHOSPHOR_NO_CHUNKAPI(new ArchaicBuilder()
             .setPhase(Phase.LATE)
             .setApplyIf(() -> ArchaicConfig.enablePhosphor && !Loader.isModLoaded(TargetedMod.CHUNKAPI.ModID()))
+            .addExcludedMod(TargetedMod.CUBIC_CHUNKS)
             .addExcludedMod(TargetedMod.SUPERNOVA)
             .addCommonMixins("lighting.base.MixinAnvilChunkLoaderBase")),
     PHOSPHOR_FASTCRAFT(new ArchaicBuilder()
             .setPhase(Phase.EARLY)
             .setApplyIf(() -> ArchaicConfig.enablePhosphor)
             .addRequiredMod(TargetedMod.FASTCRAFT)
+            .addExcludedMod(TargetedMod.CUBIC_CHUNKS)
             .addExcludedMod(TargetedMod.SUPERNOVA)
             .addCommonMixins(
                     "lighting.fastcraft.MixinChunk",

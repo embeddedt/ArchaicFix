@@ -16,6 +16,7 @@ public enum TargetedMod implements ITargetMod {
     CHUNKAPI("chunkapi"),
     CHUNK_PREGENERATOR("chunkpregenerator"),
     COFHCORE("cofh.asm.LoadingPlugin", "CoFHCore"),
+    CUBIC_CHUNKS("com.cardinalstar.cubicchunks.asm.coremod.CubicChunksCoreMod", "cubicchunks"),
     DIVERSITY("diversity"),
     DIVINERPG("divinerpg"),
     EXTRAUTILS("ExtraUtilities"),
